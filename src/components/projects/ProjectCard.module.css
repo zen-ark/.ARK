@@ -1,0 +1,132 @@
+.projectItemLine2 {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.3em;
+}
+
+.projectItemLine2Inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.projectItemLine2InnerList {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.projectItemLine2InnerList span {
+  display: inline-block;
+  transform: translate3d(0em, 100%, 0px);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Reveal on hover - characters slide up */
+.group:hover .projectItemLine2InnerList span,
+.group:focus .projectItemLine2InnerList span {
+  transform: translate3d(0em, 0%, 0px);
+}
+
+/* Stagger delay for each character */
+.projectItemLine2InnerList:nth-child(1) span {
+  transition-delay: 0ms;
+}
+.projectItemLine2InnerList:nth-child(2) span {
+  transition-delay: 20ms;
+}
+.projectItemLine2InnerList:nth-child(3) span {
+  transition-delay: 40ms;
+}
+.projectItemLine2InnerList:nth-child(4) span {
+  transition-delay: 60ms;
+}
+.projectItemLine2InnerList:nth-child(5) span {
+  transition-delay: 80ms;
+}
+.projectItemLine2InnerList:nth-child(6) span {
+  transition-delay: 100ms;
+}
+.projectItemLine2InnerList:nth-child(7) span {
+  transition-delay: 120ms;
+}
+.projectItemLine2InnerList:nth-child(8) span {
+  transition-delay: 140ms;
+}
+.projectItemLine2InnerList:nth-child(9) span {
+  transition-delay: 160ms;
+}
+.projectItemLine2InnerList:nth-child(10) span {
+  transition-delay: 180ms;
+}
+.projectItemLine2InnerList:nth-child(11) span {
+  transition-delay: 200ms;
+}
+.projectItemLine2InnerList:nth-child(12) span {
+  transition-delay: 220ms;
+}
+.projectItemLine2InnerList:nth-child(13) span {
+  transition-delay: 240ms;
+}
+.projectItemLine2InnerList:nth-child(14) span {
+  transition-delay: 260ms;
+}
+.projectItemLine2InnerList:nth-child(15) span {
+  transition-delay: 280ms;
+}
+.projectItemLine2InnerList:nth-child(16) span {
+  transition-delay: 300ms;
+}
+.projectItemLine2InnerList:nth-child(17) span {
+  transition-delay: 320ms;
+}
+.projectItemLine2InnerList:nth-child(18) span {
+  transition-delay: 340ms;
+}
+.projectItemLine2InnerList:nth-child(19) span {
+  transition-delay: 360ms;
+}
+.projectItemLine2InnerList:nth-child(20) span {
+  transition-delay: 380ms;
+}
+.projectItemLine2InnerList:nth-child(n+21) span {
+  transition-delay: 400ms;
+}
+
+/* Icon animation */
+.projectItemLine2Icon {
+  display: inline-flex;
+  align-items: center;
+  transform: translateX(-1em);
+  opacity: 0;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: 200ms;
+}
+
+.group:hover .projectItemLine2Icon,
+.group:focus .projectItemLine2Icon {
+  transform: translateX(0em);
+  opacity: 1;
+}
+
+.projectItemLine2Icon svg {
+  width: 1em;
+  height: 1em;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .projectItemLine2InnerList span,
+  .projectItemLine2Icon {
+    transform: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+  }
+}
+

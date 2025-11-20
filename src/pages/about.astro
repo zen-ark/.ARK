@@ -1,0 +1,22 @@
+---
+import Base from "@/layouts/Base.astro";
+import ContactForm from "@/components/ContactForm";
+---
+
+<Base
+  title="About — ZEN.ARK"
+  description="Swiss studio crafting clear interfaces and cinematic web experiences. We build fast, accessible sites and lean tools for teams that care about craft."
+>
+  <main class="min-h-screen flex items-center justify-center px-4 py-16 md:py-24">
+    <div class="w-full max-w-4xl mx-auto space-y-12">
+      <div class="text-center space-y-4">
+        <h1 class="text-4xl md:text-5xl font-semibold tracking-tight">Get in Touch</h1>
+        <p class="text-lg text-text-subtle max-w-2xl mx-auto">
+          Have a project in mind? We'd love to hear from you.
+        </p>
+      </div>
+
+      <ContactForm client:load />
+    </div>
+  </main>
+</Base>

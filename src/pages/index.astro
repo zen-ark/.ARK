@@ -1,0 +1,109 @@
+---
+import Base from "@/layouts/Base.astro";
+import Hero from "@/components/Hero";
+import WhatArkDoes from "@/components/WhatArkDoes";
+import OperatorArk from "@/components/OperatorArk";
+import ProjectsSection from "@/components/ProjectsSection";
+import ArkModel from "@/components/ArkModel";
+import ModulesInstalled from "@/components/ModulesInstalled";
+import LabArk from "@/components/LabArk";
+import OpenNewFile from "@/components/OpenNewFile";
+import { getCollection } from "astro:content";
+
+const allProjects = await getCollection("projects");
+
+// Transform projects for ProjectsSection component (ProjectCard)
+const projectsForSection = allProjects
+  .filter((p) => p.data.featured)
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .map((p) => ({
+    url: `/projects/${p.slug}`,
+    title: p.data.title,
+    clientName: p.data.client,
+    imageSrc: p.data.cover,
+    imageAlt: p.data.coverAlt ?? p.data.title,
+  }));
+---
+
+<Base title="ZEN.ARK — Creative Studio">
+  <main>
+    <!-- Hero Section -->
+    <Hero
+      client:load
+      videoSource="/Export.mov"
+      title="Precision. Usability. Experimentation."
+      subtitle="Swiss studio crafting clear interfaces and cinematic web experiences."
+    />
+
+    <!-- WHAT .ARK DOES Section -->
+    <WhatArkDoes client:load />
+
+    <!-- Projects Section with Layout Toggle -->
+    <ProjectsSection client:load projects={projectsForSection} />
+
+    <!-- THE .ARK MODEL Section -->
+    <ArkModel client:load />
+
+    <!-- MODULES INSTALLED Section -->
+    <ModulesInstalled client:load />
+
+    <!-- THE OPERATOR.ARK Section -->
+    <OperatorArk client:load />
+
+    <!-- OPEN A NEW FILE Section -->
+    <OpenNewFile client:load />
+
+    <!-- LAB.ARK Section - Hidden for now -->
+    <!-- <LabArk client:load /> -->
+  </main>
+  <script>
+    // Handle hash-based scrolling
+    const hash = window.location.hash;
+    if (hash) {
+      // Wait for page to fully load, then scroll
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          const targetSection = document.querySelector(hash);
+          if (targetSection) {
+            const header = document.querySelector("header");
+            const headerHeight = header ? header.getBoundingClientRect().height : 0;
+            const viewportHeight = window.innerHeight;
+            const targetRect = targetSection.getBoundingClientRect();
+
+            // Special case: Projects section should scroll to top
+            if (hash === "#projects") {
+              // Calculate scroll position accounting for sticky elements
+              const stickyWrapper = document
+                .querySelector('[id="what-the-ark"]')
+                ?.closest(".sticky")?.parentElement;
+              const stickyWrapperBottom = stickyWrapper
+                ? stickyWrapper.getBoundingClientRect().bottom + window.pageYOffset
+                : 0;
+
+              // Scroll to just past the sticky section, accounting for header
+              const targetScroll = Math.max(
+                stickyWrapperBottom - headerHeight + 20, // 20px padding
+                targetRect.top + window.pageYOffset - headerHeight - 20
+              );
+
+              window.scrollTo({
+                top: targetScroll,
+                behavior: "smooth",
+              });
+            } else {
+              // Center other sections in viewport
+              const sectionHeight = targetRect.height;
+              const sectionTop = targetRect.top + window.pageYOffset;
+              const centerScroll = sectionTop + sectionHeight / 2 - viewportHeight / 2;
+
+              window.scrollTo({
+                top: Math.max(0, centerScroll),
+                behavior: "smooth",
+              });
+            }
+          }
+        }, 100);
+      });
+    }
+  </script>
+</Base>

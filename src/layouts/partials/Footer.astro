@@ -1,0 +1,20 @@
+---
+import StickyFooterText from "@/components/StickyFooterText";
+const currentYear = new Date().getFullYear();
+const footerHeight = 600;
+---
+
+<footer
+  id="site-footer"
+  class="relative"
+  style={`height: ${footerHeight}px; clip-path: polygon(0% 0, 100% 0%, 100% 100%, 0 100%);`}
+>
+  <div class="fixed bottom-0 w-full bg-black" style={`height: ${footerHeight}px;`}>
+    <StickyFooterText client:load />
+    <div
+      class="absolute bottom-0 left-0 right-0 px-6 py-8 flex items-center justify-between text-sm text-white/60"
+    >
+      <p>© {currentYear} ZEN.ARK</p>
+    </div>
+  </div>
+</footer>

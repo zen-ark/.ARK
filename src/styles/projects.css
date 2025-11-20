@@ -1,0 +1,24 @@
+:root {
+  --radius-2xl: 28px;
+}
+
+.featured-card-enter {
+  opacity: 0.001;
+  transform: scale(0.98);
+}
+
+.featured-card-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .featured-card-enter,
+  .featured-card-enter-active {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+

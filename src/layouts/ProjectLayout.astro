@@ -1,0 +1,98 @@
+---
+import Base from "./Base.astro";
+import { buildArticleSchema, formatJsonLd } from "@/lib/seo";
+
+interface Props {
+  title: string;
+  description: string;
+  date: string;
+  author?: string;
+  ogImage?: string;
+  slug: string;
+  prevProject?: { slug: string; title: string };
+  nextProject?: { slug: string; title: string };
+}
+
+const {
+  title,
+  description,
+  date,
+  author = "ZEN.ARK",
+  ogImage,
+  slug,
+  prevProject,
+  nextProject,
+} = Astro.props;
+
+const siteUrl = import.meta.env.SITE || "https://zen.ark";
+const projectUrl = new URL(`/projects/${slug}`, siteUrl).toString();
+
+const articleSchema = buildArticleSchema({
+  headline: title,
+  description,
+  author,
+  datePublished: date,
+  image: ogImage ? new URL(ogImage, siteUrl).toString() : undefined,
+  url: projectUrl,
+});
+---
+
+<Base
+  title={`${title} — ZEN.ARK`}
+  description={description}
+  ogImage={ogImage}
+  canonical={projectUrl}
+  ogType="article"
+>
+  <!-- Hero Image Section - Full Width with Border -->
+  {
+    ogImage && (
+      <div class="w-full px-4 pt-4">
+        <div
+          class="w-full h-[60vh] relative overflow-hidden bg-transparent"
+          style={{
+            borderRadius: "var(--space-8)",
+            backgroundColor: "transparent",
+          }}
+        >
+          <img src={ogImage} alt={title} class="w-full h-full object-cover" />
+        </div>
+      </div>
+    )
+  }
+
+  <!-- Content Section - Constrained Width -->
+  <article class="max-w-6xl mx-auto px-6 py-12">
+    <slot />
+  </article>
+
+  {
+    (prevProject || nextProject) && (
+      <nav class="max-w-6xl mx-auto px-6 pb-12" aria-label="Project navigation">
+        <div class="flex justify-between items-center gap-4 pt-8 border-t border-black/10">
+          {prevProject ? (
+            <a
+              href={`/projects/${prevProject.slug}`}
+              class="text-sm text-black/70 hover:text-black transition-colors focus-ring"
+            >
+              ← {prevProject.title}
+            </a>
+          ) : (
+            <span />
+          )}
+          {nextProject && (
+            <a
+              href={`/projects/${nextProject.slug}`}
+              class="text-sm text-black/70 hover:text-black transition-colors focus-ring"
+            >
+              {nextProject.title} →
+            </a>
+          )}
+        </div>
+      </nav>
+    )
+  }
+
+  <!-- Article Schema -->
+  <script type="application/ld+json" set:html={formatJsonLd(articleSchema)} slot="head" />
+</Base>

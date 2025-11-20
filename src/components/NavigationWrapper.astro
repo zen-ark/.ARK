@@ -1,0 +1,58 @@
+---
+import Navigation from "./Navigation";
+import { getCollection } from "astro:content";
+
+const { url } = Astro;
+const currentPath = url.pathname;
+const isGerman = currentPath.startsWith("/de");
+const prefix = isGerman ? "/de" : "";
+
+const toHref = (path: string) => {
+  if (path === "/") return prefix || "/";
+  return `${prefix}${path}`;
+};
+
+const primaryLinks = [
+  { href: toHref("/"), label: isGerman ? "Startseite" : "Home" },
+  { href: "#what-the-ark", label: "WHATS ARK" },
+  { href: toHref("/projects"), label: isGerman ? "Projekte" : "Projects" },
+  { href: "#how-ark", label: "HOW ARK" },
+  { href: "#behind-ark", label: "BEHIND ARK" },
+  { href: toHref("/contact"), label: isGerman ? "Kontakt" : "Contact" },
+];
+
+const projects = await getCollection("projects").catch(() => []);
+
+const sorted =
+  projects && projects.length
+    ? [...projects]
+        .sort((a, b) => {
+          const da = (a.data as any).date ? new Date((a.data as any).date).getTime() : 0;
+          const db = (b.data as any).date ? new Date((b.data as any).date).getTime() : 0;
+          return db - da;
+        })
+        .slice(0, 8)
+        .map((p) => ({
+          href: `${prefix}/projects/${p.slug}`.replace("//", "/"),
+          label: (p.data as any).title || p.slug,
+        }))
+    : [
+        { href: `${prefix}/projects/swiss-fintech`.replace("//", "/"), label: "Swiss Fintech" },
+        {
+          href: `${prefix}/projects/zen-intelligence`.replace("//", "/"),
+          label: "Zen Intelligence",
+        },
+      ];
+
+const talkHref = "mailto:hello@zen.ark";
+const logoLines = [".ARK"];
+---
+
+<Navigation
+  client:load
+  projects={sorted}
+  primaryLinks={primaryLinks}
+  talkHref={talkHref}
+  logoLines={logoLines}
+  activePath={currentPath}
+/>

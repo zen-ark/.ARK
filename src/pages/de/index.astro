@@ -1,0 +1,38 @@
+---
+import Base from "@/layouts/Base.astro";
+---
+
+<Base title="ZEN.ARK — Kreatives Studio" lang="de">
+  <main>
+    <!-- Hero Section -->
+    <header
+      id="hero"
+      class="h-[calc(100vh-var(--space-8))] flex items-end justify-start px-6 pb-6 relative overflow-hidden m-[var(--space-4)]"
+      aria-labelledby="hero-title"
+    >
+      <!-- Background Video -->
+      <video
+        autoplay
+        loop
+        muted
+        playsinline
+        class="absolute inset-0 w-full h-full object-cover"
+        aria-hidden="true"
+      >
+        <source src="/Export.mov" type="video/mp4" />
+      </video>
+
+      <!-- Overlay for better text readability -->
+      <div class="absolute inset-0 bg-black/50"></div>
+
+      <div class="text-left space-y-2 relative z-10">
+        <h1 id="hero-title" class="text-3xl md:text-4xl font-semibold tracking-tight">
+          Präzision. Benutzerfreundlichkeit. Experimentieren.
+        </h1>
+        <p class="text-white/70">
+          Ein Schweizer Studio, das klare Interfaces und filmische Web-Erlebnisse gestaltet.
+        </p>
+      </div>
+    </header>
+  </main>
+</Base>

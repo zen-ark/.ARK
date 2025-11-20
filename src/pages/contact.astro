@@ -1,0 +1,23 @@
+---
+import Base from "@/layouts/Base.astro";
+import ContactForm from "@/components/ContactForm";
+---
+
+<Base
+  title="Contact — ZEN.ARK"
+  description="Get in touch with ZEN.ARK studio. Tell us about your product, timeline, and constraints. We'll reply within one business day."
+>
+  <main class="min-h-screen flex items-center justify-center px-4 py-16 md:py-24">
+    <div class="w-full max-w-4xl mx-auto space-y-12">
+      <div class="text-center space-y-4">
+        <h1 class="text-4xl md:text-5xl font-semibold tracking-tight">Get in Touch</h1>
+        <p class="text-lg text-text-subtle max-w-2xl mx-auto">
+          Tell us about your product, timeline, and constraints. We'll reply within one business
+          day.
+        </p>
+      </div>
+
+      <ContactForm client:load />
+    </div>
+  </main>
+</Base>

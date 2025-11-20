@@ -1,0 +1,80 @@
+---
+title: "Design Tokens in 2025: A Practical Guide"
+date: "2025-10-10"
+tags: ["Design Systems", "CSS", "Tokens"]
+excerpt: "How we implement and maintain design tokens using CSS custom properties and Tailwind CSS."
+author: "ZEN.ARK"
+published: true
+---
+
+## The Token System
+
+Design tokens are the foundation of any scalable design system. They create a single source of truth for design decisions and make it easy to maintain consistency across products.
+
+### Our Approach
+
+We use CSS custom properties (CSS variables) as our token layer, combined with Tailwind CSS for utility classes. This gives us the best of both worlds:
+
+```css
+:root {
+  /* Semantic color tokens */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: rgba(255, 255, 255, 0.7);
+  --color-surface-base: #000000;
+
+  /* Spacing scale */
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+}
+```
+
+### Why CSS Custom Properties?
+
+1. **Runtime flexibility**: Can be updated via JavaScript
+2. **Scoping**: Can be overridden in specific contexts
+3. **Browser support**: Excellent across modern browsers
+4. **Performance**: No build-time overhead
+
+### Integration with Tailwind
+
+Tailwind CSS works beautifully with custom properties:
+
+```typescript
+// tailwind.config.ts
+export default {
+  theme: {
+    extend: {
+      colors: {
+        "text-primary": "var(--color-text-primary)",
+        "text-secondary": "var(--color-text-secondary)",
+      },
+    },
+  },
+};
+```
+
+### Token Categories
+
+We organize tokens into clear categories:
+
+- **Colors**: Brand, semantic, surface, text
+- **Spacing**: Consistent scale from 4px to 96px
+- **Typography**: Font sizes, weights, line heights
+- **Radii**: Border radius values
+- **Transitions**: Animation durations and easings
+
+### Maintenance
+
+Tokens make it trivial to implement theme changes or rebrand. Update the token values, and your entire application updates automatically.
+
+## Best Practices
+
+1. **Use semantic names**: `--color-text-primary` not `--color-white`
+2. **Consistent scale**: Follow a predictable pattern
+3. **Document thoroughly**: Explain when to use each token
+4. **Version control**: Track token changes in your design system
+
+## Conclusion
+
+Design tokens are essential for building maintainable, scalable design systems. They reduce decision fatigue, improve consistency, and make your codebase more maintainable.

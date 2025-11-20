@@ -1,0 +1,102 @@
+---
+import "@/styles/global.css";
+import Header from "./partials/Header.astro";
+import Footer from "./partials/Footer.astro";
+import { buildOrganizationSchema, buildWebSiteSchema, formatJsonLd } from "@/lib/seo";
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  lang?: string;
+  canonical?: string;
+  ogType?: "website" | "article";
+}
+
+const {
+  title = "ZEN.ARK",
+  description = "Creative studio — clarity, usability, experimentation",
+  ogImage = "/og.jpg",
+  lang = "en",
+  canonical,
+  ogType = "website",
+} = Astro.props;
+
+const currentPath = Astro.url.pathname;
+const isGerman = currentPath.startsWith("/de");
+
+const plausibleDomain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN || "zen.ark";
+const isProd = import.meta.env.PROD;
+
+const siteUrl = import.meta.env.SITE || "https://zen.ark";
+const fullUrl = canonical || new URL(currentPath, siteUrl).toString();
+
+// Schema.org structured data
+const organizationSchema = buildOrganizationSchema({
+  name: "ZEN.ARK",
+  url: siteUrl,
+  logo: `${siteUrl}/og.jpg`,
+  sameAs: [],
+});
+
+const websiteSchema = buildWebSiteSchema({
+  name: "ZEN.ARK",
+  url: siteUrl,
+  description: "Creative studio focused on clarity, usability, and experimentation",
+});
+---
+
+<html lang={lang} data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.ico" />
+    <link rel="canonical" href={fullUrl} />
+
+    <!-- Geist Variable Font for smooth weight animation -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(ogImage, siteUrl).toString()} />
+    <meta property="og:url" content={fullUrl} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content="ZEN.ARK" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(ogImage, siteUrl).toString()} />
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json" set:html={formatJsonLd(organizationSchema)} />
+    <script type="application/ld+json" set:html={formatJsonLd(websiteSchema)} />
+
+    <!-- Plausible Analytics (Production Only) -->
+    {
+      isProd && (
+        <>
+          <link rel="preconnect" href="https://plausible.io" />
+          <script defer data-domain={plausibleDomain} src="https://plausible.io/js/script.js" />
+        </>
+      )
+    }
+  </head>
+  <body class="antialiased">
+    <Header />
+
+    <slot />
+
+    <Footer />
+  </body>
+</html>
