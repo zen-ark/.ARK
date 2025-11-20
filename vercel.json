@@ -18,6 +18,11 @@
       ]
     }
   ],
-  "trailingSlash": false
+  "trailingSlash": false,
+  "functions": {
+    "**": {
+      "runtime": "nodejs20.x"
+    }
+  }
 }
 

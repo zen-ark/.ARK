@@ -363,9 +363,9 @@ export default function Navigation({
 
           <div className={styles.headerRight}>
             <a ref={talkBtnRef} className={`${styles.headerPill} ${styles.talkBtn}`} href={talkHref}>
+              <span className={styles.talkSweep} aria-hidden></span>
               <span className={styles.talkText}>
                 <span className={styles.talkTextInner}>Let&#39;s talk</span>
-                <span className={styles.talkCursor} aria-hidden>│</span>
               </span>
               <span className={styles.talkArrow} aria-hidden>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
