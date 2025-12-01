@@ -1,40 +1,214 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+import MetadataNode from "./MetadataNode";
 
 interface CardData {
   label: string;
   mode: string;
   status: string;
-  bgColor: string;
+  imageSrc: string;
 }
 
+const FRAME_COUNT = 272;
+const getFrameSrc = (index: number) =>
+  `/no bg png sequence/no bg${String(index + 1).padStart(4, "0")}.png`;
+
 const cards: CardData[] = [
+  {
+    label: "SYSTEMATIC",
+    mode: "MODE: STRUCTURE",
+    status: "STATUS: STABLE",
+    imageSrc: "/OBJ 1.png",
+  },
   {
     label: "CREATIVE",
     mode: "MODE: EXPLORATION",
     status: "STATUS: ACTIVE",
-    bgColor: "bg-[hsl(0_0%_98%)]",
+    imageSrc: "/OBJ 2.png",
   },
   {
     label: "INTERACTIVE",
     mode: "MODE: INPUT / OUTPUT",
     status: "STATUS: RESPONSIVE",
-    bgColor: "bg-[hsl(0_0%_95%)]",
-  },
-  {
-    label: "SYSTEMATIC",
-    mode: "MODE: STRUCTURE",
-    status: "STATUS: STABLE",
-    bgColor: "bg-[hsl(0_0%_92%)]",
+    imageSrc: "/OBJ 3.png",
   },
 ];
 
-// Final order: SYSTEMATIC (left), INTERACTIVE (center), CREATIVE (right)
-const finalOrder = [2, 1, 0]; // indices: systematic, interactive, creative
+type Position = { x: number; y: number };
+
+type MetadataVisualConfig = {
+  startFrame: number;
+  animationWindow: number;
+  anchorPath: { start: Position; end: Position };
+  cardPath: { start: Position; end: Position };
+};
+
+const METADATA_VISUALS: Record<string, MetadataVisualConfig> = {
+  SYSTEMATIC: {
+    startFrame: 40,
+    animationWindow: 40,
+    anchorPath: { start: { x: 0.5, y: 1}, end: { x: 0.43, y: 0.65 } },
+    cardPath: { start: { x: 0.72, y: 0.45 }, end: { x: 0.8, y: 0.12 } },
+  },
+  CREATIVE: {
+    startFrame: 123,
+    animationWindow: 40,
+    anchorPath: { start: { x: 0.3, y: 1}, end: { x: 0.3, y: 0.2 } },
+    cardPath: { start: { x: 0.2, y: 0.9}, end: { x: 0.1, y: 0.7} },
+  },
+  INTERACTIVE: {
+    startFrame: 213,
+    animationWindow: 40,
+    anchorPath: { start: { x: 0.6, y: 0.9 }, end: { x: 0.6, y: 0.62 } },
+    cardPath: { start: { x: 0.9, y: 0.9 }, end: { x: 0.9, y: 0.5 } },
+  },
+};
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
+const lerp = (start: number, end: number, t: number) => start + (end - start) * t;
+
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const m = matchMedia("(prefers-reduced-motion: reduce)");
+    const set = () => setReduced(m.matches);
+    set();
+    m.addEventListener?.("change", set);
+    return () => m.removeEventListener?.("change", set);
+  }, []);
+  return reduced;
+}
 
 export default function WhatArkDoes() {
   const [headerHeight, setHeaderHeight] = useState(0);
+  const containerRef = useRef<HTMLElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const frameCacheRef = useRef<(ImageBitmap | null)[]>(Array(FRAME_COUNT).fill(null));
+  const frameLoadingRef = useRef<boolean[]>(Array(FRAME_COUNT).fill(false));
+  const currentFrameIndexRef = useRef<number>(-1);
+  const progressListenersRef = useRef(new Set<(value: number) => void>());
+
+  const subscribeToProgress = useCallback(
+    (listener: (value: number) => void) => {
+      progressListenersRef.current.add(listener);
+      return () => {
+        progressListenersRef.current.delete(listener);
+      };
+    },
+    []
+  );
+
+  const drawFrame = useCallback((index: number) => {
+    const canvas = canvasRef.current;
+    const bitmap = frameCacheRef.current[index];
+    if (!canvas || !bitmap) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const parent = canvas.parentElement;
+    if (!parent) return;
+    const rect = parent.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const width = rect.width * dpr;
+    const height = rect.height * dpr;
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+      canvas.style.width = `${rect.width}px`;
+      canvas.style.height = `${rect.height}px`;
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const frameAspect = bitmap.width / bitmap.height;
+    const canvasAspect = canvas.width / canvas.height;
+    let drawWidth = canvas.width;
+    let drawHeight = canvas.height;
+    if (frameAspect > canvasAspect) {
+      drawHeight = canvas.width / frameAspect;
+    } else {
+      drawWidth = canvas.height * frameAspect;
+    }
+    const dx = (canvas.width - drawWidth) / 2;
+    const dy = canvas.height - drawHeight;
+    ctx.drawImage(bitmap, dx, dy, drawWidth, drawHeight);
+  }, []);
+
+  const ensureFrame = useCallback(
+    (index: number) => {
+      if (index < 0 || index >= FRAME_COUNT) return;
+      if (frameCacheRef.current[index] || frameLoadingRef.current[index]) return;
+      frameLoadingRef.current[index] = true;
+
+      const img = new Image();
+      img.src = getFrameSrc(index);
+      img.decode()
+        .then(() => createImageBitmap(img))
+        .then((bitmap) => {
+          frameCacheRef.current[index] = bitmap;
+          frameLoadingRef.current[index] = false;
+          if (currentFrameIndexRef.current === index) {
+            drawFrame(index);
+          }
+        })
+        .catch(() => {
+          frameLoadingRef.current[index] = false;
+        });
+    },
+    [drawFrame]
+  );
+
+  const renderFrame = useCallback(
+    (progress: number) => {
+      const index = Math.min(
+        FRAME_COUNT - 1,
+        Math.max(0, Math.round(progress * (FRAME_COUNT - 1)))
+      );
+      if (index === currentFrameIndexRef.current) return;
+      currentFrameIndexRef.current = index;
+      const frame = frameCacheRef.current[index];
+      if (frame) {
+        drawFrame(index);
+      } else {
+        ensureFrame(index);
+      }
+      ensureFrame(index + 1);
+      ensureFrame(index + 2);
+      ensureFrame(index - 1);
+    },
+    [drawFrame, ensureFrame]
+  );
+
+  useEffect(() => {
+    const resizeCanvas = () => {
+      if (!canvasRef.current) return;
+      const parent = canvasRef.current.parentElement;
+      if (!parent) return;
+      const rect = parent.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvasRef.current.width = rect.width * dpr;
+      canvasRef.current.height = rect.height * dpr;
+      canvasRef.current.style.width = `${rect.width}px`;
+      canvasRef.current.style.height = `${rect.height}px`;
+      if (currentFrameIndexRef.current >= 0 && frameCacheRef.current[currentFrameIndexRef.current]) {
+        drawFrame(currentFrameIndexRef.current);
+      }
+    };
+
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+    return () => window.removeEventListener("resize", resizeCanvas);
+  }, [drawFrame]);
+
+  useEffect(() => {
+    ensureFrame(0);
+    ensureFrame(1);
+    ensureFrame(2);
+  }, [ensureFrame]);
+  const reduced = usePrefersReducedMotion();
 
   // Calculate header height for padding
   useEffect(() => {
@@ -47,8 +221,6 @@ export default function WhatArkDoes() {
 
     updateHeaderHeight();
     window.addEventListener("resize", updateHeaderHeight, { passive: true });
-
-    // Also check after a short delay to ensure header is fully rendered
     const timeoutId = setTimeout(updateHeaderHeight, 100);
 
     return () => {
@@ -57,22 +229,101 @@ export default function WhatArkDoes() {
     };
   }, []);
 
+  // Rebuilt scroll logic with precomputed bounds and momentum interpolation
+  useEffect(() => {
+    const boundsRef = { start: 0, end: 0 };
+    const targetProgressRef = { current: 0 };
+    const currentProgressRef = { current: 0 };
+    const rafIdRef = { current: 0 };
+
+    const applyFrame = (progress: number) => {
+      renderFrame(progress);
+      progressListenersRef.current.forEach((listener) => listener(progress));
+    };
+
+    const animationLoop = () => {
+      const ease = reduced ? 1 : 0.05;
+      const diff = targetProgressRef.current - currentProgressRef.current;
+
+      if (Math.abs(diff) > 0.0001) {
+        currentProgressRef.current += diff * ease;
+        applyFrame(currentProgressRef.current);
+        rafIdRef.current = requestAnimationFrame(animationLoop);
+      } else if (Math.abs(diff) > 0) {
+        currentProgressRef.current = targetProgressRef.current;
+        applyFrame(currentProgressRef.current);
+        rafIdRef.current = 0;
+      } else {
+        rafIdRef.current = 0;
+      }
+    };
+
+    const startAnimation = () => {
+      if (!rafIdRef.current) {
+        rafIdRef.current = requestAnimationFrame(animationLoop);
+      }
+    };
+
+    const updateTargetFromScroll = () => {
+      const { start, end } = boundsRef;
+      if (end <= start) {
+        targetProgressRef.current = 0;
+      } else {
+        const raw = (window.scrollY - start) / (end - start);
+        targetProgressRef.current = Math.max(0, Math.min(1, raw));
+      }
+
+      if (reduced) {
+        currentProgressRef.current = targetProgressRef.current;
+        applyFrame(currentProgressRef.current);
+      } else {
+        startAnimation();
+      }
+    };
+
+    const updateBounds = () => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const start = window.scrollY + rect.top;
+      const end = start + rect.height - window.innerHeight;
+      boundsRef.start = start;
+      boundsRef.end = end;
+      updateTargetFromScroll();
+    };
+
+    updateBounds();
+
+    window.addEventListener("resize", updateBounds);
+    window.addEventListener("scroll", updateTargetFromScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("resize", updateBounds);
+      window.removeEventListener("scroll", updateTargetFromScroll);
+      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
+    };
+  }, [reduced, renderFrame]);
+
+  // Removed separate video control effect as it's integrated into the loop
+
   return (
-    <section id="what-the-ark" className="w-full flex flex-col py-16 lg:py-24" style={{ paddingTop: headerHeight > 0 ? `${headerHeight + 16}px` : "4rem", minHeight: "100vh", backgroundColor: "hsl(var(--color-bg-canvas))" }}>
+    <section 
+      ref={containerRef}
+      id="what-the-ark" 
+      className="w-full relative" 
+      style={{ 
+        height: "300vh", // Tall container for scroll space
+        backgroundColor: "hsl(var(--color-bg-canvas))" 
+      }}
+    >
+      {/* Sticky Wrapper */}
+      <div 
+        className="sticky top-0 w-full h-screen flex flex-col overflow-hidden"
+        style={{
+            paddingTop: headerHeight > 0 ? `${headerHeight + 16}px` : "4rem",
+        }}
+      >
           {/* Heading - large, fluid, full width */}
-          <div className="wtark-heading w-full" style={{ marginBottom: "16px" }}>
-            {/* <h2 
-              className="font-light uppercase text-black w-full px-6"
-              style={{
-                fontSize: "13.5vw",
-                lineHeight: 0.9,
-                letterSpacing: "normal",
-                whiteSpace: "nowrap",
-                textAlign: "center",
-              }}
-            >
-              WHAT THE .ARK
-            </h2> */}
+          <div className="wtark-heading w-full flex-shrink-0" style={{ marginBottom: "16px" }}>
             <div className="w-full px-6 mt-4">
               <img 
                 src="/What the ark.svg" 
@@ -83,7 +334,7 @@ export default function WhatArkDoes() {
           </div>
 
           {/* Copy row - two columns on desktop */}
-          <div className="wtark-copy mb-16 lg:mb-24 px-6">
+          <div className="wtark-copy mb-8 lg:mb-16 px-6 flex-shrink-0">
             <div className="hidden lg:flex lg:justify-between lg:gap-8">
               <p className="wtark-copy-text wtark-copy-left">
                 .ARK IS A DIGITAL STUDIO BUILT AROUND ONE EXTENSION, RUN BY A SINGLE DESIGNER.
@@ -104,79 +355,83 @@ export default function WhatArkDoes() {
             </div>
           </div>
 
-          {/* Cards row - fills remaining vertical space */}
-          <div className="cards-row flex-1 flex flex-col px-6" style={{ minHeight: "50vh" }}>
-            {/* Desktop: Grid layout with cards as direct children */}
-            <div className="hidden lg:grid cards-grid flex-1" style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))", columnGap: "32px", height: "50vh" }}>
-              {finalOrder.map((cardIndex) => {
-                const card = cards[cardIndex];
-                return (
-                  <Card
-                    key={cardIndex}
-                    card={card}
-                    metadataOpacity={1}
-                  />
-                );
-              })}
-            </div>
+          {/* Canvas Stage - displays frame sequence */}
+          <div className="flex-1 w-full relative flex items-end justify-center overflow-hidden">
+            <div className="relative w-full h-full flex items-end justify-center" style={{ backgroundColor: "white" }}>
+              <canvas
+                ref={canvasRef}
+                className="w-full h-full"
+                style={{
+                  display: "block",
+                  pointerEvents: "none",
+                }}
+              />
 
-            {/* Mobile: Vertical stacked layout */}
-            <div className="lg:hidden flex flex-col gap-6" style={{ rowGap: "24px" }}>
-              {finalOrder.map((cardIndex) => {
-                const card = cards[cardIndex];
-                return (
-                  <Card
-                    key={cardIndex}
-                    card={card}
-                    metadataOpacity={1}
-                  />
-                );
-              })}
+              {/* Metadata Overlay - Floating Node */}
+              <MetadataOverlayWrapper
+                cards={cards}
+                reduced={reduced}
+                subscribeToProgress={subscribeToProgress}
+              />
             </div>
           </div>
-        </section>
-  );
-}
-
-interface CardProps {
-  card: CardData;
-  metadataOpacity: number;
-}
-
-function Card({ card, metadataOpacity }: CardProps) {
-  return (
-    <div
-      className={`wtark-card ${card.bgColor} rounded-2xl overflow-hidden w-full`}
-      style={{
-        position: "relative",
-        height: "50vh",
-        boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
-      }}
-    >
-      {/* Reserved space for future 3D canvas (top 50%) */}
-      <div className="w-full" style={{ height: "50%" }} />
-
-      {/* Metadata area (bottom 50%) - bottom-left aligned */}
-      <div className="relative h-[50%] p-4 flex flex-col justify-end">
-        <div>
-          <div
-            className="text-black font-mono"
-            style={{
-              fontFamily: "var(--font-mono)",
-            }}
-          >
-            <div className="text-base md:text-lg font-medium uppercase tracking-wide mb-2">
-              {card.label}
-            </div>
-            <div className="text-xs md:text-sm uppercase tracking-wide opacity-70 mb-1">
-              {card.mode}
-            </div>
-            <div className="text-xs md:text-sm uppercase tracking-wide opacity-70">
-              {card.status}
-            </div>
-          </div>
-        </div>
       </div>
-    </div>
+    </section>
   );
 }
+
+interface MetadataOverlayWrapperProps {
+  cards: CardData[];
+  reduced: boolean;
+  subscribeToProgress: (listener: (value: number) => void) => () => void;
+}
+
+function MetadataOverlayWrapper({
+  cards,
+  reduced,
+  subscribeToProgress,
+}: MetadataOverlayWrapperProps) {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => subscribeToProgress(setProgress), [subscribeToProgress]);
+
+  return (
+    <>
+      {cards.map((card) => {
+        const config = METADATA_VISUALS[card.label];
+        if (!config) return null;
+        const startProgress = config.startFrame / (FRAME_COUNT - 1);
+        const animationWindow =
+          config.animationWindow > 0 ? config.animationWindow / (FRAME_COUNT - 1) : 0.01;
+        const t =
+          progress <= startProgress
+            ? 0
+            : clamp((progress - startProgress) / animationWindow, 0, 1);
+        const visible = progress >= startProgress;
+        const anchorPosition = {
+          x: lerp(config.anchorPath.start.x, config.anchorPath.end.x, t),
+          y: lerp(config.anchorPath.start.y, config.anchorPath.end.y, t),
+        };
+        const cardPosition = {
+          x: lerp(config.cardPath.start.x, config.cardPath.end.x, t),
+          y: lerp(config.cardPath.start.y, config.cardPath.end.y, t),
+        };
+
+        return (
+          <MetadataNode
+            key={card.label}
+            label={card.label}
+            mode={card.mode}
+            status={card.status}
+            imageSrc={card.imageSrc}
+            visible={visible}
+            reduced={reduced}
+            anchor={anchorPosition}
+            card={cardPosition}
+          />
+        );
+      })}
+    </>
+  );
+}
+
