@@ -25,7 +25,6 @@ export default defineConfig({
   ],
   adapter: vercel({
     imageService: true,
-    runtime: "nodejs20.x",
   }),
   output: "hybrid",
   srcDir: "src",

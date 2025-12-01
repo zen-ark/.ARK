@@ -57,7 +57,7 @@
   flex-direction: column;
   gap: 0.1em;
   font-size: clamp(1rem, 1.2vw, 1.4rem);
-  font-family: "Geist", system-ui, sans-serif;
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -98,6 +98,7 @@
   border-radius: var(--nav-radius);
   background: #fff;
   color: var(--nav-text);
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
   font-weight: 400;
   letter-spacing: 0.08em;
   line-height: 1;
@@ -257,6 +258,7 @@
   justify-content: center;
   will-change: transform, opacity;
   transform: translateY(0);
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
   font-weight: 400;
 }
 
@@ -672,7 +674,8 @@
   color: var(--nav-text);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  font-weight: 500;
+  font-family: "Geist", system-ui, sans-serif;
+  font-weight: 300;
   overflow: hidden;
   border-radius: 18px;
   cursor: pointer;
@@ -786,6 +789,8 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
+  font-family: "Geist", system-ui, sans-serif;
+  font-weight: 300;
   opacity: 0.72;
 }
 
@@ -807,6 +812,8 @@
   text-decoration: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   font-size: clamp(1rem, 2.4vw, 1.1rem);
+  font-family: "Geist", system-ui, sans-serif;
+  font-weight: 300;
 }
 
 .menuProjectLink:last-child {
@@ -838,7 +845,8 @@
 }
 
 .menuTalkText {
-  font-weight: 600;
+  font-family: "Geist", system-ui, sans-serif;
+  font-weight: 300;
 }
 
 .menuTalk:hover .menuTalkArrow,

@@ -33,6 +33,31 @@ export default function Hero({ videoSource, title, subtitle }: HeroProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const heroCardRef = useRef<HTMLDivElement>(null);
 
+  // Inject keyframe animation for editorial fade-in
+  useEffect(() => {
+    const styleId = 'hero-text-animation';
+    if (document.getElementById(styleId)) return;
+
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = `
+      @keyframes heroTextFadeIn {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    return () => {
+      const existingStyle = document.getElementById(styleId);
+      if (existingStyle) {
+        existingStyle.remove();
+      }
+    };
+  }, []);
+
   useEffect(() => {
     const section = sectionRef.current;
     const heroCard = heroCardRef.current;
@@ -128,7 +153,7 @@ export default function Hero({ videoSource, title, subtitle }: HeroProps) {
         <header
           ref={heroCardRef}
           id="hero"
-          className="w-screen h-[calc(100vh-var(--space-8))] flex items-end justify-start px-6 pb-6 relative overflow-hidden rounded-[var(--space-8)] border-[var(--space-4)] border-[hsl(var(--color-bg-canvas))] m-[var(--space-4)] transition-all duration-500 ease-out motion-reduce:duration-200"
+          className="w-screen h-[calc(100vh-var(--space-8))] flex items-end justify-start relative overflow-hidden rounded-[var(--space-8)] border-[var(--space-4)] border-[hsl(var(--color-bg-canvas))] m-[var(--space-4)] transition-all duration-500 ease-out motion-reduce:duration-200"
           style={{
             transform: 'translateZ(0)',
             willChange: 'transform',
@@ -151,15 +176,49 @@ export default function Hero({ videoSource, title, subtitle }: HeroProps) {
             <source src={videoSource} type="video/mp4" />
           </video>
 
-          {/* Text Content */}
-          <div className="text-left space-y-2 relative z-10 text-white">
+          {/* Text Content - Editorial Layout */}
+          <div 
+            className="text-left relative z-10"
+            style={{
+              marginLeft: 'clamp(1.5rem, 3vw, 2.5rem)',
+              marginBottom: 'clamp(1.5rem, 3vw, 2.5rem)',
+              opacity: 0,
+              transform: 'translateY(12px)',
+              animation: 'heroTextFadeIn 0.6s ease-out 0.3s forwards',
+            }}
+          >
             <h1
               id="hero-title"
-              className="text-3xl md:text-4xl font-semibold tracking-tight"
+              className="font-normal leading-[1.15] tracking-[-0.01em] mb-[clamp(1.75rem, 3vw, 2.5rem)] text-left"
+              style={{
+                fontSize: 'clamp(2rem, 3vw, 4rem)',
+                color: 'rgba(255, 255, 255, 1)',
+                fontWeight: 400,
+                background: 'transparent',
+                textAlign: 'left',
+              }}
             >
-              {title}
+              {title.split('. ').map((line, i, arr) => (
+                <span key={i}>
+                  {line}{i < arr.length - 1 ? '.' : ''}
+                  {i < arr.length - 1 && <br />}
+                </span>
+              ))}
             </h1>
-            <p className="text-white/70">{subtitle}</p>
+            <p 
+              className="font-normal text-left"
+              style={{
+                fontSize: 'clamp(1rem, 1.4vw, 1.35rem)',
+                color: 'rgba(255, 255, 255, 0.82)',
+                fontWeight: 400,
+                lineHeight: 1.45,
+                letterSpacing: '-0.015em',
+                maxWidth: '52ch',
+                textAlign: 'left',
+              }}
+            >
+              {subtitle}
+            </p>
           </div>
         </header>
       </div>

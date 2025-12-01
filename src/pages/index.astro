@@ -31,8 +31,8 @@ const projectsForSection = allProjects
     <Hero
       client:load
       videoSource="/Export.mov"
-      title="Precision. Usability. Experimentation."
-      subtitle="Swiss studio crafting clear interfaces and cinematic web experiences."
+      title="Where digital work becomes tangible."
+      subtitle="Shaping interfaces with clarity, usability, and a subtle experimental edge."
     />
 
     <!-- WHAT .ARK DOES Section -->
@@ -57,50 +57,34 @@ const projectsForSection = allProjects
     <!-- <LabArk client:load /> -->
   </main>
   <script>
-    // Handle hash-based scrolling
-    const hash = window.location.hash;
-    if (hash) {
+    // Handle hash-based scrolling to projects section
+    if (window.location.hash === "#projects") {
       // Wait for page to fully load, then scroll
       window.addEventListener("load", () => {
         setTimeout(() => {
-          const targetSection = document.querySelector(hash);
-          if (targetSection) {
+          const projectsSection = document.getElementById("projects");
+          if (projectsSection) {
+            // Calculate scroll position accounting for sticky elements
+            // Get the sticky wrapper (the parent of the sticky element)
+            const stickyWrapper = document
+              .querySelector('[id="what-the-ark"]')
+              ?.closest(".sticky")?.parentElement;
+            const stickyWrapperBottom = stickyWrapper
+              ? stickyWrapper.getBoundingClientRect().bottom + window.pageYOffset
+              : 0;
             const header = document.querySelector("header");
             const headerHeight = header ? header.getBoundingClientRect().height : 0;
-            const viewportHeight = window.innerHeight;
-            const targetRect = targetSection.getBoundingClientRect();
 
-            // Special case: Projects section should scroll to top
-            if (hash === "#projects") {
-              // Calculate scroll position accounting for sticky elements
-              const stickyWrapper = document
-                .querySelector('[id="what-the-ark"]')
-                ?.closest(".sticky")?.parentElement;
-              const stickyWrapperBottom = stickyWrapper
-                ? stickyWrapper.getBoundingClientRect().bottom + window.pageYOffset
-                : 0;
+            // Scroll to just past the sticky section, accounting for header
+            const targetScroll = Math.max(
+              stickyWrapperBottom - headerHeight + 20, // 20px padding
+              projectsSection.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20
+            );
 
-              // Scroll to just past the sticky section, accounting for header
-              const targetScroll = Math.max(
-                stickyWrapperBottom - headerHeight + 20, // 20px padding
-                targetRect.top + window.pageYOffset - headerHeight - 20
-              );
-
-              window.scrollTo({
-                top: targetScroll,
-                behavior: "smooth",
-              });
-            } else {
-              // Center other sections in viewport
-              const sectionHeight = targetRect.height;
-              const sectionTop = targetRect.top + window.pageYOffset;
-              const centerScroll = sectionTop + sectionHeight / 2 - viewportHeight / 2;
-
-              window.scrollTo({
-                top: Math.max(0, centerScroll),
-                behavior: "smooth",
-              });
-            }
+            window.scrollTo({
+              top: targetScroll,
+              behavior: "smooth",
+            });
           }
         }, 100);
       });
