@@ -12,7 +12,8 @@
     "preview": "astro preview",
     "lint": "eslint . --ext .ts,.tsx,.astro,.jsx",
     "format": "prettier -w .",
-    "type-check": "astro check && tsc --noEmit"
+    "type-check": "astro check && tsc --noEmit",
+    "push": "node push.js"
   },
   "dependencies": {
     "@astrojs/mdx": "^3.1.7",
