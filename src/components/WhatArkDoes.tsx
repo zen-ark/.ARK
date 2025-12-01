@@ -45,30 +45,77 @@ type MetadataVisualConfig = {
   cardPath: { start: Position; end: Position };
 };
 
-const METADATA_VISUALS: Record<string, MetadataVisualConfig> = {
+type ResponsiveMetadataConfig = {
+  mobile?: Partial<MetadataVisualConfig>;
+  tablet?: Partial<MetadataVisualConfig>;
+  desktop: MetadataVisualConfig;
+};
+
+const METADATA_VISUALS: Record<string, ResponsiveMetadataConfig> = {
   SYSTEMATIC: {
-    startFrame: 40,
-    animationWindow: 40,
-    anchorPath: { start: { x: 0.5, y: 1}, end: { x: 0.43, y: 0.65 } },
-    cardPath: { start: { x: 0.72, y: 0.45 }, end: { x: 0.8, y: 0.12 } },
+    desktop: {
+      startFrame: 40,
+      animationWindow: 40,
+      anchorPath: { start: { x: 0.5, y: 1 }, end: { x: 0.43, y: 0.65 } },
+      cardPath: { start: { x: 0.72, y: 0.45 }, end: { x: 0.8, y: 0.12 } },
+    },
+    mobile: {
+      anchorPath: { start: { x: 0.5, y: 1 }, end: { x: 0.43, y: 0.55 } },
+      cardPath: { start: { x: 0.5, y: 0.8 }, end: { x: 0.5, y: 0.25 } },
+    },
   },
   CREATIVE: {
-    startFrame: 123,
-    animationWindow: 40,
-    anchorPath: { start: { x: 0.3, y: 1}, end: { x: 0.3, y: 0.2 } },
-    cardPath: { start: { x: 0.2, y: 0.9}, end: { x: 0.1, y: 0.7} },
+    desktop: {
+      startFrame: 123,
+      animationWindow: 40,
+      anchorPath: { start: { x: 0.3, y: 1 }, end: { x: 0.3, y: 0.2 } },
+      cardPath: { start: { x: 0.2, y: 0.9 }, end: { x: 0.1, y: 0.7 } },
+    },
+    mobile: {
+      anchorPath: { start: { x: 0.3, y: 1 }, end: { x: 0.3, y: 0.3 } },
+      cardPath: { start: { x: 0.5, y: 0.9 }, end: { x: 0.5, y: 0.55 } },
+    },
   },
   INTERACTIVE: {
-    startFrame: 213,
-    animationWindow: 40,
-    anchorPath: { start: { x: 0.6, y: 0.9 }, end: { x: 0.6, y: 0.62 } },
-    cardPath: { start: { x: 0.9, y: 0.9 }, end: { x: 0.9, y: 0.5 } },
+    desktop: {
+      startFrame: 213,
+      animationWindow: 40,
+      anchorPath: { start: { x: 0.6, y: 0.9 }, end: { x: 0.6, y: 0.62 } },
+      cardPath: { start: { x: 0.9, y: 0.9 }, end: { x: 0.9, y: 0.5 } },
+    },
+    mobile: {
+      anchorPath: { start: { x: 0.6, y: 0.9 }, end: { x: 0.6, y: 0.7 } },
+      cardPath: { start: { x: 0.5, y: 0.9 }, end: { x: 0.5, y: 0.85 } },
+    },
   },
 };
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 const lerp = (start: number, end: number, t: number) => start + (end - start) * t;
+
+function useBreakpoint() {
+  const [breakpoint, setBreakpoint] = useState<"mobile" | "tablet" | "desktop">("desktop");
+
+  useEffect(() => {
+    const updateBreakpoint = () => {
+      const width = window.innerWidth;
+      if (width < 768) {
+        setBreakpoint("mobile");
+      } else if (width < 1024) {
+        setBreakpoint("tablet");
+      } else {
+        setBreakpoint("desktop");
+      }
+    };
+
+    updateBreakpoint();
+    window.addEventListener("resize", updateBreakpoint);
+    return () => window.removeEventListener("resize", updateBreakpoint);
+  }, []);
+
+  return breakpoint;
+}
 
 function usePrefersReducedMotion() {
   const [reduced, setReduced] = useState(false);
@@ -392,14 +439,27 @@ function MetadataOverlayWrapper({
   subscribeToProgress,
 }: MetadataOverlayWrapperProps) {
   const [progress, setProgress] = useState(0);
+  const breakpoint = useBreakpoint();
 
   useEffect(() => subscribeToProgress(setProgress), [subscribeToProgress]);
 
   return (
     <>
       {cards.map((card) => {
-        const config = METADATA_VISUALS[card.label];
-        if (!config) return null;
+        const fullConfig = METADATA_VISUALS[card.label];
+        if (!fullConfig) return null;
+
+        // Fallback to desktop config if specific breakpoint config is missing,
+        // or merge partial config with desktop defaults if needed.
+        // For simplicity here: take mobile/tablet if available, else desktop.
+        // A deeper merge could be done if we want partial overrides.
+        let config = fullConfig.desktop;
+        if (breakpoint === "mobile" && fullConfig.mobile) {
+          config = { ...config, ...fullConfig.mobile };
+        } else if (breakpoint === "tablet" && fullConfig.tablet) {
+          config = { ...config, ...fullConfig.tablet };
+        }
+
         const startProgress = config.startFrame / (FRAME_COUNT - 1);
         const animationWindow =
           config.animationWindow > 0 ? config.animationWindow / (FRAME_COUNT - 1) : 0.01;
@@ -412,10 +472,17 @@ function MetadataOverlayWrapper({
           x: lerp(config.anchorPath.start.x, config.anchorPath.end.x, t),
           y: lerp(config.anchorPath.start.y, config.anchorPath.end.y, t),
         };
-        const cardPosition = {
-          x: lerp(config.cardPath.start.x, config.cardPath.end.x, t),
-          y: lerp(config.cardPath.start.y, config.cardPath.end.y, t),
-        };
+        
+        // Constrain card position within safe viewport bounds (approx. 5% padding)
+        let cardX = lerp(config.cardPath.start.x, config.cardPath.end.x, t);
+        let cardY = lerp(config.cardPath.start.y, config.cardPath.end.y, t);
+        
+        // Simple clamping to prevent overflow (0.05 - 0.95)
+        // This is a rough safeguard; specific breakpoint configs in METADATA_VISUALS are better.
+        cardX = Math.max(0.05, Math.min(0.95, cardX));
+        cardY = Math.max(0.1, Math.min(0.9, cardY));
+
+        const cardPosition = { x: cardX, y: cardY };
 
         return (
           <MetadataNode

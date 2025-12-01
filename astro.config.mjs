@@ -3,7 +3,7 @@ import react from "@astrojs/react";
 import mdx from "@astrojs/mdx";
 import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
-import vercel from "@astrojs/vercel/serverless";
+import vercel from "@astrojs/vercel/static";
 
 export default defineConfig({
   site: "https://zen.ark",
@@ -26,11 +26,10 @@ export default defineConfig({
   adapter: vercel({
     imageService: true,
   }),
-  output: "hybrid",
+  output: "static",
   srcDir: "src",
   image: {
     domains: [],
     remotePatterns: [],
   },
 });
-

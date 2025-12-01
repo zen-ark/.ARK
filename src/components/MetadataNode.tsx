@@ -89,10 +89,10 @@ export default function MetadataNode({
         }}
       >
         <div
-          className="rounded-lg overflow-hidden p-3 w-48 md:w-56 bg-white/85 backdrop-blur-sm"
+          className="rounded-lg overflow-hidden p-2 sm:p-3 w-40 sm:w-48 md:w-56 bg-white/85 backdrop-blur-sm"
           style={{ border: `1px solid ${lineColor}` }}
         >
-          <div className="relative h-24 w-full rounded-md overflow-hidden mb-3 bg-gray-100 border border-black/5">
+          <div className="relative h-20 sm:h-24 w-full rounded-md overflow-hidden mb-3 bg-gray-100 border border-black/5">
             {loadedSrc && (
               <img
                 src={loadedSrc}
