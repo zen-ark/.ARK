@@ -112,17 +112,19 @@ export default function ProjectCard({
       {/* Client Name Badge - White border only, Geist Mono font */}
       {clientName && (
         <div 
-          className="absolute right-6 md:right-10 z-10"
+          className="absolute z-10"
           style={{
             top: `${titleCenterY}px`,
+            right: '1rem',
             transform: 'translateY(-50%)',
           }}
         >
           <span
-            className="inline-block px-5 py-2.5 rounded-full text-white text-xs md:text-sm font-medium tracking-wider uppercase whitespace-nowrap border-2 border-white"
+            className="inline-block px-2.5 py-1 rounded-[4px] text-white text-xs md:text-sm font-medium uppercase whitespace-nowrap border-[0.5px] border-white"
             style={{
               fontFamily: "'Geist Mono', monospace",
               background: "transparent",
+              letterSpacing: "0.03em",
             }}
           >
             {clientName}
@@ -132,25 +134,18 @@ export default function ProjectCard({
 
       {/* Arrow Button - 2.4x size from list view with blend mode difference */}
       <div 
-        className="absolute bottom-6 right-6 md:bottom-10 md:right-10 z-20 pointer-events-none w-[96px] h-[96px] md:w-[115px] md:h-[115px] rounded-full border-[4px] md:border-[5px] border-white flex items-center justify-center"
+        className="absolute z-20 pointer-events-none w-[96px] h-[96px] md:w-[90px] md:h-[90px] rounded-[12px] md:rounded-[16px] border-[4px] md:border-[5px] border-white flex items-center justify-center"
         style={{
+          bottom: '1rem',
+          right: '1rem',
           mixBlendMode: 'difference',
         }}
       >
-        <svg
+        <img
+          src="/arrow.svg"
+          alt=""
           className="w-[48px] h-[48px] md:w-[58px] md:h-[58px]"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M5 12H19M19 12L12 5M19 12L12 19"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        />
       </div>
 
       {/* Close Button */}

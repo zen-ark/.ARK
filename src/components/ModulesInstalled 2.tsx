@@ -11,6 +11,10 @@ const modules: Module[] = [
     description: "Product UI, dashboards, systems.",
   },
   {
+    title: "Web Experiences",
+    description: "Framer/Next-style sites, cinematic flows.",
+  },
+  {
     title: "Creative Direction",
     description: "Concept, narrative, visual identity.",
   },
@@ -27,8 +31,16 @@ const modules: Module[] = [
     description: "Minimal, digital-first identities.",
   },
   {
+    title: "Prototyping",
+    description: "Flows, user journeys, testable concepts.",
+  },
+  {
     title: "Technical Integration",
     description: "Framer, React, Astro hand-off.",
+  },
+  {
+    title: "Art Direction",
+    description: "Visual language, campaign feel.",
   },
 ];
 
@@ -114,9 +126,7 @@ function ModuleTile({ module, index, isVisible }: ModuleTileProps) {
 
 export default function ModulesInstalled() {
   const ref = useRef<HTMLElement>(null);
-  const gridRef = useRef<HTMLUListElement>(null);
   const [isInView, setIsInView] = useState(false);
-  const [revealProgress, setRevealProgress] = useState(0);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -138,83 +148,27 @@ export default function ModulesInstalled() {
     };
   }, []);
 
-  // Scroll detection - gradual reveal from white to black
-  // Starts when section top hits bottom of viewport (100vh)
-  // Finishes when section top hits 50vh
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!ref.current) return;
-
-      const rect = ref.current.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      
-      // Start point: section top at viewport bottom (100vh)
-      const startPoint = viewportHeight;
-      // End point: section top at 50vh
-      const endPoint = viewportHeight * 0.5;
-      
-      // Calculate progress (0 to 1)
-      // When rect.top = startPoint (100vh), progress = 0
-      // When rect.top = endPoint (50vh), progress = 1
-      let progress = 0;
-      
-      if (rect.top <= startPoint) {
-        // Transition has started
-        const range = startPoint - endPoint;
-        const distance = startPoint - rect.top;
-        progress = Math.min(1, Math.max(0, distance / range));
-      }
-      
-      setRevealProgress(progress);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll(); // Check initial state
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  // Interpolate background color based on progress
-  const bgOpacity = revealProgress;
-  const bgColor = `rgba(${Math.round(255 * (1 - bgOpacity))}, ${Math.round(255 * (1 - bgOpacity))}, ${Math.round(255 * (1 - bgOpacity))}, 1)`;
-  
-  // Interpolate text colors for smooth transition
-  const titleColor = `rgb(${Math.round(255 * (1 - bgOpacity))}, ${Math.round(255 * (1 - bgOpacity))}, ${Math.round(255 * (1 - bgOpacity))})`;
-  const subtitleColor = `rgb(${Math.round(155 + 100 * (1 - bgOpacity))}, ${Math.round(155 + 100 * (1 - bgOpacity))}, ${Math.round(155 + 100 * (1 - bgOpacity))})`;
-
   return (
     <section
       ref={ref}
       id="modules-installed"
-      className="relative w-full px-6 py-12 md:py-16 lg:py-24"
-      style={{
-        backgroundColor: bgColor,
-        transition: "background-color 0.1s ease-out",
-      }}
+      className="w-full bg-white px-6 py-12 md:py-16 lg:py-24"
     >
-      <div className="relative mx-auto w-full max-w-6xl z-10">
+      <div className="mx-auto w-full max-w-6xl">
         {/* Section Header */}
         <div className="mb-12 md:mb-16">
           <p
-            className={`mb-2 text-xs font-semibold uppercase tracking-wider transition-all duration-500 ease-out ${
+            className={`mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500 transition-all duration-500 ease-out ${
               isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
             }`}
-            style={{
-              color: subtitleColor,
-              transition: "color 0.1s ease-out",
-            }}
           >
             System Capabilities
           </p>
           <h2
-            className={`text-4xl font-light uppercase leading-none tracking-tight md:text-5xl lg:text-6xl transition-all duration-500 ease-out ${
+            className={`text-4xl font-light uppercase leading-none tracking-tight text-neutral-900 md:text-5xl lg:text-6xl transition-all duration-500 ease-out ${
               isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
             }`}
             style={{
-              color: titleColor,
-              transition: "color 0.1s ease-out",
               transitionDelay: isInView ? "100ms" : "0ms",
             }}
           >
@@ -224,8 +178,7 @@ export default function ModulesInstalled() {
 
         {/* Tiles Grid */}
         <ul
-          ref={gridRef}
-          className={`relative grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 transition-opacity duration-600 ${
+          className={`grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 transition-opacity duration-600 ${
             isInView ? "opacity-100" : "opacity-0"
           }`}
           role="list"

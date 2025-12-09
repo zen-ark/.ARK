@@ -8,6 +8,7 @@ import ArkModel from "@/components/ArkModel";
 import ModulesInstalled from "@/components/ModulesInstalled";
 import LabArk from "@/components/LabArk";
 import OpenNewFile from "@/components/OpenNewFile";
+import FooterV2 from "@/layouts/partials/FooterV2.astro";
 import { getCollection } from "astro:content";
 
 const allProjects = await getCollection("projects");
@@ -25,7 +26,7 @@ const projectsForSection = allProjects
   }));
 ---
 
-<Base title="ZEN.ARK — Creative Studio">
+<Base title=".ARK — Creative Studio">
   <main>
     <!-- Hero Section -->
     <Hero
@@ -56,6 +57,10 @@ const projectsForSection = allProjects
     <!-- LAB.ARK Section - Hidden for now -->
     <!-- <LabArk client:load /> -->
   </main>
+
+  <!-- FooterV2 - Preview of inversa.com footer style -->
+  <FooterV2 />
+
   <script>
     // Handle hash-based scrolling to projects section
     if (window.location.hash === "#projects") {

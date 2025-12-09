@@ -380,9 +380,9 @@ export default function WhatArkDoes() {
             </div>
           </div>
 
-          {/* Copy row - two columns on desktop */}
-          <div className="wtark-copy mb-8 lg:mb-16 px-6 flex-shrink-0">
-            <div className="hidden lg:flex lg:justify-between lg:gap-8">
+          {/* Copy row - two columns on tablet and desktop */}
+          <div className="wtark-copy mb-8 md:mb-16 px-6 flex-shrink-0">
+            <div className="hidden md:flex md:justify-between md:gap-8">
               <p className="wtark-copy-text wtark-copy-left">
                 .ARK IS A DIGITAL STUDIO BUILT AROUND ONE EXTENSION, RUN BY A SINGLE DESIGNER.
               </p>
@@ -391,13 +391,13 @@ export default function WhatArkDoes() {
               </p>
             </div>
             
-            {/* Mobile: stacked */}
-            <div className="lg:hidden flex flex-col gap-4">
-              <p className="wtark-copy-text" style={{ textAlign: "left" }}>
-                {`.ARK IS A DIGITAL STUDIO BUILT AROUND ONE EXTENSION, RUN BY A SINGLE DESIGNER.`}
+            {/* Mobile: stacked with better spacing */}
+            <div className="md:hidden flex flex-col gap-6">
+              <p className="wtark-copy-text wtark-copy-mobile">
+                .ARK IS A DIGITAL STUDIO BUILT AROUND ONE EXTENSION, RUN BY A SINGLE DESIGNER.
               </p>
-              <p className="wtark-copy-text" style={{ textAlign: "left" }}>
-                {`WE CRAFT CLEAR INTERFACES AND CINEMATIC WEB EXPERIENCES WITH PRECISION AND EXPERIMENTATION.`}
+              <p className="wtark-copy-text wtark-copy-mobile">
+                WE CRAFT CLEAR INTERFACES AND CINEMATIC WEB EXPERIENCES WITH PRECISION AND EXPERIMENTATION.
               </p>
             </div>
           </div>

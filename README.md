@@ -1,4 +1,4 @@
-# ZEN.ARK — Portfolio Website
+# .ARK — Portfolio Website
 
 A lean, production-ready Astro portfolio stack hosted on Vercel.
 
@@ -220,7 +220,7 @@ title: "Post Title"
 date: "2025-10-25"
 tags: ["Design", "Development"]
 excerpt: "Brief excerpt for post listing"
-author: "ZEN.ARK"
+author: ".ARK"
 published: true
 ---
 
@@ -259,7 +259,7 @@ Post content here...
 - `tags` (array of strings)
 - `excerpt` (string, required)
 - `coverImage` (image, optional)
-- `author` (string, default: "ZEN.ARK")
+- `author` (string, default: ".ARK")
 - `published` (boolean, default: true)
 
 ## Accessibility
@@ -361,4 +361,4 @@ For questions or issues:
 
 ---
 
-Built with precision by ZEN.ARK.
+Built with precision by .ARK.

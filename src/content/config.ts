@@ -40,7 +40,7 @@ const posts = defineCollection({
       tags: z.array(z.string()).default([]),
       excerpt: z.string(),
       coverImage: image().optional(),
-      author: z.string().default("ZEN.ARK"),
+      author: z.string().default(".ARK"),
       published: z.boolean().default(true),
     }),
 });

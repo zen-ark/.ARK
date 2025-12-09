@@ -33,14 +33,14 @@ const fullUrl = canonical || new URL(currentPath, siteUrl).toString();
 
 // Schema.org structured data
 const organizationSchema = buildOrganizationSchema({
-  name: "ZEN.ARK",
+  name: ".ARK",
   url: siteUrl,
   logo: `${siteUrl}/og.jpg`,
   sameAs: [],
 });
 
 const websiteSchema = buildWebSiteSchema({
-  name: "ZEN.ARK",
+  name: ".ARK",
   url: siteUrl,
   description: "Creative studio focused on clarity, usability, and experimentation",
 });
@@ -70,7 +70,7 @@ const websiteSchema = buildWebSiteSchema({
     <meta property="og:image" content={new URL(ogImage, siteUrl).toString()} />
     <meta property="og:url" content={fullUrl} />
     <meta property="og:type" content={ogType} />
-    <meta property="og:site_name" content="ZEN.ARK" />
+    <meta property="og:site_name" content=".ARK" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />

@@ -55,16 +55,36 @@
     line-height: 1.2;
     letter-spacing: 0.48px;
     word-wrap: break-word;
-    height: calc(1.2em * 3);
-    overflow: hidden;
+    min-height: calc(1.2em * 3);
     display: block;
+  }
+
+  @media (max-width: 1023px) {
+    .wtark-copy-text {
+      min-height: auto;
+      height: auto;
+    }
+  }
+
+  .wtark-copy-mobile {
+    text-align: justify;
+    font-size: 14px;
+    line-height: 1.4;
+    letter-spacing: 0.4px;
+  }
+
+  @media (min-width: 768px) {
+    .wtark-copy-mobile {
+      font-size: 15px;
+      line-height: 1.35;
+    }
   }
 
   .wtark-copy-left {
     text-align: justify;
   }
 
-  @media (min-width: 1024px) {
+  @media (min-width: 768px) {
     .wtark-copy-left {
       max-width: 20%;
     }
@@ -74,7 +94,7 @@
     text-align: justify;
   }
 
-  @media (min-width: 1024px) {
+  @media (min-width: 768px) {
     .wtark-copy-right {
       max-width: 20%;
     }
@@ -114,4 +134,3 @@
     }
   }
 }
-
