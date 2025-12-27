@@ -1,7 +1,7 @@
 :root {
   --nav-padding-x: clamp(24px, 5vw, 64px);
   --nav-padding-y: clamp(18px, 4vw, 42px);
-  --nav-radius: 100px;
+  --nav-radius: var(--radius-12);
   --nav-accent: rgba(108, 117, 255, 1);
   --nav-pill-bg: rgba(236, 238, 246, 0.75);
   --nav-text: #000;

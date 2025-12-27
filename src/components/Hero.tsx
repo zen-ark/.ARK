@@ -21,17 +21,26 @@
  *   - heroCardRef: The visual element that transforms between states
  */
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface HeroProps {
   videoSource: string;
+  secondaryVideoSource?: string;
   title: string;
   subtitle: string;
 }
 
-export default function Hero({ videoSource, title, subtitle }: HeroProps) {
+export default function Hero({ videoSource, secondaryVideoSource, title, subtitle }: HeroProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const heroCardRef = useRef<HTMLDivElement>(null);
+  const [showSecondaryVideo, setShowSecondaryVideo] = useState(false);
+  const secondaryVideoRef = useRef<HTMLVideoElement>(null);
+  const primaryVideoRef = useRef<HTMLVideoElement>(null);
+
+  const getVideoType = (src: string) => {
+    if (src.toLowerCase().endsWith('.webm')) return 'video/webm';
+    return 'video/mp4';
+  };
 
   // Inject keyframe animation for editorial fade-in
   useEffect(() => {
@@ -141,6 +150,28 @@ export default function Hero({ videoSource, title, subtitle }: HeroProps) {
     };
   }, []);
 
+  const handlePrimaryVideoEnded = () => {
+    if (secondaryVideoSource) {
+      setShowSecondaryVideo(true);
+      if (secondaryVideoRef.current) {
+        secondaryVideoRef.current.currentTime = 0;
+        secondaryVideoRef.current.play().catch(() => {
+          // Handle potential play errors (e.g., if autoplay policy interferes)
+        });
+      }
+    }
+  };
+
+  const handleSecondaryVideoEnded = () => {
+    setShowSecondaryVideo(false);
+    if (primaryVideoRef.current) {
+      primaryVideoRef.current.currentTime = 0;
+      primaryVideoRef.current.play().catch(() => {
+        // Handle potential play errors
+      });
+    }
+  };
+
   return (
     <section
       ref={sectionRef}
@@ -164,17 +195,34 @@ export default function Hero({ videoSource, title, subtitle }: HeroProps) {
           }}
           aria-labelledby="hero-title"
         >
-          {/* Background Video */}
+          {/* Background Video 1 (Primary) */}
           <video
+            ref={primaryVideoRef}
             autoPlay
-            loop
+            loop={!secondaryVideoSource}
             muted
             playsInline
-            className="absolute inset-0 w-full h-full object-cover bg-black"
+            onEnded={handlePrimaryVideoEnded}
+            className={`absolute inset-0 w-full h-full object-cover bg-black transition-opacity duration-300 ${showSecondaryVideo ? 'opacity-0' : 'opacity-100'}`}
             aria-hidden="true"
           >
-            <source src={videoSource} type="video/mp4" />
+            <source src={videoSource} type={getVideoType(videoSource)} />
           </video>
+
+          {/* Background Video 2 (Secondary/Loop) */}
+          {secondaryVideoSource && (
+            <video
+              ref={secondaryVideoRef}
+              loop={false}
+              muted
+              playsInline
+              onEnded={handleSecondaryVideoEnded}
+              className={`absolute inset-0 w-full h-full object-cover bg-black transition-opacity duration-300 ${showSecondaryVideo ? 'opacity-100' : 'opacity-0'}`}
+              aria-hidden="true"
+            >
+              <source src={secondaryVideoSource} type={getVideoType(secondaryVideoSource)} />
+            </video>
+          )}
 
           {/* Text Content - Editorial Layout */}
           <div 

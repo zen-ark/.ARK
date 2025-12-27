@@ -2,12 +2,9 @@
 import Base from "@/layouts/Base.astro";
 import Hero from "@/components/Hero";
 import WhatArkDoes from "@/components/WhatArkDoes";
-import OperatorArk from "@/components/OperatorArk";
 import ProjectsSection from "@/components/ProjectsSection";
-import ArkModel from "@/components/ArkModel";
-import ModulesInstalled from "@/components/ModulesInstalled";
-import LabArk from "@/components/LabArk";
 import OpenNewFile from "@/components/OpenNewFile";
+import SystemStateController from "@/components/SystemStateController";
 import FooterV2 from "@/layouts/partials/FooterV2.astro";
 import { getCollection } from "astro:content";
 
@@ -26,12 +23,13 @@ const projectsForSection = allProjects
   }));
 ---
 
-<Base title=".ARK — Creative Studio">
+<Base title=".ARK — Creative Studio" showFooter={false}>
   <main>
     <!-- Hero Section -->
     <Hero
       client:load
-      videoSource="/Export.mov"
+      videoSource="/Hero Videos/Export.mov"
+      secondaryVideoSource="/Hero Videos/2 Loops.webm"
       title="Where digital work becomes tangible."
       subtitle="Shaping interfaces with clarity, usability, and a subtle experimental edge."
     />
@@ -42,20 +40,11 @@ const projectsForSection = allProjects
     <!-- Projects Section with Layout Toggle -->
     <ProjectsSection client:load projects={projectsForSection} />
 
-    <!-- THE .ARK MODEL Section -->
-    <ArkModel client:load />
-
-    <!-- MODULES INSTALLED Section -->
-    <ModulesInstalled client:load />
-
-    <!-- THE OPERATOR.ARK Section -->
-    <OperatorArk client:load />
+    <!-- SYSTEM STATE CONTROLLER (The .ARK Model) -->
+    <SystemStateController client:only="react" />
 
     <!-- OPEN A NEW FILE Section -->
     <OpenNewFile client:load />
-
-    <!-- LAB.ARK Section - Hidden for now -->
-    <!-- <LabArk client:load /> -->
   </main>
 
   <!-- FooterV2 - Preview of inversa.com footer style -->

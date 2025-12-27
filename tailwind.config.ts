@@ -76,6 +76,15 @@ export default {
         "entrance": "var(--easing-entrance)",
         "exit": "var(--easing-exit)"
       },
+      "keyframes": {
+        "shimmer": {
+          "0%": { "transform": "translateX(-100%)" },
+          "100%": { "transform": "translateX(100%)" }
+        }
+      },
+      "animation": {
+        "shimmer": "shimmer 2s infinite"
+      },
       "backdropBlur": {
         "4": "var(--blur-4)",
         "8": "var(--blur-8)",

@@ -1,242 +1,388 @@
 import React, { useEffect, useRef, useState } from "react";
 
 interface Module {
+  id: string;
   title: string;
   description: string;
+  build: string;
+  lastRun: string;
 }
 
 const modules: Module[] = [
   {
+    id: "01",
     title: "Interface Design",
     description: "Product UI, dashboards, systems.",
+    build: "v2.4",
+    lastRun: "00:43s",
   },
   {
+    id: "02",
     title: "Creative Direction",
     description: "Concept, narrative, visual identity.",
+    build: "v1.8",
+    lastRun: "12:05s",
   },
   {
+    id: "03",
     title: "Motion & Interactive",
     description: "Prototyping, transitions, micro-UX.",
+    build: "v3.0",
+    lastRun: "00:12s",
   },
   {
+    id: "04",
     title: "Design Systems",
     description: "Tokens, components, documentation.",
+    build: "v2.1",
+    lastRun: "04:20s",
   },
   {
+    id: "05",
     title: "Brand Design",
     description: "Minimal, digital-first identities.",
+    build: "v1.5",
+    lastRun: "08:15s",
   },
   {
+    id: "06",
     title: "Technical Integration",
     description: "Framer, React, Astro hand-off.",
+    build: "v2.9",
+    lastRun: "01:30s",
   },
 ];
 
-interface ModuleTileProps {
-  module: Module;
-  index: number;
-  isVisible: boolean;
+type ModuleStatus = "queued" | "installing" | "verified";
+
+interface ActiveModuleCardProps {
+  module: Module | null;
+  isFinal: boolean;
 }
 
-function ModuleTile({ module, index, isVisible }: ModuleTileProps) {
-  // Determine mechanical accent type based on index
-  const accentType = index % 3;
-  const delay = index * 50; // Stagger delay in milliseconds
+function ActiveModuleCard({ module, isFinal }: ActiveModuleCardProps) {
+  if (!module) {
+    return (
+      <div className="rounded-3xl border border-dashed border-black/10 bg-white/70 p-10 text-center shadow-inner">
+        <p className="font-mono text-sm uppercase tracking-[0.3em] text-neutral-400">
+          System awaiting installation
+        </p>
+      </div>
+    );
+  }
+
+  const statusLabel = isFinal ? "VERIFIED" : "INSTALLING…";
 
   return (
-    <div
-      className={`group relative aspect-[1/1] rounded-2xl border border-neutral-200 bg-gradient-to-b from-neutral-50 to-zinc-50 p-5 transition-all duration-300 ease-out hover:translate-y-[2px] hover:shadow-[0_6px_16px_rgba(0,0,0,0.08)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3BD58B] focus-visible:ring-offset-2 shadow-[0_4px_12px_rgba(0,0,0,0.04)] ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-      }`}
-      style={{
-        transitionDelay: isVisible ? `${delay}ms` : "0ms",
-        transitionDuration: "600ms",
-        transitionTimingFunction: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-      }}
-      tabIndex={0}
-      role="listitem"
-    >
-      {/* Edge glow on hover */}
-      <div
-        className="absolute right-0 top-0 h-full w-1 rounded-r-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100"
-        style={{
-          background: "linear-gradient(to bottom, rgba(59, 213, 139, 0.6), rgba(59, 213, 139, 0.2))",
-          filter: "blur(4px)",
-        }}
-        aria-hidden="true"
-      />
-
-      {/* Content wrapper */}
-      <div className="relative flex h-full flex-col justify-between">
-        {/* Top section: Title and Accent */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1">
-            <h3 className="text-base font-bold uppercase leading-tight tracking-tight text-neutral-900 transition-all duration-200 group-hover:translate-y-[-1px] group-hover:font-extrabold md:text-lg">
-              {module.title}
-            </h3>
-          </div>
-
-          {/* Mechanical Accent - top-right */}
-          <div className="flex-shrink-0" aria-hidden="true">
-            {accentType === 0 && (
-              // Circular knob base
-              <div className="h-3 w-3 rounded-full bg-neutral-300 shadow-[inset_0_1px_2px_rgba(0,0,0,0.2)]" />
-            )}
-            {accentType === 1 && (
-              // Vertical groove
-              <div className="h-4 w-1 rounded-full bg-neutral-300 shadow-[inset_0_1px_2px_rgba(0,0,0,0.15)]" />
-            )}
-            {accentType === 2 && (
-              // LED dot
-              <div className="h-2 w-2 rounded-full bg-[#3BD58B] opacity-60 shadow-[0_0_4px_rgba(59,213,139,0.4)]" />
-            )}
-          </div>
+    <div className="relative overflow-hidden rounded-[32px] border border-black/10 bg-white p-8 shadow-[0_40px_120px_rgba(0,0,0,0.08)] transition-transform duration-500 animate-active-entry">
+      {!isFinal && (
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-black/10 to-transparent opacity-60 [animation:activeSweep_1s_ease-out_forwards]" />
         </div>
+      )}
 
-        {/* Middle section: Description */}
-        <div className="mt-3 flex-1">
-          <p className="max-w-[90%] text-sm leading-relaxed text-neutral-600 md:text-base">
-            {module.description}
+      <header className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p className="font-mono text-[11px] uppercase tracking-[0.4em] text-neutral-400">
+            Module {module.id}
           </p>
+          <h3 className="mt-2 text-3xl font-semibold uppercase tracking-tight text-neutral-900 md:text-4xl">
+            {module.title}
+          </h3>
         </div>
+        <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.4em]">
+          <span className={`text-sm ${isFinal ? "text-[#3BD58B]" : "text-neutral-500"}`}>{statusLabel}</span>
+          <span
+            className={`relative h-3 w-3 rounded-full ${
+              isFinal ? "bg-[#3BD58B]" : "bg-[#3BD58B] shadow-[0_0_12px_#3BD58B]"
+            }`}
+          >
+            {!isFinal && (
+              <span className="absolute inset-0 animate-ping rounded-full bg-[#3BD58B]/60"></span>
+            )}
+          </span>
+        </div>
+      </header>
 
-        {/* Bottom section: Engraved seam line */}
-        <div className="mt-auto pt-4">
-          <div
-            className="h-px w-16 rounded-full bg-neutral-300 opacity-50"
-            aria-hidden="true"
-          />
+      <p className="mb-6 text-base leading-relaxed text-neutral-600 md:text-lg">{module.description}</p>
+
+      {!isFinal && (
+        <div className="mb-6 space-y-1 font-mono text-[11px] text-neutral-500">
+          <div className="flex items-center gap-2 text-[#3BD58B]">
+            <span className="text-base leading-none">›</span>
+            <span className="text-neutral-500">validating checksum…</span>
+          </div>
+          <div className="flex items-center gap-2 text-[#3BD58B]">
+            <span className="text-base leading-none">›</span>
+            <span className="text-neutral-500">allocating resources…</span>
+          </div>
         </div>
+      )}
+
+      <footer className="flex flex-wrap gap-4 border-t border-neutral-100 pt-4 font-mono text-[11px] uppercase tracking-[0.4em] text-neutral-400">
+        <span>Build {module.build}</span>
+        <span className="ml-auto">Last Run {module.lastRun}</span>
+      </footer>
+    </div>
+  );
+}
+
+interface HistoryItemProps {
+  module: Module;
+  isNewest: boolean;
+}
+
+function HistoryItem({ module, isNewest }: HistoryItemProps) {
+  return (
+    <div
+      className={`flex items-center justify-between rounded-2xl border border-neutral-200/70 bg-white/60 px-4 py-3 text-xs font-mono uppercase tracking-[0.4em] text-neutral-400 transition-all duration-500 hover:border-neutral-400 hover:bg-white ${
+        isNewest ? "history-enter shadow-lg" : ""
+      }`}
+    >
+      <div className="flex items-center gap-3">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full border border-neutral-200 text-[11px] text-neutral-500">
+          {module.id}
+        </div>
+        <div className="hidden text-[10px] text-neutral-500 sm:block">{module.title}</div>
+      </div>
+      <div className="flex items-center gap-2 text-[#3BD58B]">
+        <span className="text-[10px] tracking-[0.4em]">VERIFIED</span>
+        <span className="h-2 w-2 rounded-full bg-[#3BD58B]" />
       </div>
     </div>
   );
 }
 
 export default function ModulesInstalled() {
-  const ref = useRef<HTMLElement>(null);
-  const gridRef = useRef<HTMLUListElement>(null);
-  const [isInView, setIsInView] = useState(false);
-  const [revealProgress, setRevealProgress] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const anchorsWrapperRef = useRef<HTMLDivElement>(null);
+  const anchorRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  useEffect(() => {
-    if (!ref.current) return;
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const [progress, setProgress] = useState(0);
+  const [history, setHistory] = useState<number[]>([]);
+  const [lastStackedId, setLastStackedId] = useState<string | null>(null);
+  const prevActiveRef = useRef(-1);
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1, rootMargin: "-100px" }
-    );
-
-    observer.observe(ref.current);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
-  // Scroll detection - gradual reveal from white to black
-  // Starts when section top hits bottom of viewport (100vh)
-  // Finishes when section top hits 50vh
   useEffect(() => {
     const handleScroll = () => {
-      if (!ref.current) return;
-
-      const rect = ref.current.getBoundingClientRect();
+      if (!sectionRef.current) return;
       const viewportHeight = window.innerHeight;
-      
-      // Start point: section top at viewport bottom (100vh)
-      const startPoint = viewportHeight;
-      // End point: section top at 50vh
-      const endPoint = viewportHeight * 0.5;
-      
-      // Calculate progress (0 to 1)
-      // When rect.top = startPoint (100vh), progress = 0
-      // When rect.top = endPoint (50vh), progress = 1
-      let progress = 0;
-      
-      if (rect.top <= startPoint) {
-        // Transition has started
-        const range = startPoint - endPoint;
-        const distance = startPoint - rect.top;
-        progress = Math.min(1, Math.max(0, distance / range));
+      const anchors = anchorRefs.current;
+
+      let nextActive = -1;
+      const triggerLine = viewportHeight * 0.45;
+
+      anchors.forEach((anchor, index) => {
+        if (!anchor) return;
+        const rect = anchor.getBoundingClientRect();
+        if (rect.top <= triggerLine) {
+          nextActive = index;
+        }
+      });
+
+      if (nextActive >= modules.length) nextActive = modules.length - 1;
+      setActiveIndex(nextActive);
+
+      if (anchorsWrapperRef.current) {
+        const wrapperRect = anchorsWrapperRef.current.getBoundingClientRect();
+        const totalScrollable = Math.max(wrapperRect.height - viewportHeight, 1);
+        const scrolled = Math.min(Math.max(-wrapperRect.top, 0), totalScrollable);
+        setProgress(scrolled / totalScrollable);
       }
-      
-      setRevealProgress(progress);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll(); // Check initial state
+    window.addEventListener("resize", handleScroll, { passive: true });
+    handleScroll();
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
     };
   }, []);
 
-  // Interpolate background color based on progress
-  const bgOpacity = revealProgress;
-  const bgColor = `rgba(${Math.round(255 * (1 - bgOpacity))}, ${Math.round(255 * (1 - bgOpacity))}, ${Math.round(255 * (1 - bgOpacity))}, 1)`;
-  
-  // Interpolate text colors for smooth transition
-  const titleColor = `rgb(${Math.round(255 * (1 - bgOpacity))}, ${Math.round(255 * (1 - bgOpacity))}, ${Math.round(255 * (1 - bgOpacity))})`;
-  const subtitleColor = `rgb(${Math.round(155 + 100 * (1 - bgOpacity))}, ${Math.round(155 + 100 * (1 - bgOpacity))}, ${Math.round(155 + 100 * (1 - bgOpacity))})`;
+  useEffect(() => {
+    const prevIndex = prevActiveRef.current;
+
+    if (activeIndex === -1) {
+      setHistory([]);
+      prevActiveRef.current = -1;
+      return;
+    }
+
+    if (prevIndex === activeIndex) return;
+
+    setHistory((prev) => {
+      let nextHistory = prev;
+
+      if (prevIndex > -1 && activeIndex > prevIndex) {
+        if (!prev.includes(prevIndex)) {
+          nextHistory = [...prev, prevIndex];
+          setLastStackedId(modules[prevIndex].id);
+        }
+      }
+
+      if (activeIndex < prevIndex) {
+        nextHistory = prev.filter((idx) => idx < activeIndex);
+      }
+
+      return nextHistory;
+    });
+
+    prevActiveRef.current = activeIndex;
+  }, [activeIndex]);
+
+  useEffect(() => {
+    if (!lastStackedId) return;
+    const timer = setTimeout(() => setLastStackedId(null), 800);
+    return () => clearTimeout(timer);
+  }, [lastStackedId]);
+
+  const activeModule = activeIndex >= 0 ? modules[activeIndex] : null;
+  const isFinalActive =
+    activeIndex === modules.length - 1 && history.length === modules.length - 1;
+
+  const historyItems = [...history].sort((a, b) => a - b);
 
   return (
-    <section
-      ref={ref}
-      id="modules-installed"
-      className="relative w-full px-6 py-12 md:py-16 lg:py-24"
-      style={{
-        backgroundColor: bgColor,
-        transition: "background-color 0.1s ease-out",
-      }}
-    >
-      <div className="relative mx-auto w-full max-w-6xl z-10">
-        {/* Section Header */}
-        <div className="mb-12 md:mb-16">
-          <p
-            className={`mb-2 text-xs font-semibold uppercase tracking-wider transition-all duration-500 ease-out ${
-              isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
-            }`}
-            style={{
-              color: subtitleColor,
-              transition: "color 0.1s ease-out",
-            }}
-          >
-            System Capabilities
-          </p>
-          <h2
-            className={`text-4xl font-light uppercase leading-none tracking-tight md:text-5xl lg:text-6xl transition-all duration-500 ease-out ${
-              isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
-            }`}
-            style={{
-              color: titleColor,
-              transition: "color 0.1s ease-out",
-              transitionDelay: isInView ? "100ms" : "0ms",
-            }}
-          >
-            Modules Installed
-          </h2>
-        </div>
+    <>
+      <section
+        ref={sectionRef}
+        id="modules-installed"
+        className="relative w-full bg-white text-black pt-[20vh]"
+      >
+        <div className="mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-8 md:grid-cols-12">
+          {/* Left Console */}
+          <div className="relative col-span-1 border-b border-neutral-200 bg-white/95 backdrop-blur-sm md:sticky md:top-0 md:col-span-4 md:h-screen md:border-b-0 md:border-r">
+            <div className="flex h-full flex-col justify-between px-6 pt-[120px] md:px-12">
+              <div
+                className="w-full border-t border-black/10 pt-4"
+                style={{ marginTop: "16px" }}
+              >
+                <div className="mb-4 flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.4em] text-neutral-500 md:mb-8">
+                  <span>SYSTEM / MODULES</span>
+                  <span>
+                    INSTALLING /{" "}
+                    {activeIndex > -1 ? `${Math.min(activeIndex + 1, modules.length)}` : "--"}
+                  </span>
+                </div>
 
-        {/* Tiles Grid */}
-        <ul
-          ref={gridRef}
-          className={`relative grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 transition-opacity duration-600 ${
-            isInView ? "opacity-100" : "opacity-0"
-          }`}
-          role="list"
-        >
-          {modules.map((module, index) => (
-            <li key={module.title}>
-              <ModuleTile module={module} index={index} isVisible={isInView} />
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
+                <div className="mb-8">
+                  <div className="mb-2 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.4em] text-neutral-400">
+                    <span>Progress</span>
+                    <span>{Math.round(progress * 100)}%</span>
+                  </div>
+                  <div className="h-1 w-full overflow-hidden rounded-full bg-neutral-100">
+                    <div
+                      className="h-full bg-black transition-all duration-300 ease-out"
+                      style={{ width: `${Math.round(progress * 100)}%` }}
+                    />
+                  </div>
+                </div>
+
+                <h2
+                  ref={titleRef}
+                  className="mb-8 text-3xl font-light uppercase leading-none tracking-tight md:text-5xl lg:text-6xl"
+                >
+                  Modules
+                  <br className="hidden md:block" /> Installed
+                </h2>
+              </div>
+
+              <div
+                className={`hidden pb-12 transition-opacity duration-500 md:block ${
+                  activeIndex > -1 ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <div className="mb-4 border-l-2 border-[#3BD58B] pl-4">
+                  <p className="font-mono text-[11px] uppercase tracking-[0.4em] text-neutral-500">
+                    Active Module
+                  </p>
+                  <div className="text-lg font-bold uppercase leading-tight md:text-xl">
+                    {activeModule?.title || "Waiting..."}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.4em] text-neutral-500">
+                  <span>Status:</span>
+                  <span className="flex items-center gap-2 text-[#3BD58B]">
+                    <span className="relative flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#3BD58B] opacity-75"></span>
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-[#3BD58B]"></span>
+                    </span>
+                    INSTALLING…
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Area */}
+          <div className="relative col-span-1 md:col-span-8">
+            <div className="sticky top-0 space-y-10 pb-12 pt-[120px]">
+              <div className="rounded-3xl border border-neutral-200 bg-white/70 p-6">
+                <div className="mb-4 flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.4em] text-neutral-500">
+                  <span>History</span>
+                  <span>{history.length} / {modules.length - 1}</span>
+                </div>
+                <div className="space-y-3">
+                  {historyItems.length === 0 && (
+                    <div className="rounded-2xl border border-dashed border-neutral-300 px-4 py-3 text-center font-mono text-[11px] uppercase tracking-[0.4em] text-neutral-400">
+                      No installations logged yet
+                    </div>
+                  )}
+                  {historyItems.map((idx) => (
+                    <HistoryItem
+                      key={modules[idx].id}
+                      module={modules[idx]}
+                      isNewest={modules[idx].id === lastStackedId}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <ActiveModuleCard module={activeModule} isFinal={isFinalActive} />
+            </div>
+
+            <div ref={anchorsWrapperRef} className="mt-20 space-y-0 opacity-0">
+              {modules.map((module, index) => (
+                <div
+                  key={`anchor-${module.id}`}
+                  ref={(el) => (anchorRefs.current[index] = el)}
+                  className="h-[120vh]"
+                />
+              ))}
+              <div className="h-[40vh]" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <style>{`
+        @keyframes activeSweep {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+
+        @keyframes activeEntry {
+          0% { opacity: 0; transform: translateY(48px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes historyEnter {
+          0% { opacity: 0; transform: translateY(16px) scale(0.95); }
+          100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .history-enter {
+          animation: historyEnter 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .animate-active-entry {
+          animation: activeEntry 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+      `}</style>
+    </>
   );
 }
