@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, AnimatePresence, useMotionValueEvent, useMotionValue, useSpring } from 'framer-motion';
 import EqualizerScroll from './EqualizerScroll';
 
@@ -71,7 +71,7 @@ const ARK_LAYOUT_TRANSITION = { type: "spring", stiffness: 180, damping: 45 };
 
 // Animation variants for text elements
 const titleVariants = {
-  hidden: { opacity: 0, y: 12 },
+  hidden: { opacity: 0, y: -20 },
   visible: { 
     opacity: 1, 
     y: 0,
@@ -79,30 +79,45 @@ const titleVariants = {
   },
   exit: { 
     opacity: 0, 
-    y: -12,
-    transition: { duration: 0.45, ease: ARK_EASE } // Speed up exit slightly so text clears faster
+    y: 20,
+    transition: { duration: 0.45, ease: ARK_EASE } 
   }
 };
 
 const infoVariants = {
-  hidden: { opacity: 0, y: 8 },
+  hidden: { opacity: 0, x: 20 },
   visible: { 
     opacity: 1, 
-    y: 0,
+    x: 0,
     transition: { ...ARK_TRANSITION, delay: 0.5 } 
   },
   exit: { 
     opacity: 0, 
-    y: -8,
-    transition: { duration: 0.45, ease: ARK_EASE } // Speed up exit to match title
+    x: -20,
+    transition: { duration: 0.45, ease: ARK_EASE } 
   }
 };
 
 export default function ProjectsV6() {
   const containerRef = useRef<HTMLDivElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
+  const titleBoxRef = useRef<HTMLDivElement>(null);
   const [activeProject, setActiveProject] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
+  const [titleBoxHeight, setTitleBoxHeight] = useState(0);
+
+  useEffect(() => {
+    const updateHeight = () => {
+      if (titleBoxRef.current) {
+        // Add 24px for the bottom CornerSvg which extends the visual height
+        setTitleBoxHeight(titleBoxRef.current.offsetHeight + 24);
+      }
+    };
+
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    return () => window.removeEventListener('resize', updateHeight);
+  }, []); // Constant height, only update on resize
 
   // Custom Cursor Logic
   const cursorX = useMotionValue(0);
@@ -116,6 +131,16 @@ export default function ProjectsV6() {
   const cursorRotateSpring = useSpring(cursorRotate, { damping: 30, stiffness: 300 });
 
   const prevPos = useRef({ x: 0, y: 0 });
+
+  // Hide default cursor when hovering
+  useEffect(() => {
+    if (isHovering) {
+      document.body.style.cursor = 'none';
+      return () => {
+        document.body.style.cursor = '';
+      };
+    }
+  }, [isHovering]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const { clientX, clientY } = e;
@@ -173,23 +198,27 @@ export default function ProjectsV6() {
   return (
     // Height = 600vh (standard) - The logic handles the buffer internally
     <section ref={containerRef} className="relative h-[600vh] w-full bg-white pt-[10vh] pb-[10vh]">
-      {/* Sticky Viewport - 85vh height */}
-      <div className="sticky top-[10vh] flex h-[85vh] w-full items-start justify-center px-8 md:px-12 max-w-[1800px] mx-auto z-[5]">
+      {/* Sticky Viewport - 40px bottom margin (100vh - 10vh top - 40px bottom) */}
+      <div 
+        className="sticky top-[10vh] flex w-full items-start justify-center px-4 z-[5]"
+        style={{ height: "calc(90vh - 40px)" }}
+      >
         
         {/* Scroll Indicator (Swiss Ruler) */}
         <EqualizerScroll 
           scrollYProgress={scrollYProgress} 
           projects={projects}
           activeProject={activeProject}
+          cutoutHeight={titleBoxHeight}
         />
         
         {/* Background Image Container */}
         <div 
             ref={imageContainerRef}
+            className="relative flex-1 h-full w-full overflow-hidden rounded-tr-[24px] rounded-bl-[24px] bg-gray-200 cursor-none ml-[152px]"
             onMouseMove={handleMouseMove}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
-            className="relative flex-1 h-full w-full overflow-hidden rounded-tr-[24px] rounded-bl-[24px] bg-gray-200 cursor-none ml-[140px]"
         >
           <AnimatePresence initial={false}>
             <motion.div
@@ -201,23 +230,37 @@ export default function ProjectsV6() {
               transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
               style={{ zIndex: activeProject }} 
             >
-              <a href={`/projects/${project.title.toLowerCase().replace(/\s+/g, '-').replace(/\./g, '')}`} className="block w-full h-full">
+              <a 
+                href={`/projects/${project.title.toLowerCase().replace(/\s+/g, '-').replace(/\./g, '')}`} 
+                className="block w-full h-full cursor-none"
+                style={{ cursor: 'none', pointerEvents: 'auto' }}
+                onMouseMove={handleMouseMove}
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+              >
                 <img 
                   src={project.src} 
                   alt={project.title} 
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-cover pointer-events-none"
                 />
-                <div className="absolute inset-0 bg-black/20" />
+                <div className="absolute inset-0 bg-black/20 pointer-events-none" />
               </a>
             </motion.div>
           </AnimatePresence>
 
           {/* Top-Left Title Box */}
           <motion.div 
+             ref={titleBoxRef}
              layout 
              transition={ARK_LAYOUT_TRANSITION}
              className="absolute left-0 top-0 z-20 bg-white pr-12 pb-8 pt-10 pl-6 rounded-br-[24px] max-w-[75vw] md:max-w-[80vw]"
-             style={{ borderRadius: "0 0 24px 0" }} 
+             style={{ 
+               borderRadius: "0 0 24px 0",
+               boxShadow: "1px 0 0 white" // Fix sub-pixel flickering on right edge
+             }}
+             onMouseMove={handleMouseMove}
+             onMouseEnter={() => setIsHovering(true)}
+             onMouseLeave={() => setIsHovering(false)}
           >
               {/* Inner text wrapper - removed overflow-hidden to prevent truncation during exit */}
               <div>
@@ -249,8 +292,11 @@ export default function ProjectsV6() {
           <motion.div 
              layout
              transition={ARK_LAYOUT_TRANSITION}
-             className="absolute bottom-0 right-0 z-20 bg-white pl-12 pt-8 pb-6 pr-8 rounded-tl-[24px]"
-             style={{ borderRadius: "24px 0 0 0" }} 
+             className="absolute bottom-0 right-[-1px] z-20 bg-white pl-12 pt-8 pb-6 pr-8 rounded-tl-[24px]"
+             style={{ borderRadius: "24px 0 0 0" }}
+             onMouseMove={handleMouseMove}
+             onMouseEnter={() => setIsHovering(true)}
+             onMouseLeave={() => setIsHovering(false)}
           >
               <div>
                  <AnimatePresence mode="popLayout" initial={false}>

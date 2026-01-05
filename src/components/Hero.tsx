@@ -184,6 +184,7 @@ export default function Hero({ videoSource, secondaryVideoSource, title, subtitl
         <header
           ref={heroCardRef}
           id="hero"
+          data-theme="dark"
           className="w-screen h-[calc(100vh-var(--space-8))] flex items-end justify-start relative overflow-hidden rounded-[var(--space-8)] border-[var(--space-4)] border-[hsl(var(--color-bg-canvas))] m-[var(--space-4)] transition-all duration-500 ease-out motion-reduce:duration-200"
           style={{
             transform: 'translateZ(0)',

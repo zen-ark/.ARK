@@ -390,6 +390,7 @@ export default function SystemStateController() {
   return (
     <section 
       ref={containerRef} 
+      data-theme={activePhase === 2 ? "light" : "dark"}
       className="relative w-full h-screen bg-[#0A0A0A] overflow-hidden" 
     >
         {/* --- LAYERS (Stacked Absolute) --- */}

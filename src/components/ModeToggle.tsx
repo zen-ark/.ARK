@@ -11,6 +11,7 @@ export default function ModeToggle({ currentPath, isGerman }: ModeToggleProps) {
   const normalizedPath = normalizePath(currentPath);
   const currentMode = getMode(currentPath);
   const [hoveredMode, setHoveredMode] = useState<Mode | null>(null);
+  const [isOnDark, setIsOnDark] = useState(false);
   const highlightRef = useRef<HTMLDivElement>(null);
   const agencyButtonRef = useRef<HTMLButtonElement>(null);
   const hiringButtonRef = useRef<HTMLButtonElement>(null);
@@ -48,6 +49,47 @@ export default function ModeToggle({ currentPath, isGerman }: ModeToggleProps) {
       updateHighlightPosition(activeButton);
     }
   }, [hoveredMode, currentMode]);
+
+  // Handle Theme Detection (Dark/Light background)
+  useEffect(() => {
+    let ticking = false;
+
+    const checkTheme = () => {
+      // Check the element at the center right of the screen (where the toggle is)
+      // The toggle itself is at fixed right: 16px, top: 50%
+      // We sample a point slightly to the left of the toggle to hit the content behind it
+      const x = window.innerWidth - 100; 
+      const y = window.innerHeight / 2;
+      
+      const elements = document.elementsFromPoint(x, y);
+      
+      // Look for a data-theme="dark" attribute on any element in the stack
+      const isDark = elements.some(el => {
+        // Check if the element or its closest parent has the theme attribute
+        return el.closest('[data-theme="dark"]');
+      });
+
+      setIsOnDark(isDark);
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(checkTheme);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    // Also check on resize and initially
+    window.addEventListener("resize", onScroll, { passive: true });
+    checkTheme();
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
   
   const handleModeChange = (targetMode: Mode) => {
     // Don't navigate if already in target mode
@@ -69,7 +111,7 @@ export default function ModeToggle({ currentPath, isGerman }: ModeToggleProps) {
   };
 
   return (
-    <div className={styles.edgeRailToggle}>
+    <div className={`${styles.edgeRailToggle} ${isOnDark ? styles.onDark : ''}`}>
       <div className={styles.edgeRailStack}>
         <div ref={optionsRef} className={styles.edgeRailOptions}>
           <div 
