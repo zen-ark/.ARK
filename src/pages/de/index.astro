@@ -1,9 +1,49 @@
 ---
 import Base from "@/layouts/Base.astro";
 import Hero from "@/components/Hero";
+import WhatArkDoes from "@/components/WhatArkDoes";
+import ProjectsSection from "@/components/ProjectsSection";
+import ProjectsV2 from "@/components/ProjectsV2";
+import OpenNewFile from "@/components/OpenNewFile";
+import SystemStateController from "@/components/SystemStateController";
+import FooterV2 from "@/layouts/partials/FooterV2.astro";
+import { getCollection } from "astro:content";
+import { getMode } from "@/lib/mode";
+
+const allProjects = await getCollection("projects");
+const mode = getMode(Astro.url.pathname);
+
+// Hybrid filtering: if any projects have featuredAgency, show only those; else show all
+const hasFeaturedAgency = allProjects.some((p) => p.data.featuredAgency);
+const filteredProjects = hasFeaturedAgency
+  ? allProjects.filter((p) => p.data.featuredAgency)
+  : allProjects;
+
+// Sort by orderAgency if set (ascending, lower numbers first), then by date (newest first)
+const sortedProjects = [...filteredProjects].sort((a, b) => {
+  const orderA = a.data.orderAgency ?? Infinity;
+  const orderB = b.data.orderAgency ?? Infinity;
+
+  if (orderA !== orderB) {
+    return orderA - orderB;
+  }
+
+  const dateA = new Date(a.data.date).getTime();
+  const dateB = new Date(b.data.date).getTime();
+  return dateB - dateA;
+});
+
+// Transform projects for ProjectsSection component
+const projectsForSection = sortedProjects.map((p) => ({
+  url: `/de/projects/${p.slug}`,
+  title: p.data.title,
+  clientName: p.data.client,
+  imageSrc: p.data.cover,
+  imageAlt: p.data.coverAlt ?? p.data.title,
+}));
 ---
 
-<Base title=".ARK — Kreatives Studio" lang="de">
+<Base title=".ARK — Kreatives Studio" lang="de" showFooter={false}>
   <main>
     <!-- Hero Section -->
     <Hero
@@ -13,5 +53,58 @@ import Hero from "@/components/Hero";
       title="Wo digitale Arbeit greifbar wird."
       subtitle="Interfaces gestalten mit Klarheit, Usability und einem subtilen experimentellen Ansatz."
     />
+
+    <!-- WHAT .ARK DOES Section -->
+    <WhatArkDoes client:load />
+
+    <!-- Projects Section with Layout Toggle -->
+    <ProjectsSection client:load projects={projectsForSection} />
+
+    <!-- Projects V2 Rotor Experiment -->
+    <ProjectsV2 client:load />
+
+    <!-- SYSTEM STATE CONTROLLER (The .ARK Model) -->
+    <SystemStateController client:only="react" />
+
+    <!-- OPEN A NEW FILE Section -->
+    <OpenNewFile client:load />
   </main>
+
+  <!-- FooterV2 - Preview of inversa.com footer style -->
+  <FooterV2 />
+
+  <script>
+    // Handle hash-based scrolling to projects section
+    if (window.location.hash === "#projects") {
+      // Wait for page to fully load, then scroll
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          const projectsSection = document.getElementById("projects");
+          if (projectsSection) {
+            // Calculate scroll position accounting for sticky elements
+            // Get the sticky wrapper (the parent of the sticky element)
+            const stickyWrapper = document
+              .querySelector('[id="what-the-ark"]')
+              ?.closest(".sticky")?.parentElement;
+            const stickyWrapperBottom = stickyWrapper
+              ? stickyWrapper.getBoundingClientRect().bottom + window.pageYOffset
+              : 0;
+            const header = document.querySelector("header");
+            const headerHeight = header ? header.getBoundingClientRect().height : 0;
+
+            // Scroll to just past the sticky section, accounting for header
+            const targetScroll = Math.max(
+              stickyWrapperBottom - headerHeight + 20, // 20px padding
+              projectsSection.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20
+            );
+
+            window.scrollTo({
+              top: targetScroll,
+              behavior: "smooth",
+            });
+          }
+        }, 100);
+      });
+    }
+  </script>
 </Base>

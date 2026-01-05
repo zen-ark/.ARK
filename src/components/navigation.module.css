@@ -130,6 +130,12 @@
   overflow: hidden;
 }
 
+@media (max-width: 768px) {
+  .talkBtn {
+    display: none;
+  }
+}
+
 .talkBtn:active {
   opacity: 1;
   transform: scaleY(0.98);
@@ -1006,4 +1012,5 @@
     opacity: 0.9 !important;
   }
 }
+
 

@@ -44,7 +44,7 @@ import { getCollection } from "astro:content";
 
 ### `PUBLIC_PLAUSIBLE_DOMAIN`
 
-Domain for Plausible analytics (e.g., `"zen.ark"`).
+Domain for Plausible analytics (e.g., `"ark.studio.ch"`).
 
 - **Required for production analytics**
 - Set in Vercel dashboard under project settings → Environment Variables
@@ -142,7 +142,7 @@ Set in Vercel dashboard (Settings → Environment Variables):
 
 | Variable                  | Value     | Environment |
 | ------------------------- | --------- | ----------- |
-| `PUBLIC_PLAUSIBLE_DOMAIN` | `zen.ark` | Production  |
+| `PUBLIC_PLAUSIBLE_DOMAIN` | `ark.studio.ch` | Production  |
 
 **Note:** Preview deployments inherit production environment variables by default. Plausible is disabled in development mode regardless.
 
@@ -354,7 +354,7 @@ pnpm build
 
 For questions or issues:
 
-- Email: hello@zen.ark
+- Email: hello@ark.studio.ch
 - Check Astro docs: https://docs.astro.build
 - Check React docs: https://react.dev
 - Check Tailwind docs: https://tailwindcss.com

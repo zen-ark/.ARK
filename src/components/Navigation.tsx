@@ -19,8 +19,8 @@ const DEFAULT_LINKS = [
   { href: "/contact", label: "Contact" },
 ];
 
-const DEFAULT_TALK_HREF = "mailto:hello@zen.ark";
-const DEFAULT_LOGO_LINES = ["Coding", "Portfolio"];
+const DEFAULT_TALK_HREF = "mailto:hello@ark.studio.ch";
+const DEFAULT_LOGO_LINES = ["ark", "studio", "ch"];
 
 interface Link {
   href: string;
@@ -33,6 +33,7 @@ interface Props {
   talkHref?: string;
   logoLines?: string[];
   activePath?: string;
+  mode?: 'agency' | 'hiring';
 }
 
 type GroupKey = "nav" | "projects" | "cta";
@@ -50,6 +51,7 @@ export default function Navigation({
   talkHref = DEFAULT_TALK_HREF,
   logoLines = DEFAULT_LOGO_LINES,
   activePath = "",
+  mode = 'agency',
 }: Props) {
   const [open, setOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -352,11 +354,7 @@ export default function Navigation({
       <header ref={headerRef} className={`${styles.header} ${open ? styles.headerOpen : ""}`}>
         <div className={styles.headerInner}>
           <a className={styles.logo} href={logoHref} aria-label="Go to home page">
-            {logoLines.map((line, index) => (
-              <span className={styles.logoWord} key={`${line}-${index}`}>
-                {line}
-              </span>
-            ))}
+            <img src="/favicon.svg" alt="Ark Studio" style={{ height: '2.5rem', width: 'auto' }} />
           </a>
 
           <div className={styles.headerCenter} aria-hidden="true" />
@@ -481,36 +479,46 @@ export default function Navigation({
                   if (link.href === "/projects" || link.href === "/de/projects") {
                     e.preventDefault();
                     const pathname = window.location.pathname;
-                    const isHomePage = pathname === "/" || pathname === "/de" || pathname === "/de/";
                     const isGerman = link.href === "/de/projects";
-                    const homePath = isGerman ? "/de/" : "/";
+                    const prefix = isGerman ? "/de" : "";
                     
-                    if (isHomePage) {
-                      // Already on home page, just scroll
-                      const projectsSection = document.getElementById("projects");
-                      if (projectsSection) {
-                        // Calculate scroll position accounting for sticky elements
-                        // Get the sticky wrapper (the parent of the sticky element)
-                        const stickyWrapper = document.querySelector('[id="what-the-ark"]')?.closest('.sticky')?.parentElement;
-                        const stickyWrapperBottom = stickyWrapper ? stickyWrapper.getBoundingClientRect().bottom + window.pageYOffset : 0;
-                        const headerHeight = headerRef.current?.getBoundingClientRect().height || 0;
-                        
-                        // Scroll to just past the sticky section, accounting for header
-                        const targetScroll = Math.max(
-                          stickyWrapperBottom - headerHeight + 20, // 20px padding
-                          projectsSection.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20
-                        );
-                        
-                        window.scrollTo({
-                          top: targetScroll,
-                          behavior: "smooth"
-                        });
-                        handleClose();
-                      }
-                    } else {
-                      // Navigate to home page with hash, browser will handle scroll
+                    if (mode === 'hiring') {
+                      // Hiring mode: navigate to /portfolio (no hash for now)
+                      const portfolioPath = `${prefix}/portfolio`.replace("//", "/");
                       handleClose();
-                      window.location.href = `${homePath}#projects`;
+                      window.location.href = portfolioPath;
+                    } else {
+                      // Agency mode: keep existing behavior
+                      const isHomePage = pathname === "/" || pathname === "/de" || pathname === "/de/";
+                      const homePath = isGerman ? "/de/" : "/";
+                      
+                      if (isHomePage) {
+                        // Already on home page, just scroll
+                        const projectsSection = document.getElementById("projects");
+                        if (projectsSection) {
+                          // Calculate scroll position accounting for sticky elements
+                          // Get the sticky wrapper (the parent of the sticky element)
+                          const stickyWrapper = document.querySelector('[id="what-the-ark"]')?.closest('.sticky')?.parentElement;
+                          const stickyWrapperBottom = stickyWrapper ? stickyWrapper.getBoundingClientRect().bottom + window.pageYOffset : 0;
+                          const headerHeight = headerRef.current?.getBoundingClientRect().height || 0;
+                          
+                          // Scroll to just past the sticky section, accounting for header
+                          const targetScroll = Math.max(
+                            stickyWrapperBottom - headerHeight + 20, // 20px padding
+                            projectsSection.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20
+                          );
+                          
+                          window.scrollTo({
+                            top: targetScroll,
+                            behavior: "smooth"
+                          });
+                          handleClose();
+                        }
+                      } else {
+                        // Navigate to home page with hash, browser will handle scroll
+                        handleClose();
+                        window.location.href = `${homePath}#projects`;
+                      }
                     }
                   }
                 };

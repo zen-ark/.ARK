@@ -3,6 +3,8 @@ import "@/styles/global.css";
 import Header from "./partials/Header.astro";
 import Footer from "./partials/FooterV2.astro";
 import { buildOrganizationSchema, buildWebSiteSchema, formatJsonLd } from "@/lib/seo";
+import ModeToggle from "@/components/ModeToggle";
+import { isHomepageRoute } from "@/lib/mode";
 
 interface Props {
   title?: string;
@@ -27,10 +29,10 @@ const {
 const currentPath = Astro.url.pathname;
 const isGerman = currentPath.startsWith("/de");
 
-const plausibleDomain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN || "zen.ark";
+const plausibleDomain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN || "ark.studio.ch";
 const isProd = import.meta.env.PROD;
 
-const siteUrl = import.meta.env.SITE || "https://zen.ark";
+const siteUrl = import.meta.env.SITE || "https://ark.studio.ch";
 const fullUrl = canonical || new URL(currentPath, siteUrl).toString();
 
 // Schema.org structured data
@@ -98,6 +100,10 @@ const websiteSchema = buildWebSiteSchema({
     <Header />
 
     <slot />
+
+    {isHomepageRoute(currentPath) && (
+      <ModeToggle client:load currentPath={currentPath} isGerman={isGerman} />
+    )}
 
     {showFooter && <Footer />}
   </body>

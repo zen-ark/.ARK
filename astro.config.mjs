@@ -6,7 +6,7 @@ import sitemap from "@astrojs/sitemap";
 import vercel from "@astrojs/vercel/static";
 
 export default defineConfig({
-  site: "https://zen.ark",
+  site: "https://ark.studio.ch",
   integrations: [
     react(),
     mdx(),

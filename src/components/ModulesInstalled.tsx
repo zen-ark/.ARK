@@ -155,7 +155,7 @@ function HistoryItem({ module, isNewest }: HistoryItemProps) {
 
 export default function ModulesInstalled() {
   const sectionRef = useRef<HTMLElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
+  const titleRef = useRef<HTMLDivElement>(null);
   const anchorsWrapperRef = useRef<HTMLDivElement>(null);
   const anchorRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -282,13 +282,16 @@ export default function ModulesInstalled() {
                   </div>
                 </div>
 
-                <h2
+                <div
                   ref={titleRef}
-                  className="mb-8 text-3xl font-light uppercase leading-none tracking-tight md:text-5xl lg:text-6xl"
+                  className="mb-8 w-full"
                 >
-                  Modules
-                  <br className="hidden md:block" /> Installed
-                </h2>
+                  <img
+                    src="/The Ark Model.svg"
+                    alt="The Ark Model"
+                    className="w-full h-auto"
+                  />
+                </div>
               </div>
 
               <div

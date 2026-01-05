@@ -28,6 +28,10 @@ const projects = defineCollection({
         .optional(),
       status: z.enum(["live", "beta", "archived"]).default("live"),
       featured: z.boolean().default(false),
+      featuredAgency: z.boolean().default(false),
+      featuredHiring: z.boolean().default(false),
+      orderAgency: z.number().optional(),
+      orderHiring: z.number().optional(),
     }),
 });
 

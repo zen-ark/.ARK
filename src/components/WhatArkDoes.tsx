@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-// Removed import MetadataNode to inline optimized version
-// import MetadataNode from "./MetadataNode";
+// Keep FRAME_COUNT to map the existing metadata frame numbers to percentages
+const FRAME_COUNT = 272;
 
 interface CardData {
   label: string;
@@ -11,10 +11,6 @@ interface CardData {
   status: string;
   imageSrc: string;
 }
-
-const FRAME_COUNT = 272;
-const getFrameSrc = (index: number) =>
-  `/no bg webp sequence/no bg${String(index + 1).padStart(4, "0")}.webp`;
 
 const cards: CardData[] = [
   {
@@ -98,7 +94,6 @@ const lerp = (start: number, end: number, t: number) =>
 
 function useBreakpoint() {
   const [breakpoint, setBreakpoint] = useState<"mobile" | "tablet" | "desktop">("desktop");
-
   useEffect(() => {
     const updateBreakpoint = () => {
       const width = window.innerWidth;
@@ -110,12 +105,10 @@ function useBreakpoint() {
         setBreakpoint("desktop");
       }
     };
-
     updateBreakpoint();
     window.addEventListener("resize", updateBreakpoint);
     return () => window.removeEventListener("resize", updateBreakpoint);
   }, []);
-
   return breakpoint;
 }
 
@@ -134,11 +127,26 @@ function usePrefersReducedMotion() {
 export default function WhatArkDoes() {
   const [headerHeight, setHeaderHeight] = useState(0);
   const containerRef = useRef<HTMLElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const frameCacheRef = useRef<(ImageBitmap | null)[]>(Array(FRAME_COUNT).fill(null));
-  const frameLoadingRef = useRef<boolean[]>(Array(FRAME_COUNT).fill(false));
-  const currentFrameIndexRef = useRef<number>(-1);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const progressListenersRef = useRef(new Set<(value: number) => void>());
+
+  // Calculate header height for padding
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      const header = document.querySelector('header');
+      if (header) {
+        setHeaderHeight(header.getBoundingClientRect().height);
+      }
+    };
+    updateHeaderHeight();
+    window.addEventListener("resize", updateHeaderHeight, { passive: true });
+    // Small delay to ensure layout is done
+    const timeoutId = setTimeout(updateHeaderHeight, 100);
+    return () => {
+      window.removeEventListener("resize", updateHeaderHeight);
+      clearTimeout(timeoutId);
+    };
+  }, []);
 
   const subscribeToProgress = useCallback(
     (listener: (value: number) => void) => {
@@ -150,255 +158,56 @@ export default function WhatArkDoes() {
     []
   );
 
-  const drawFrame = useCallback((index: number) => {
-    const canvas = canvasRef.current;
-    const bitmap = frameCacheRef.current[index];
-    if (!canvas || !bitmap) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const parent = canvas.parentElement;
-    if (!parent) return;
-    const rect = parent.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    const width = rect.width * dpr;
-    const height = rect.height * dpr;
-    if (canvas.width !== width || canvas.height !== height) {
-      canvas.width = width;
-      canvas.height = height;
-      canvas.style.width = `${rect.width}px`;
-      canvas.style.height = `${rect.height}px`;
+  const updateVideoTime = useCallback((progress: number) => {
+    const video = videoRef.current;
+    if (video && Number.isFinite(video.duration)) {
+      // Map progress (0-1) to video duration
+      const time = progress * video.duration;
+      // Check if time is valid to avoid errors
+      if (Number.isFinite(time)) {
+        video.currentTime = time;
+      }
     }
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    const frameAspect = bitmap.width / bitmap.height;
-    const canvasAspect = canvas.width / canvas.height;
-    let drawWidth = canvas.width;
-    let drawHeight = canvas.height;
-    if (frameAspect > canvasAspect) {
-      drawHeight = canvas.width / frameAspect;
-    } else {
-      drawWidth = canvas.height * frameAspect;
-    }
-    const dx = (canvas.width - drawWidth) / 2;
-    const dy = canvas.height - drawHeight;
-    ctx.drawImage(bitmap, dx, dy, drawWidth, drawHeight);
   }, []);
-
-  const ensureFrame = useCallback(
-    (index: number) => {
-      if (index < 0 || index >= FRAME_COUNT) return;
-      if (frameCacheRef.current[index] || frameLoadingRef.current[index]) return;
-      frameLoadingRef.current[index] = true;
-
-      const img = new Image();
-      img.src = getFrameSrc(index);
-
-      // Calculate target dimensions - cap at 1080p width to save memory
-      const MAX_WIDTH = 2560;
-
-      img.decode()
-        .then(() => createImageBitmap(img, { resizeWidth: MAX_WIDTH }))
-        .then((bitmap) => {
-          frameCacheRef.current[index] = bitmap;
-          frameLoadingRef.current[index] = false;
-          // If this is a frame we might need (close to current), redraw
-          const currentIndex = currentFrameIndexRef.current;
-          if (Math.abs(currentIndex - index) < 5) {
-             // Redraw closest available frame
-             // This might trigger a redraw if we are waiting on the current frame
-             if (currentIndex === index || frameCacheRef.current[currentIndex] === null) {
-                // If we are currently trying to show 'index', or if the current target 'currentIndex' 
-                // is missing but 'index' just loaded and is close, we might want to update.
-                // But generally, we only redraw if it's the specific target or we need a fallback.
-                // Let the animation loop handle it via renderFrame usually, 
-                // but if animation stopped, we might need to force a paint.
-             }
-          }
-        })
-        .catch(() => {
-          frameLoadingRef.current[index] = false;
-        });
-    },
-    [drawFrame]
-  );
-
-  const renderFrame = useCallback(
-    (progress: number) => {
-      const index = Math.min(
-        FRAME_COUNT - 1,
-        Math.max(0, Math.round(progress * (FRAME_COUNT - 1)))
-      );
-      
-      currentFrameIndexRef.current = index;
-      
-      // FALLBACK STRATEGY:
-      // If the exact frame is missing, find the closest available one to show.
-      // This prevents the "stopping" effect where the canvas freezes.
-      let frameToDrawIndex = index;
-      if (!frameCacheRef.current[index]) {
-         // Search outwards for closest cached frame
-         let dist = 1;
-         let found = -1;
-         // Search up to 20 frames away
-         while (dist < 20) {
-           if (index - dist >= 0 && frameCacheRef.current[index - dist]) {
-             found = index - dist;
-             break;
-           }
-           if (index + dist < FRAME_COUNT && frameCacheRef.current[index + dist]) {
-             found = index + dist;
-             break;
-           }
-           dist++;
-         }
-         if (found !== -1) {
-            frameToDrawIndex = found;
-         }
-         // If nothing found, we just keep whatever is on canvas (which is effectively the last drawn frame)
-      }
-
-      const frame = frameCacheRef.current[frameToDrawIndex];
-      if (frame) {
-        drawFrame(frameToDrawIndex);
-      } else {
-        ensureFrame(index); // Ensure the target frame is loading
-      }
-
-      // Preload logic with Velocity Lookahead
-      // If we jumped far, we might want to prioritize differently.
-      // For now, simple window:
-      const BUFFER = 2; // Immediate neighbors
-      for (let i = 1; i <= BUFFER; i++) {
-        ensureFrame(index + i);
-        ensureFrame(index - i);
-      }
-      
-      // Lookahead: If we are scrolling down (implied by sequence), load ahead more
-      // Since we don't track velocity explicitly here easily without state, 
-      // we can just bias the lookahead slightly forward as users mostly scroll down.
-      ensureFrame(index + 3);
-      ensureFrame(index + 4);
-      ensureFrame(index + 5);
-
-      // Clean up distant frames
-      // Increased buffer size to 60 to allow for faster scrolling without constant re-decoding
-      const CACHE_BUFFER = 60;
-      for (let i = 0; i < FRAME_COUNT; i++) {
-        if (Math.abs(i - index) > CACHE_BUFFER) {
-          if (frameCacheRef.current[i]) {
-            frameCacheRef.current[i]?.close();
-            frameCacheRef.current[i] = null;
-            frameLoadingRef.current[i] = false;
-          }
-        }
-      }
-    },
-    [drawFrame, ensureFrame]
-  );
-
-  useEffect(() => {
-    const resizeCanvas = () => {
-      if (!canvasRef.current) return;
-      const parent = canvasRef.current.parentElement;
-      if (!parent) return;
-      const rect = parent.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-      canvasRef.current.width = rect.width * dpr;
-      canvasRef.current.height = rect.height * dpr;
-      canvasRef.current.style.width = `${rect.width}px`;
-      canvasRef.current.style.height = `${rect.height}px`;
-      
-      // Redraw current if valid
-      const idx = currentFrameIndexRef.current;
-      if (idx >= 0 && frameCacheRef.current[idx]) {
-        drawFrame(idx);
-      }
-    };
-
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-    return () => window.removeEventListener("resize", resizeCanvas);
-  }, [drawFrame]);
-
-  useEffect(() => {
-    ensureFrame(0);
-    ensureFrame(1);
-    ensureFrame(2);
-  }, [ensureFrame]);
 
   const reduced = usePrefersReducedMotion();
 
-  // Calculate header height for padding
-  useEffect(() => {
-    const updateHeaderHeight = () => {
-      const header = document.querySelector('header');
-      if (header) {
-        setHeaderHeight(header.getBoundingClientRect().height);
-      }
-    };
-
-    updateHeaderHeight();
-    window.addEventListener("resize", updateHeaderHeight, { passive: true });
-    const timeoutId = setTimeout(updateHeaderHeight, 100);
-
-    return () => {
-      window.removeEventListener("resize", updateHeaderHeight);
-      clearTimeout(timeoutId);
-    };
-  }, []);
-
-  // Rebuilt scroll logic with precomputed bounds and momentum interpolation
+  // Scroll Animation Logic
   useEffect(() => {
     const boundsRef = { start: 0, end: 0 };
     const targetProgressRef = { current: 0 };
     const currentProgressRef = { current: 0 };
     const rafIdRef = { current: 0 };
 
-    const applyFrame = (progress: number) => {
-      renderFrame(progress);
-      // Notify listeners (like our optimized overlay)
+    const applyProgress = (progress: number) => {
+      updateVideoTime(progress);
+      // Notify listeners (overlay)
       progressListenersRef.current.forEach((listener) => listener(progress));
     };
 
     const animationLoop = () => {
-      const ease = reduced ? 1 : 0.05;
+      const ease = reduced ? 1 : 0.05; // Adjust ease factor for responsiveness
       let diff = targetProgressRef.current - currentProgressRef.current;
       
-      // Clamp speed to prevent skipping too many frames
-      // 0.005 roughly corresponds to ~1.3 frames per tick at 60fps
-      const MAX_SPEED = 0.005; 
+      // Limit max speed to prevent jumping too far in one frame
+      const MAX_SPEED = 0.08; 
+      
       if (!reduced) {
-        diff = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, diff));
-      }
-
-      if (Math.abs(diff) > 0.00001) {
-        currentProgressRef.current += diff * (reduced ? 1 : 0.8); // slight ease on top of clamp
-        // If we clamped, we might be drifting from target, so we just add the clamped diff
-        // But if we are close (diff small), the ease logic above (original code used ease) 
-        // essentially does the same. 
-        // Let's rewrite slightly for clarity:
-        
-        // Apply velocity
-        // If the gap is huge (fast scroll), we just move at MAX_SPEED.
-        // If the gap is small, we ease into it.
-        if (Math.abs(targetProgressRef.current - currentProgressRef.current) > MAX_SPEED) {
-            // Far away: Move constant speed
-            currentProgressRef.current += diff; 
-        } else {
-            // Close: Ease
-            currentProgressRef.current += (targetProgressRef.current - currentProgressRef.current) * ease;
-        }
-
-        applyFrame(currentProgressRef.current);
-        rafIdRef.current = requestAnimationFrame(animationLoop);
-      } else if (Math.abs(targetProgressRef.current - currentProgressRef.current) > 0) {
-        currentProgressRef.current = targetProgressRef.current;
-        applyFrame(currentProgressRef.current);
-        rafIdRef.current = 0;
+         // Apply eased movement
+         if (Math.abs(diff) > 0.0001) {
+            currentProgressRef.current += diff * ease;
+            applyProgress(currentProgressRef.current);
+            rafIdRef.current = requestAnimationFrame(animationLoop);
+         } else {
+            // Snap to target if very close
+            currentProgressRef.current = targetProgressRef.current;
+            applyProgress(currentProgressRef.current);
+            rafIdRef.current = 0;
+         }
       } else {
-        rafIdRef.current = 0;
+         // Instant update for reduced motion
+         currentProgressRef.current = targetProgressRef.current;
+         applyProgress(currentProgressRef.current);
       }
     };
 
@@ -410,6 +219,7 @@ export default function WhatArkDoes() {
 
     const updateTargetFromScroll = () => {
       const { start, end } = boundsRef;
+      // Safety check
       if (end <= start) {
         targetProgressRef.current = 0;
       } else {
@@ -419,7 +229,7 @@ export default function WhatArkDoes() {
 
       if (reduced) {
         currentProgressRef.current = targetProgressRef.current;
-        applyFrame(currentProgressRef.current);
+        applyProgress(currentProgressRef.current);
       } else {
         startAnimation();
       }
@@ -428,7 +238,9 @@ export default function WhatArkDoes() {
     const updateBounds = () => {
       if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
+      // Calculate absolute position
       const start = window.scrollY + rect.top;
+      // Scroll distance is container height minus viewport height
       const end = start + rect.height - window.innerHeight;
       boundsRef.start = start;
       boundsRef.end = end;
@@ -436,7 +248,6 @@ export default function WhatArkDoes() {
     };
 
     updateBounds();
-
     window.addEventListener("resize", updateBounds);
     window.addEventListener("scroll", updateTargetFromScroll, { passive: true });
 
@@ -445,7 +256,7 @@ export default function WhatArkDoes() {
       window.removeEventListener("scroll", updateTargetFromScroll);
       if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
     };
-  }, [reduced, renderFrame]);
+  }, [reduced, updateVideoTime]);
 
   return (
     <section
@@ -457,7 +268,6 @@ export default function WhatArkDoes() {
         backgroundColor: "hsl(var(--color-bg-canvas))"
       }}
     >
-      {/* Sticky Wrapper */}
       <div
         className="sticky top-0 w-full h-screen flex flex-col overflow-hidden"
         style={{
@@ -497,19 +307,24 @@ export default function WhatArkDoes() {
           </div>
         </div>
 
-        {/* Canvas Stage - displays frame sequence */}
+        {/* Video Stage */}
         <div className="flex-1 w-full relative flex items-end justify-center overflow-hidden">
           <div className="relative w-full h-full flex items-end justify-center" style={{ backgroundColor: "white" }}>
-            <canvas
-              ref={canvasRef}
-              className="w-full h-full"
-              style={{
-                display: "block",
-                pointerEvents: "none",
-              }}
-            />
+            
+            <video
+              ref={videoRef}
+              className="w-full h-full object-contain"
+              playsInline
+              muted
+              loop={false}
+              preload="auto"
+              // Add both WebM (Chrome/FF) and MOV (Safari HEVC) sources if available
+              // If you only have one, just use src="..." on the video tag
+            >
+              <source src="/whatthearkanimation.webm" type="video/webm" />
+              {/* <source src="/Export.mov" type="video/quicktime" /> */}
+            </video>
 
-            {/* Metadata Overlay - Floating Node - Optimized Version */}
             <OptimizedMetadataOverlay
               cards={cards}
               reduced={reduced}
@@ -542,10 +357,9 @@ function OptimizedMetadataOverlay({
   // Store refs to all dynamic DOM elements
   const nodeRefs = useRef<Map<string, {
     container: HTMLDivElement;
-    line: SVGLineElement;
-    anchorDot: SVGCircleElement;
-    cardDot: SVGCircleElement;
     card: HTMLDivElement;
+    line: SVGLineElement;
+    anchor: SVGCircleElement;
   }>>(new Map());
 
   // Store current breakpoint in ref to access it in the subscription closure without re-binding
@@ -587,42 +401,38 @@ function OptimizedMetadataOverlay({
         if (!visible) return; // Skip calculation if hidden
 
         // 2. Calculate positions
-        const anchorX = lerp(config.anchorPath.start.x, config.anchorPath.end.x, t);
-        const anchorY = lerp(config.anchorPath.start.y, config.anchorPath.end.y, t);
-        
         let cardX = lerp(config.cardPath.start.x, config.cardPath.end.x, t);
         let cardY = lerp(config.cardPath.start.y, config.cardPath.end.y, t);
+
+        let anchorX = lerp(config.anchorPath.start.x, config.anchorPath.end.x, t);
+        let anchorY = lerp(config.anchorPath.start.y, config.anchorPath.end.y, t);
         
         // Clamp
         cardX = Math.max(0.05, Math.min(0.95, cardX));
         cardY = Math.max(0.1, Math.min(0.9, cardY));
 
-        const anchorPctX = (anchorX * 100).toFixed(2) + "%";
-        const anchorPctY = (anchorY * 100).toFixed(2) + "%";
         const cardPctX = (cardX * 100).toFixed(2) + "%";
         const cardPctY = (cardY * 100).toFixed(2) + "%";
+        const anchorPctX = (anchorX * 100).toFixed(2) + "%";
+        const anchorPctY = (anchorY * 100).toFixed(2) + "%";
 
         // 3. Update DOM directly (Imperative Animation)
         
-        // Update Line
-        refs.line.setAttribute("x1", anchorPctX);
-        refs.line.setAttribute("y1", anchorPctY);
-        refs.line.setAttribute("x2", cardPctX);
-        refs.line.setAttribute("y2", cardPctY);
-
-        // Update Dots
-        refs.anchorDot.setAttribute("cx", anchorPctX);
-        refs.anchorDot.setAttribute("cy", anchorPctY);
-        refs.cardDot.setAttribute("cx", cardPctX);
-        refs.cardDot.setAttribute("cy", cardPctY);
-
         // Update Card Position
-        // Using left/top + transform translate(-50%, -50%) matches original CSS logic
         refs.card.style.left = cardPctX;
         refs.card.style.top = cardPctY;
-        // Optimization: Could use transform translate(vw, vh) to avoid 'left/top' layout thrashing, 
-        // but % based layout is tricky with transforms alone without window resize observer. 
-        // Given we bypassed React, this should be fast enough.
+
+        // Update Line and Anchor
+        if (refs.line) {
+          refs.line.setAttribute("x1", anchorPctX);
+          refs.line.setAttribute("y1", anchorPctY);
+          refs.line.setAttribute("x2", cardPctX);
+          refs.line.setAttribute("y2", cardPctY);
+        }
+        if (refs.anchor) {
+          refs.anchor.setAttribute("cx", anchorPctX);
+          refs.anchor.setAttribute("cy", anchorPctY);
+        }
       });
     });
   }, [subscribeToProgress, cards]); // removed breakpoint dependency to avoid re-subscribing
@@ -658,19 +468,17 @@ function OptimizedMetadataNode({
   registerRef: (refs: any) => void 
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const lineRef = useRef<SVGLineElement>(null);
-  const anchorDotRef = useRef<SVGCircleElement>(null);
-  const cardDotRef = useRef<SVGCircleElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const lineRef = useRef<SVGLineElement>(null);
+  const anchorRef = useRef<SVGCircleElement>(null);
 
   useEffect(() => {
-    if (containerRef.current && lineRef.current && anchorDotRef.current && cardDotRef.current && cardRef.current) {
+    if (containerRef.current && cardRef.current && lineRef.current && anchorRef.current) {
         registerRef({
             container: containerRef.current,
+            card: cardRef.current,
             line: lineRef.current,
-            anchorDot: anchorDotRef.current,
-            cardDot: cardDotRef.current,
-            card: cardRef.current
+            anchor: anchorRef.current
         });
     }
   }, [registerRef]);
@@ -683,17 +491,19 @@ function OptimizedMetadataNode({
       className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-0"
       aria-hidden="true"
     >
-      <svg className="absolute inset-0 w-full h-full" style={{ pointerEvents: "none" }}>
+      <svg className="absolute inset-0 w-full h-full overflow-visible pointer-events-none">
         <line
           ref={lineRef}
+          x1="0" y1="0" x2="0" y2="0"
           stroke={lineColor}
           strokeWidth="1"
-          vectorEffect="non-scaling-stroke"
         />
-        <circle ref={anchorDotRef} r="2" fill={lineColor} />
-        <circle ref={cardDotRef} r="2" fill={lineColor} />
+        <circle
+          ref={anchorRef}
+          cx="0" cy="0" r="3"
+          fill={lineColor}
+        />
       </svg>
-
       <div
         ref={cardRef}
         className="absolute pointer-events-auto"

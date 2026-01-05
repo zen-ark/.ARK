@@ -2,25 +2,10 @@
 import Base from "@/layouts/Base.astro";
 import Hero from "@/components/Hero";
 import WhatArkDoes from "@/components/WhatArkDoes";
-import ProjectsSection from "@/components/ProjectsSection";
+import ProjectsV6 from "@/components/ProjectsV6";
 import OpenNewFile from "@/components/OpenNewFile";
 import SystemStateController from "@/components/SystemStateController";
 import FooterV2 from "@/layouts/partials/FooterV2.astro";
-import { getCollection } from "astro:content";
-
-const allProjects = await getCollection("projects");
-
-// Transform projects for ProjectsSection component (ProjectCard)
-const projectsForSection = allProjects
-  .filter((p) => p.data.featured)
-  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
-  .map((p) => ({
-    url: `/projects/${p.slug}`,
-    title: p.data.title,
-    clientName: p.data.client,
-    imageSrc: p.data.cover,
-    imageAlt: p.data.coverAlt ?? p.data.title,
-  }));
 ---
 
 <Base title=".ARK — Creative Studio" showFooter={false}>
@@ -37,8 +22,8 @@ const projectsForSection = allProjects
     <!-- WHAT .ARK DOES Section -->
     <WhatArkDoes client:load />
 
-    <!-- Projects Section with Layout Toggle -->
-    <ProjectsSection client:load projects={projectsForSection} />
+    <!-- Projects V6 Liquid Folder -->
+    <ProjectsV6 client:load />
 
     <!-- SYSTEM STATE CONTROLLER (The .ARK Model) -->
     <SystemStateController client:only="react" />

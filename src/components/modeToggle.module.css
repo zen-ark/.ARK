@@ -1,0 +1,98 @@
+/* Edge Rail Toggle Styles */
+.edgeRailToggle {
+  position: fixed;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1300; /* Above hero content, below nav overlay */
+  pointer-events: auto;
+}
+
+.edgeRailStack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 56px;
+  width: 56px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(4px);
+  padding-block: 8px;
+  padding-inline: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  overflow: visible;
+}
+
+.edgeRailOptions {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  overflow: visible;
+}
+
+.edgeRailHighlight {
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(4px);
+  border-radius: 8px;
+  transition: top 200ms ease-out, height 200ms ease-out, opacity 180ms ease-out;
+  pointer-events: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  z-index: 0;
+}
+
+
+.edgeRailButton {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 48px;
+  border-radius: 8px;
+  position: relative;
+  z-index: 1;
+  padding-block: 12px;
+  padding-inline: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 10px;
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: color 180ms ease-out, border-color 180ms ease-out;
+  overflow: visible;
+}
+
+.edgeRailButton:focus-visible {
+  outline: 1px solid rgba(108, 117, 255, 0.6);
+  outline-offset: 1px;
+}
+
+.edgeRailActive {
+  color: rgba(0, 0, 0, 1);
+}
+
+.edgeRailText {
+  display: block;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: visible;
+  margin: 0;
+  padding: 0;
+}
+
+/* Hide on mobile (screens smaller than 768px) */
+@media (max-width: 767px) {
+  .edgeRailToggle {
+    display: none;
+  }
+}

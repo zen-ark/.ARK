@@ -24,7 +24,7 @@ const {
   nextProject,
 } = Astro.props;
 
-const siteUrl = import.meta.env.SITE || "https://zen.ark";
+const siteUrl = import.meta.env.SITE || "https://ark.studio.ch";
 const projectUrl = new URL(`/projects/${slug}`, siteUrl).toString();
 
 const articleSchema = buildArticleSchema({
