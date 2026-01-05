@@ -2,45 +2,13 @@
 import Base from "@/layouts/Base.astro";
 import Hero from "@/components/Hero";
 import WhatArkDoes from "@/components/WhatArkDoes";
-import ProjectsSection from "@/components/ProjectsSection";
-import ProjectsV2 from "@/components/ProjectsV2";
+import ProjectsV6 from "@/components/ProjectsV6";
 import OpenNewFile from "@/components/OpenNewFile";
 import SystemStateController from "@/components/SystemStateController";
 import FooterV2 from "@/layouts/partials/FooterV2.astro";
-import { getCollection } from "astro:content";
 import { getMode } from "@/lib/mode";
 
-const allProjects = await getCollection("projects");
 const mode = getMode(Astro.url.pathname);
-
-// Hybrid filtering: if any projects have featuredAgency, show only those; else show all
-const hasFeaturedAgency = allProjects.some((p) => p.data.featuredAgency);
-const filteredProjects = hasFeaturedAgency
-  ? allProjects.filter((p) => p.data.featuredAgency)
-  : allProjects;
-
-// Sort by orderAgency if set (ascending, lower numbers first), then by date (newest first)
-const sortedProjects = [...filteredProjects].sort((a, b) => {
-  const orderA = a.data.orderAgency ?? Infinity;
-  const orderB = b.data.orderAgency ?? Infinity;
-
-  if (orderA !== orderB) {
-    return orderA - orderB;
-  }
-
-  const dateA = new Date(a.data.date).getTime();
-  const dateB = new Date(b.data.date).getTime();
-  return dateB - dateA;
-});
-
-// Transform projects for ProjectsSection component
-const projectsForSection = sortedProjects.map((p) => ({
-  url: `/de/projects/${p.slug}`,
-  title: p.data.title,
-  clientName: p.data.client,
-  imageSrc: p.data.cover,
-  imageAlt: p.data.coverAlt ?? p.data.title,
-}));
 ---
 
 <Base title=".ARK — Kreatives Studio" lang="de" showFooter={false}>
@@ -57,11 +25,8 @@ const projectsForSection = sortedProjects.map((p) => ({
     <!-- WHAT .ARK DOES Section -->
     <WhatArkDoes client:load />
 
-    <!-- Projects Section with Layout Toggle -->
-    <ProjectsSection client:load projects={projectsForSection} />
-
-    <!-- Projects V2 Rotor Experiment -->
-    <ProjectsV2 client:load />
+    <!-- Projects V6 Liquid Folder -->
+    <ProjectsV6 client:load />
 
     <!-- SYSTEM STATE CONTROLLER (The .ARK Model) -->
     <SystemStateController client:only="react" />
