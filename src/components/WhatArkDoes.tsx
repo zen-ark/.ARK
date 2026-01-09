@@ -322,7 +322,7 @@ export default function WhatArkDoes() {
               // If you only have one, just use src="..." on the video tag
             >
               <source src="/whatthearkanimation.webm" type="video/webm" />
-              {/* <source src="/Export.mov" type="video/quicktime" /> */}
+              <source src="/Export.mov" type="video/quicktime" />
             </video>
 
             <OptimizedMetadataOverlay

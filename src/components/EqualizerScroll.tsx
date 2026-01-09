@@ -12,35 +12,38 @@ interface EqualizerScrollProps {
 const ARK_LAYOUT_TRANSITION = { type: "spring", stiffness: 180, damping: 45 };
 
 // Sub-component to handle the individual tick rendering
-const EqualizerTick = ({ tickIndex, totalTicks, smoothProgress, totalSegments, milestoneIndex }: {
+const EqualizerTick = ({ tickIndex, totalTicks, smoothProgress, totalSegments, milestoneIndex, isMobile }: {
   tickIndex: number;
   totalTicks: number;
   smoothProgress: any;
   totalSegments: number;
   milestoneIndex: number;
+  isMobile: boolean;
 }) => {
   const isMilestone = milestoneIndex !== -1;
           
   // Calculate distance from current scroll position (the "wave")
   const currentTickPosition = useTransform(smoothProgress, (latest: any) => {
-    return (latest / totalSegments) * (totalTicks - 1);
+    // latest is 0 to 1 (normalized progress)
+    return latest * (totalTicks - 1);
   });
   
   const distanceFromWave = useTransform(currentTickPosition, (currentPos) => {
     return Math.abs(tickIndex - currentPos);
   });
   
-  // Calculate bar width using Gaussian distribution
+  // Calculate bar width using Gaussian distribution (responsive)
   const barWidth = useTransform(distanceFromWave, (distance) => {
+    const milestoneWidth = isMobile ? 28 : 40;
+    const baseWidth = isMobile ? 8 : 12;
+    const maxWidth = isMobile ? 28 : 40;
+    
     if (isMilestone) {
-      return 40;
+      return milestoneWidth;
     }
     
     const sigma = 4;
     const gaussian = Math.exp(-(distance * distance) / (2 * sigma * sigma));
-    
-    const baseWidth = 12;
-    const maxWidth = 40;
     
     return baseWidth + (maxWidth - baseWidth) * gaussian;
   });
@@ -88,12 +91,12 @@ const EqualizerTick = ({ tickIndex, totalTicks, smoothProgress, totalSegments, m
               return 0.7 + 0.3 * gaussian;
             }),
           }}
-          className="ml-3 flex items-baseline gap-1"
+          className="ml-2 md:ml-3 flex items-baseline gap-0.5 md:gap-1"
         >
-          <span className="font-mono text-[10px] uppercase tracking-wider text-gray-400">
+          <span className="font-mono text-[8px] md:text-[10px] uppercase tracking-wider text-gray-400">
             project
           </span>
-          <span className="font-mono text-[12px] uppercase tracking-wider text-black font-medium">
+          <span className="font-mono text-[10px] md:text-[12px] uppercase tracking-wider text-black font-medium">
             {String(milestoneIndex + 1).padStart(2, '0')}
           </span>
         </motion.div>
@@ -105,6 +108,7 @@ const EqualizerTick = ({ tickIndex, totalTicks, smoothProgress, totalSegments, m
 export default function EqualizerScroll({ scrollYProgress, projects, activeProject, cutoutHeight = 0 }: EqualizerScrollProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerHeight, setContainerHeight] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -112,34 +116,56 @@ export default function EqualizerScroll({ scrollYProgress, projects, activeProje
     }
   }, [cutoutHeight]);
 
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   // Dynamic Calculation of Ticks
   const availableHeight = Math.max(0, containerHeight);
   const totalTicks = Math.floor(availableHeight / 3);
 
-  const totalSegments = projects.length + 0.5;
-  const projectProgress = useTransform(scrollYProgress, [0, 1], [0, totalSegments]);
-  
-  const springConfig = { damping: 40, stiffness: 400 };
-  const smoothProgress = useSpring(projectProgress, springConfig);
+  // Use scrollYProgress to drive the wave continuously
+  // Map scroll (0 to 1) directly to the normalized range (0 to 1)
+  const animatedProgress = useSpring(scrollYProgress, { damping: 40, stiffness: 200 });
 
+  // Pass this animated value to ticks
+  // We don't use totalSegments scaling anymore, we use 0-1 range directly logic inside ticks
+  // But to keep tick logic similar, we can map 0-1 to 0-(totalTicks-1) inside the tick component
+
+
+  // Calculate milestone positions (where projects start)
   const milestonePositions = projects.map((_, index) => {
     if (totalTicks <= 1) return 0;
+
+    // User requested first project at start (0)
     if (index === 0) return 0;
-    if (index === projects.length - 1) return totalTicks - 1;
-    return Math.round((index / (projects.length - 1)) * (totalTicks - 1));
+    
+    // For all other projects, place milestones at the transition threshold
+    // Switch to project i happens at i / projects.length (linear mapping)
+    // In ProjectsV6: const rawIndex = latest * projects.length;
+    // So transition from 0 to 1 happens at latest = 1 / N = 0.2
+    // Transition from 1 to 2 happens at latest = 2 / N = 0.4
+    // etc.
+    const threshold = index / projects.length;
+    return Math.round(threshold * (totalTicks - 1));
   });
 
   return (
     <motion.div 
       ref={containerRef}
-      className="absolute left-4 bottom-0 w-[120px] flex flex-col items-start justify-end z-30"
+      className="absolute left-4 bottom-0 w-[80px] md:w-[120px] flex flex-col items-start justify-end z-30"
       initial={false}
       animate={{
         height: cutoutHeight ? `calc(100% - ${cutoutHeight}px)` : '75vh'
       }}
       transition={ARK_LAYOUT_TRANSITION}
       style={{ 
-        marginBottom: '40px' 
+        marginBottom: '0px' 
       }}
     >
       <div className="relative h-full w-full flex flex-col items-start justify-end gap-[2px] pb-0">
@@ -153,9 +179,10 @@ export default function EqualizerScroll({ scrollYProgress, projects, activeProje
               key={tickIndex}
               tickIndex={tickIndex}
               totalTicks={totalTicks}
-              smoothProgress={smoothProgress}
-              totalSegments={totalSegments}
+              smoothProgress={animatedProgress}
+              totalSegments={0} // Unused now
               milestoneIndex={milestoneIndex}
+              isMobile={isMobile}
             />
           );
         })}
