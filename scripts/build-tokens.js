@@ -99,7 +99,6 @@ function generateCSSVariables() {
   css += '  --color-text-tertiary: 0 0% 60%;\n';
   css += '  --color-text-inverse: 0 0% 100%;\n';
   css += '  --color-brand-primary: 258 55% 63%;\n';
-  css += '  --color-brand-secondary: 0 0% 100%;\n';
   css += '  --color-accent-primary: 0 0% 0%;\n';
   css += '  --color-accent-contrast: 0 0% 100%;\n';
   css += '  --color-border-default: 0 0% 0% / 0.1;\n';
@@ -135,7 +134,8 @@ function generateTailwindConfig() {
           
           // Brand colors
           'brand': 'hsl(var(--color-brand-primary))',
-          'brand-secondary': 'hsl(var(--color-brand-secondary))',
+          'brand-secondary': 'hsl(var(--color-brand-accent))',
+          'brand-accent': 'hsl(var(--color-brand-accent))',
           
           // Accent colors
           'accent': 'hsl(var(--color-accent-primary))',

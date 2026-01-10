@@ -1,22 +1,126 @@
 ---
 import Base from "@/layouts/Base.astro";
+
+// Grid configuration
+const rows = 3;
+const cols = 4;
+const gap = "20px"; // Fixed pixel gap for uniform spacing
+const cornerRadius = 8;
+
+// Helper to generate calc strings for responsive grid
+const getRectStyles = (r: number, c: number) => {
+  // width = (100% - (cols + 1) * gap) / cols
+  const width = `calc((100% - (${cols} + 1) * ${gap}) / ${cols})`;
+  // height = (100% - (rows + 1) * gap) / rows
+  const height = `calc((100% - (${rows} + 1) * ${gap}) / ${rows})`;
+
+  // x = gap + c * (width + gap)
+  // Simplifying: gap + c * width + c * gap = gap * (c + 1) + c * width
+  // But we can use the width expression directly or nested calc
+  // Let's use a simpler iterative logic: gap * (c+1) + width * c
+  const x = `calc(${gap} * (${c} + 1) + ${c} * ((100% - (${cols} + 1) * ${gap}) / ${cols}))`;
+  const y = `calc(${gap} * (${r} + 1) + ${r} * ((100% - (${rows} + 1) * ${gap}) / ${rows}))`;
+
+  return { x, y, width, height };
+};
+
+const tiles = [];
+for (let r = 0; r < rows; r++) {
+  for (let c = 0; c < cols; c++) {
+    tiles.push(getRectStyles(r, c));
+  }
+}
 ---
 
-<Base title="404 — Page Not Found" description="The page you're looking for doesn't exist">
-  <main class="max-w-3xl mx-auto px-6 py-20 text-center space-y-6">
-    <h1 class="text-4xl md:text-5xl font-semibold">404</h1>
-    <h2 class="text-2xl text-white/70">Page Not Found</h2>
-    <p class="text-white/60">
-      The page you're looking for doesn't exist or has been moved.
-    </p>
-    <div class="pt-4">
+<Base
+  title="404 — Page Not Found"
+  description="The page you're looking for doesn't exist"
+  showFooter={false}
+>
+  <div
+    class="relative w-full h-screen overflow-hidden font-sans bg-[hsl(var(--color-brand-accent))]"
+  >
+    <!-- Layer 1: Content Base (The "Tiles" Surface) -->
+    <!-- 
+      This contains the white background and the masked "404" text.
+      It sits behind the overlay, so it's only visible through the mask holes.
+    -->
+    <div class="absolute inset-0 bg-white flex items-center justify-center overflow-hidden">
+      <!-- 
+        Text is huge and centered.
+        translate-y-[-2%] is a subtle optical adjustment.
+      -->
+      <h1
+        class="text-[35vw] font-bold leading-none tracking-tighter text-[var(--color-brand-black)] select-none translate-y-[-2%]"
+      >
+        404
+      </h1>
+    </div>
+
+    <!-- Layer 2: The Grid Gutter Overlay -->
+    <!-- 
+      This SVG fills the screen with the Brand Accent color.
+      It uses a mask to cut out "holes" where the tiles should be.
+    -->
+    <svg
+      class="absolute inset-0 w-full h-full pointer-events-none z-10"
+      style="background-color: transparent;"
+    >
+      <defs>
+        <mask id="grid-mask">
+          <!-- White: Opaque (Show the overlay -> Colored Gaps) -->
+          <rect width="100%" height="100%" fill="white"></rect>
+          <!-- Black: Transparent (Hide the overlay -> Show Layer 1 Tiles) -->
+          {
+            tiles.map((tile) => (
+              <rect
+                x={tile.x}
+                y={tile.y}
+                width={tile.width}
+                height={tile.height}
+                rx={cornerRadius}
+                ry={cornerRadius}
+                fill="black"
+              />
+            ))
+          }
+        </mask>
+      </defs>
+      <!-- The Overlay Rect using the mask -->
+      <rect width="100%" height="100%" fill="hsl(var(--color-brand-accent))" mask="url(#grid-mask)"
+      ></rect>
+    </svg>
+
+    <!-- Layer 3: Central Content Card -->
+    <div
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] max-w-[90vw] h-[180px] bg-[#0A0A0A] rounded-lg p-6 flex flex-col justify-between z-20 shadow-2xl border border-white/5"
+    >
+      <!-- Top Left: Label -->
+      <span class="text-white text-xs font-mono font-medium uppercase tracking-[0.2em] opacity-80">
+        Page<br />Not Found
+      </span>
+
+      <!-- Bottom Right: CTA -->
       <a
         href="/"
-        class="inline-block px-5 py-3 rounded-xl bg-white text-black font-medium hover:bg-white/90 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
+        class="self-end group flex items-center gap-2 text-white hover:text-white/80 transition-all text-sm font-bold uppercase tracking-wide"
       >
-        Return Home
+        Go Home
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform"
+        >
+          <line x1="7" y1="17" x2="17" y2="7"></line>
+          <polyline points="7 7 17 7 17 17"></polyline>
+        </svg>
       </a>
     </div>
-  </main>
+  </div>
 </Base>
-

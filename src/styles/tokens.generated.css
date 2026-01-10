@@ -8,7 +8,7 @@
   --color-text-tertiary: 0 0% 50%;
   --color-text-inverse: 0 0% 0%;
   --color-brand-primary: 258 55% 63%;
-  --color-brand-secondary: 79 100% 67%;
+  --color-brand-accent: 71 100% 61%;
   --color-accent-primary: 0 0% 100%;
   --color-accent-contrast: 0 0% 0%;
   --color-border-default: 0 0% 100% / 0.1;
@@ -88,7 +88,6 @@
   --color-text-tertiary: 0 0% 60%;
   --color-text-inverse: 0 0% 100%;
   --color-brand-primary: 258 55% 63%;
-  --color-brand-secondary: 0 0% 100%;
   --color-accent-primary: 0 0% 0%;
   --color-accent-contrast: 0 0% 100%;
   --color-border-default: 0 0% 0% / 0.1;

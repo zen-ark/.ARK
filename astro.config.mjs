@@ -1,18 +1,15 @@
 import { defineConfig } from "astro/config";
 import react from "@astrojs/react";
 import mdx from "@astrojs/mdx";
-import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
 import vercel from "@astrojs/vercel/static";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   site: "https://ark.studio.ch",
   integrations: [
     react(),
     mdx(),
-    tailwind({
-      applyBaseStyles: false,
-    }),
     sitemap({
       i18n: {
         defaultLocale: "en",
@@ -23,6 +20,9 @@ export default defineConfig({
       },
     }),
   ],
+  vite: {
+    plugins: [tailwindcss()],
+  },
   adapter: vercel({
     imageService: true,
   }),

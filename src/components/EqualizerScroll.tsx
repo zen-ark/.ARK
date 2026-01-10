@@ -9,7 +9,7 @@ interface EqualizerScrollProps {
 }
 
 // Matches ProjectsV6 transition for sync
-const ARK_LAYOUT_TRANSITION = { type: "spring", stiffness: 180, damping: 45 };
+const ARK_LAYOUT_TRANSITION = { type: "spring", stiffness: 180, damping: 45 } as const;
 
 // Sub-component to handle the individual tick rendering
 const EqualizerTick = ({ tickIndex, totalTicks, smoothProgress, totalSegments, milestoneIndex, isMobile }: {

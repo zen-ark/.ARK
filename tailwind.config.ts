@@ -25,7 +25,8 @@ export default {
         "text-tertiary": "hsl(var(--color-text-tertiary))",
         "text-inverse": "hsl(var(--color-text-inverse))",
         "brand": "hsl(var(--color-brand-primary))",
-        "brand-secondary": "hsl(var(--color-brand-secondary))",
+        "brand-secondary": "hsl(var(--color-brand-accent))",
+        "brand-accent": "hsl(var(--color-brand-accent))",
         "accent": "hsl(var(--color-accent-primary))",
         "accent-contrast": "hsl(var(--color-accent-contrast))",
         "border": "hsl(var(--color-border-default))",
@@ -75,15 +76,6 @@ export default {
         "emphasized": "var(--easing-emphasized)",
         "entrance": "var(--easing-entrance)",
         "exit": "var(--easing-exit)"
-      },
-      "keyframes": {
-        "shimmer": {
-          "0%": { "transform": "translateX(-100%)" },
-          "100%": { "transform": "translateX(100%)" }
-        }
-      },
-      "animation": {
-        "shimmer": "shimmer 2s infinite"
       },
       "backdropBlur": {
         "4": "var(--blur-4)",

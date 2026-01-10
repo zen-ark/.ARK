@@ -481,9 +481,9 @@ const currentYear = new Date().getFullYear();
 
 <script>
   const syncGridMetrics = () => {
-    const footer = document.querySelector(".footer");
-    const rowFirst = footer?.querySelector(".row-first");
-    const rowLast = footer?.querySelector(".row-last");
+    const footer = document.querySelector(".footer") as HTMLElement | null;
+    const rowFirst = footer?.querySelector(".row-first") as HTMLElement | null;
+    const rowLast = footer?.querySelector(".row-last") as HTMLElement | null;
     if (!footer || !rowFirst || !rowLast) return;
 
     const rowFirstHeight = rowFirst.offsetHeight;

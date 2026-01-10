@@ -352,7 +352,7 @@ export default function ModulesInstalled() {
               {modules.map((module, index) => (
                 <div
                   key={`anchor-${module.id}`}
-                  ref={(el) => (anchorRefs.current[index] = el)}
+                  ref={(el) => { anchorRefs.current[index] = el; }}
                   className="h-[120vh]"
                 />
               ))}

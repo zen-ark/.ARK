@@ -195,7 +195,7 @@ function useImageSequence(frameCount: number) {
   return { loaded, getFrame, progress: loadProgressRef.current };
 }
 
-export default function WhatArkDoes() {
+export default function WhatArkDoesCanvas() {
   const [headerHeight, setHeaderHeight] = useState(0);
   const containerRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -407,6 +407,7 @@ export default function WhatArkDoes() {
         {/* Heading - large, fluid, full width */}
         <div className="wtark-heading w-full flex-shrink-0" style={{ marginBottom: "16px" }}>
           <div className="w-full px-6 mt-4">
+            <h2 className="text-xl font-bold text-red-500 mb-2">CANVAS VERSION (TEST)</h2>
             <img
               src="/What the ark.svg"
               alt="What the ark"

@@ -124,84 +124,11 @@ function usePrefersReducedMotion() {
   return reduced;
 }
 
-// ----------------------------------------------------------------------
-// CUSTOM HOOK: useImageSequence (Blob + LRU Cache)
-// ----------------------------------------------------------------------
-
-function useImageSequence(frameCount: number) {
-  const [loaded, setLoaded] = useState(false);
-  const blobsRef = useRef<string[]>([]); // ObjectURLs
-  const imagesRef = useRef<Map<number, HTMLImageElement>>(new Map()); // Cache
-  const loadProgressRef = useRef(0);
-
-  useEffect(() => {
-    let active = true;
-
-    const loadImages = async () => {
-      // 1. Fetch all blobs
-      const promises = Array.from({ length: frameCount }, async (_, i) => {
-        const id = (i + 1).toString().padStart(4, "0");
-        const url = `/no bg webp sequence/no bg${id}.webp`;
-        try {
-          const res = await fetch(url);
-          const blob = await res.blob();
-          if (!active) return;
-          // Create object URL immediately so we can use it
-          blobsRef.current[i] = URL.createObjectURL(blob);
-          loadProgressRef.current = (i + 1) / frameCount;
-        } catch (e) {
-          console.error(`Failed to load frame ${i}`, e);
-        }
-      });
-
-      await Promise.all(promises);
-      if (active) setLoaded(true);
-    };
-
-    loadImages();
-
-    return () => {
-      active = false;
-      // Cleanup ObjectURLs
-      blobsRef.current.forEach((url) => URL.revokeObjectURL(url));
-    };
-  }, [frameCount]);
-
-  const getFrame = (index: number) => {
-    if (!blobsRef.current[index]) return null;
-
-    // Simple cache strategy for now:
-    // If we have an image object, return it.
-    // Otherwise create one.
-    // In a real LRU we would limit size, but browser cache handles blobs well.
-    // We mainly need the Image object to draw to canvas.
-    
-    let img = imagesRef.current.get(index);
-    if (!img) {
-      img = new Image();
-      img.src = blobsRef.current[index];
-      imagesRef.current.set(index, img);
-      
-      // Basic cleanup if map gets too big (simple LRU approximation)
-      if (imagesRef.current.size > 50) {
-        // Delete the oldest entry (first key)
-        const firstKey = imagesRef.current.keys().next().value;
-        if (firstKey !== undefined) imagesRef.current.delete(firstKey);
-      }
-    }
-    return img;
-  };
-
-  return { loaded, getFrame, progress: loadProgressRef.current };
-}
-
 export default function WhatArkDoes() {
   const [headerHeight, setHeaderHeight] = useState(0);
   const containerRef = useRef<HTMLElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const progressListenersRef = useRef(new Set<(value: number) => void>());
-  
-  const { loaded, getFrame } = useImageSequence(FRAME_COUNT);
 
   // Calculate header height for padding
   useEffect(() => {
@@ -231,61 +158,17 @@ export default function WhatArkDoes() {
     []
   );
 
-  const drawFrame = useCallback((progress: number) => {
-    const canvas = canvasRef.current;
-    if (!canvas || !loaded) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Map progress to frame index
-    const frameIndex = Math.floor(progress * (FRAME_COUNT - 1));
-    const img = getFrame(frameIndex);
-
-    if (img && img.complete && img.naturalWidth > 0) {
-       // Canvas sizing logic (contain)
-       const canvasWidth = canvas.width;
-       const canvasHeight = canvas.height;
-       const imgRatio = img.naturalWidth / img.naturalHeight;
-       const canvasRatio = canvasWidth / canvasHeight;
-
-       let drawWidth, drawHeight, offsetX, offsetY;
-
-       if (canvasRatio > imgRatio) {
-         drawHeight = canvasHeight;
-         drawWidth = drawHeight * imgRatio;
-         offsetX = (canvasWidth - drawWidth) / 2;
-         offsetY = 0;
-       } else {
-         drawWidth = canvasWidth;
-         drawHeight = drawWidth / imgRatio;
-         offsetX = 0;
-         offsetY = (canvasHeight - drawHeight) / 2;
-       }
-
-       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-       ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-    }
-  }, [loaded, getFrame]);
-
-  // Handle Canvas Resize
-  useEffect(() => {
-    const handleResize = () => {
-      if (containerRef.current && canvasRef.current) {
-         const parent = canvasRef.current.parentElement;
-         if (parent) {
-            canvasRef.current.width = parent.clientWidth * window.devicePixelRatio;
-            canvasRef.current.height = parent.clientHeight * window.devicePixelRatio;
-            // Force redraw of current frame?
-            // (Simpler to just let the loop handle it or wait for next scroll)
-         }
+  const updateVideoTime = useCallback((progress: number) => {
+    const video = videoRef.current;
+    if (video && Number.isFinite(video.duration)) {
+      // Map progress (0-1) to video duration
+      const time = progress * video.duration;
+      // Check if time is valid to avoid errors
+      if (Number.isFinite(time)) {
+        video.currentTime = time;
       }
-    };
-    window.addEventListener('resize', handleResize);
-    handleResize(); // Init
-    return () => window.removeEventListener('resize', handleResize);
+    }
   }, []);
-
 
   const reduced = usePrefersReducedMotion();
 
@@ -297,47 +180,34 @@ export default function WhatArkDoes() {
     const rafIdRef = { current: 0 };
 
     const applyProgress = (progress: number) => {
-      drawFrame(progress);
+      updateVideoTime(progress);
       // Notify listeners (overlay)
       progressListenersRef.current.forEach((listener) => listener(progress));
     };
 
     const animationLoop = () => {
-      // Base ease (lower is smoother but laggier, higher is tighter)
-      let ease = reduced ? 1 : 0.05; 
+      const ease = reduced ? 1 : 0.05; // Adjust ease factor for responsiveness
+      let diff = targetProgressRef.current - currentProgressRef.current;
       
-      const diff = targetProgressRef.current - currentProgressRef.current;
-      const absDiff = Math.abs(diff);
-
+      // Limit max speed to prevent jumping too far in one frame
+      const MAX_SPEED = 0.08; 
+      
       if (!reduced) {
-         // Dynamic Velocity Adjustment
-         // If we are far behind (>10% of total scroll), snap faster
-         if (absDiff > 0.1) {
-            ease = 0.5; // Very Fast catchup (was 0.2)
-         } else if (absDiff > 0.05) {
-            ease = 0.25; // Fast catchup (was 0.1)
-         }
-
          // Apply eased movement
-         if (absDiff > 0.0001) {
+         if (Math.abs(diff) > 0.0001) {
             currentProgressRef.current += diff * ease;
             applyProgress(currentProgressRef.current);
             rafIdRef.current = requestAnimationFrame(animationLoop);
          } else {
-            // Snap to target if very close and stop loop
-            if (currentProgressRef.current !== targetProgressRef.current) {
-               currentProgressRef.current = targetProgressRef.current;
-               applyProgress(currentProgressRef.current);
-            }
+            // Snap to target if very close
+            currentProgressRef.current = targetProgressRef.current;
+            applyProgress(currentProgressRef.current);
             rafIdRef.current = 0;
          }
       } else {
          // Instant update for reduced motion
-         if (currentProgressRef.current !== targetProgressRef.current) {
-            currentProgressRef.current = targetProgressRef.current;
-            applyProgress(currentProgressRef.current);
-         }
-         rafIdRef.current = 0;
+         currentProgressRef.current = targetProgressRef.current;
+         applyProgress(currentProgressRef.current);
       }
     };
 
@@ -386,12 +256,12 @@ export default function WhatArkDoes() {
       window.removeEventListener("scroll", updateTargetFromScroll);
       if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
     };
-  }, [reduced, drawFrame]);
+  }, [reduced, updateVideoTime]);
 
   return (
     <section
       ref={containerRef}
-      id="what-the-ark-canvas"
+      id="what-the-ark"
       className="w-full relative"
       style={{
         height: "300vh", // Tall container for scroll space
@@ -441,17 +311,19 @@ export default function WhatArkDoes() {
         <div className="flex-1 w-full relative flex items-end justify-center overflow-hidden">
           <div className="relative w-full h-full flex items-end justify-center" style={{ backgroundColor: "white" }}>
             
-            <canvas
-              ref={canvasRef}
-              className="w-full h-full"
-              style={{ display: 'block' }}
-            />
-            
-            {!loaded && (
-               <div className="absolute inset-0 flex items-center justify-center bg-white z-10">
-                  <span className="text-sm font-mono opacity-50">LOADING ASSETS...</span>
-               </div>
-            )}
+            <video
+              ref={videoRef}
+              className="w-full h-full object-contain"
+              playsInline
+              muted
+              loop={false}
+              preload="auto"
+              // Add both WebM (Chrome/FF) and MOV (Safari HEVC) sources if available
+              // If you only have one, just use src="..." on the video tag
+            >
+              <source src="/whatthearkanimation.webm" type="video/webm" />
+              <source src="/Export.mov" type="video/quicktime" />
+            </video>
 
             <OptimizedMetadataOverlay
               cards={cards}

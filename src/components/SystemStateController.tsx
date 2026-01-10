@@ -169,13 +169,7 @@ const UnifiedGrid = () => (
   </div>
 );
 
-const CornerUI = ({ colorRef, rightOpacityRef }: { colorRef: React.MutableRefObject<string>, rightOpacityRef: React.MutableRefObject<number> }) => {
-    const titleRef = useRef<HTMLDivElement>(null);
-    const coordsRef = useRef<HTMLDivElement>(null);
-    const statusRef = useRef<HTMLSpanElement>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
-    const progressRef = useRef<HTMLDivElement>(null);
-
+const CornerUI = () => {
     // Expose control to GSAP via refs and class names if needed, or just let parent animate
     // For now, we use a simple ref-based update or just pass props. 
     // Since we are moving to "One Timeline", we can animate these DOM nodes directly by ID or Class.
@@ -572,7 +566,7 @@ export default function SystemStateController() {
         </div>
 
         {/* 7. Persistent UI (HUD) - Topmost Layer */}
-        <CornerUI colorRef={useRef("#fff")} rightOpacityRef={useRef(1)} />
+        <CornerUI />
 
     </section>
   );
