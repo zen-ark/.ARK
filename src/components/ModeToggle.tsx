@@ -126,9 +126,9 @@ export default function ModeToggle({ currentPath, isGerman }: ModeToggleProps) {
             onMouseEnter={() => setHoveredMode("agency")}
             onMouseLeave={() => setHoveredMode(null)}
             aria-pressed={currentMode === "agency"}
-            aria-label={isGerman ? "Zu Agentur-Modus wechseln" : "Switch to Agency mode"}
+            aria-label={isGerman ? "Zu Studio-Modus wechseln" : "Switch to Studio mode"}
           >
-            <span className={styles.edgeRailText}>AGENCY</span>
+            <span className={styles.edgeRailText}>STUDIO</span>
           </button>
           <button
             ref={hiringButtonRef}
@@ -138,9 +138,9 @@ export default function ModeToggle({ currentPath, isGerman }: ModeToggleProps) {
             onMouseEnter={() => setHoveredMode("hiring")}
             onMouseLeave={() => setHoveredMode(null)}
             aria-pressed={currentMode === "hiring"}
-            aria-label={isGerman ? "Zu Bewerbungs-Modus wechseln" : "Switch to Hiring mode"}
+            aria-label={isGerman ? "Zu Designer-Modus wechseln" : "Switch to Designer mode"}
           >
-            <span className={styles.edgeRailText}>HIRING</span>
+            <span className={styles.edgeRailText}>DESIGNER</span>
           </button>
         </div>
       </div>

@@ -1,135 +1,305 @@
 ---
 import Base from "@/layouts/Base.astro";
-import { getMode } from "@/lib/mode";
+import { loadProjects } from "@/lib/projects";
+import PortfolioAnimation from "@/components/PortfolioAnimation";
+import ShainLogo from "@/components/ShainLogo";
+import SmoothScroll from "@/components/SmoothScroll";
 
-const mode = getMode(Astro.url.pathname);
+const projects = await loadProjects({ mode: "hiring" });
 ---
 
-<Base title=".ARK — Portfolio" showFooter={false}>
-  <main class="portfolio-placeholder">
-    <div class="portfolio-hero">
-      <h1 class="portfolio-title">Portfolio (Hiring Mode)</h1>
-      <p class="portfolio-subtitle">
-        Recruiter-focused sections are in progress.
-      </p>
-      
-      <div class="portfolio-ctas">
-        <a
-          href="#"
-          class="portfolio-cta-primary"
-        >
-          Download CV
-        </a>
-        <a
-          href="mailto:hello@ark.studio.ch"
-          class="portfolio-cta-secondary"
-        >
-          Email
-        </a>
-      </div>
-      
-      <p class="portfolio-note">
-        Full case studies are available via <a href="/projects">Projects</a>.
-      </p>
-    </div>
+<Base title="Shain — Portfolio" showFooter={false}>
+  <SmoothScroll client:load />
+  <main class="portfolio-container">
+    <PortfolioAnimation client:load>
+      <header class="portfolio-header">
+        <div class="logo-container shain-logo-wrapper">
+          <ShainLogo />
+        </div>
+
+        <div class="portfolio-content-wrapper">
+          <div class="portfolio-intro portfolio-intro-content">
+            <div class="intro-link">
+              <a href="/" class="studio-link">The studio <span class="arrow">→</span></a>
+            </div>
+            <div class="intro-text">
+              <h1>
+                <span class="block w-full text-right"
+                  >UI/UX designer turning complexity into clean screens —</span
+                >
+                <span class="block w-full text-left"
+                  >from concept to dev-ready handoff, with high-level 3D & motion to elevate key
+                  moments without sacrificing usability.</span
+                >
+              </h1>
+            </div>
+          </div>
+
+          <div class="projects-grid projects-grid-content">
+            {
+              projects.map((project, index) => {
+                // Pattern: 4 cols, 2 cols, 2 cols, 4 cols (repeating)
+                const isBig = index % 4 === 0 || index % 4 === 3;
+
+                return (
+                  <div class={`project-item ${isBig ? "span-4" : "span-2"}`}>
+                    <a href={project.url} class="project-card-link">
+                      <div class="project-image-container">
+                        <img src={project.cover} alt={project.coverAlt} class="project-image" />
+                      </div>
+                      <div class="project-info">
+                        <span class="project-title">{project.title}</span>
+                        <span class="project-date">{project.year}</span>
+                      </div>
+                    </a>
+                  </div>
+                );
+              })
+            }
+          </div>
+        </div>
+      </header>
+    </PortfolioAnimation>
   </main>
+
+  <style>
+    :global(body) {
+      --nav-text: #fff;
+    }
+
+    :global(#glass-overlay) {
+      --nav-text: #000;
+    }
+
+    .portfolio-container {
+      padding: 0;
+      background-color: #111; /* Dark background as per reference image */
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    .portfolio-header {
+      padding: var(--space-4);
+      margin-bottom: var(--space-16);
+      position: relative;
+      /* Ensure header takes up space but allows things to be sticky if we wanted pure CSS sticky, 
+       but we are using GSAP for parallax so relative is fine */
+    }
+
+    /* We need a wrapper to act as the scroll container if we were doing custom scrolling, 
+     but standard body scroll works with GSAP ScrollTrigger */
+
+    .logo-container {
+      width: 100%;
+      margin-top: 16px;
+      margin-bottom: var(--space-8);
+      /* padding: 0 16px; Removed to align with projects */
+      color: #fff;
+      box-sizing: border-box;
+      /* Will be animated by GSAP */
+      position: relative;
+      z-index: 1;
+    }
+
+    .portfolio-content-wrapper {
+      position: relative;
+      z-index: 10;
+      background-color: #111;
+      margin-top: 4rem;
+    }
+
+    .portfolio-intro {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+      /* Padding 32px top, 48px bottom (increased from 16px), 16px sides */
+      padding: 32px 16px 48px 16px;
+      position: relative;
+      background-color: #111; /* Ensure background color is set */
+      z-index: 10;
+      margin-bottom: -1px; /* Ensure overlap */
+    }
+
+    /* 
+     For the specific effect requested: "scrolls over the title SHAIN".
+     We can make the logo container sticky or fixed, and let the rest scroll over it.
+     But since we are using GSAP in the wrapper component, let's let GSAP handle the movement.
+     We just need to ensure z-indices are correct:
+     Logo: lower z-index
+     Intro & Grid: higher z-index and have background color.
+  */
+
+    @media (min-width: 768px) {
+      .portfolio-intro {
+        display: block;
+        position: relative;
+      }
+
+      .intro-link {
+        position: absolute;
+        top: 32px; /* Align with container top padding */
+        left: 0;
+        width: 25%;
+        /* Ensure it aligns with the padding of the container */
+        padding-left: 16px; /* Align with container side padding */
+      }
+
+      .intro-text {
+        width: 100%;
+      }
+    }
+
+    /* Mobile styles for intro layout */
+    @media (max-width: 767px) {
+      .portfolio-intro {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-4);
+      }
+
+      .intro-link {
+        position: relative;
+        width: 100%;
+        margin-bottom: var(--space-2);
+      }
+
+      .intro-text {
+        width: 100%;
+      }
+
+      /* On mobile, align text left normally, no forced right/left split if it looks weird */
+      .intro-text h1 span.text-right {
+        text-align: left;
+      }
+    }
+
+    .studio-link {
+      color: #fff;
+      text-decoration: underline;
+      font-size: 1.25rem;
+      text-underline-offset: 4px;
+    }
+
+    .studio-link:hover {
+      opacity: 0.8;
+    }
+
+    .intro-text h1 {
+      /* Fluid typography: 
+         Min font: 1.5rem (24px) at 320px viewport
+         Max font: 3rem (48px) at 1920px viewport
+         Slope: (48 - 24) / (1920 - 320) = 24 / 1600 = 0.015
+         y-intercept: 24 - (0.015 * 320) = 19.2
+         Equation: 19.2px + 1.5vw
+      */
+      font-size: clamp(1.5rem, 1.2rem + 1.5vw, 3rem);
+      line-height: 1.1;
+      font-weight: 500;
+      max-width: 100%;
+      margin: 0;
+    }
+
+    @media (min-width: 768px) {
+      .intro-text h1 {
+        /* text-indent: 25vw; Removed as we are using block spans now */
+      }
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+      /* No top padding so background merges with intro */
+      padding: 0 16px var(--space-4) 16px;
+      position: relative;
+      z-index: 10;
+      background-color: #111; /* Cover the parallax logo */
+      min-height: 100vh; /* Ensure it covers even if few projects */
+      margin-top: -1px; /* Ensure overlap */
+    }
+
+    @media (min-width: 768px) {
+      .projects-grid {
+        grid-template-columns: repeat(6, 1fr);
+        gap: 1rem;
+      }
+    }
+
+    .project-item {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .project-card-link {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .project-image-container {
+      width: 100%;
+      background-color: #e5e5e5;
+      border-radius: 0px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+      aspect-ratio: 16/9;
+    }
+
+    .span-4 .project-image-container {
+      aspect-ratio: 16/9;
+    }
+
+    .project-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 0.9;
+      transition: opacity 0.3s ease;
+    }
+
+    .project-card-link:hover .project-image {
+      opacity: 1;
+    }
+
+    .project-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: #fff;
+      padding-top: 0.25rem;
+    }
+
+    .project-title {
+      text-align: left;
+    }
+
+    .project-date {
+      text-align: right;
+      opacity: 0.7;
+    }
+
+    @media (min-width: 768px) {
+      .span-4 {
+        grid-column: span 4;
+      }
+      .span-2 {
+        grid-column: span 2;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .intro-text h1 span {
+        text-align: left !important;
+      }
+
+      .span-4,
+      .span-2 {
+        grid-column: span 1;
+      }
+    }
+  </style>
 </Base>
-
-<style>
-  .portfolio-placeholder {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--space-16, 4rem) var(--space-8, 2rem);
-  }
-
-  .portfolio-hero {
-    max-width: 600px;
-    text-align: center;
-  }
-
-  .portfolio-title {
-    font-size: clamp(2rem, 5vw, 3rem);
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: var(--space-6, 1.5rem);
-    color: #000;
-  }
-
-  .portfolio-subtitle {
-    font-size: 1.125rem;
-    line-height: 1.6;
-    color: rgba(0, 0, 0, 0.7);
-    margin-bottom: var(--space-10, 2.5rem);
-  }
-
-  .portfolio-ctas {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4, 1rem);
-    align-items: center;
-    margin-bottom: var(--space-8, 2rem);
-  }
-
-  .portfolio-cta-primary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--space-4, 1rem) var(--space-8, 2rem);
-    background: #000;
-    color: #fff;
-    text-decoration: none;
-    font-size: 0.875rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    border-radius: var(--radius-12, 12px);
-    transition: background-color 200ms ease;
-    min-width: 200px;
-  }
-
-  .portfolio-cta-primary:hover {
-    background: rgba(0, 0, 0, 0.85);
-  }
-
-  .portfolio-cta-secondary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--space-4, 1rem) var(--space-8, 2rem);
-    background: transparent;
-    color: #000;
-    text-decoration: none;
-    font-size: 0.875rem;
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: var(--radius-12, 12px);
-    transition: border-color 200ms ease, color 200ms ease;
-    min-width: 200px;
-  }
-
-  .portfolio-cta-secondary:hover {
-    border-color: rgba(0, 0, 0, 0.4);
-    color: rgba(0, 0, 0, 0.8);
-  }
-
-  .portfolio-note {
-    font-size: 0.875rem;
-    color: rgba(0, 0, 0, 0.5);
-    line-height: 1.5;
-  }
-
-  .portfolio-note a {
-    color: rgba(0, 0, 0, 0.7);
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-
-  .portfolio-note a:hover {
-    color: #000;
-  }
-</style>

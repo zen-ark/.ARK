@@ -303,41 +303,25 @@ export default function WhatArkDoesCanvas() {
     };
 
     const animationLoop = () => {
-      // Base ease (lower is smoother but laggier, higher is tighter)
-      let ease = reduced ? 1 : 0.05; 
+      const ease = reduced ? 1 : 0.08; // Slightly faster ease for canvas
+      let diff = targetProgressRef.current - currentProgressRef.current;
       
-      const diff = targetProgressRef.current - currentProgressRef.current;
-      const absDiff = Math.abs(diff);
-
       if (!reduced) {
-         // Dynamic Velocity Adjustment
-         // If we are far behind (>10% of total scroll), snap faster
-         if (absDiff > 0.1) {
-            ease = 0.5; // Very Fast catchup (was 0.2)
-         } else if (absDiff > 0.05) {
-            ease = 0.25; // Fast catchup (was 0.1)
-         }
-
          // Apply eased movement
-         if (absDiff > 0.0001) {
+         if (Math.abs(diff) > 0.0001) {
             currentProgressRef.current += diff * ease;
             applyProgress(currentProgressRef.current);
             rafIdRef.current = requestAnimationFrame(animationLoop);
          } else {
-            // Snap to target if very close and stop loop
-            if (currentProgressRef.current !== targetProgressRef.current) {
-               currentProgressRef.current = targetProgressRef.current;
-               applyProgress(currentProgressRef.current);
-            }
+            // Snap to target if very close
+            currentProgressRef.current = targetProgressRef.current;
+            applyProgress(currentProgressRef.current);
             rafIdRef.current = 0;
          }
       } else {
          // Instant update for reduced motion
-         if (currentProgressRef.current !== targetProgressRef.current) {
-            currentProgressRef.current = targetProgressRef.current;
-            applyProgress(currentProgressRef.current);
-         }
-         rafIdRef.current = 0;
+         currentProgressRef.current = targetProgressRef.current;
+         applyProgress(currentProgressRef.current);
       }
     };
 

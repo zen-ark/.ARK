@@ -1,0 +1,248 @@
+---
+import Base from "@/layouts/Base.astro";
+import { loadProjects } from "@/lib/projects";
+import { type ProjectListItem } from "@/lib/projects";
+
+const projects = await loadProjects({ mode: "hiring" });
+
+// Group projects by year
+const projectsByYear = projects.reduce(
+  (acc, project) => {
+    const year = project.year || 2025; // Default to current year if missing
+    if (!acc[year]) acc[year] = [];
+    acc[year].push(project);
+    return acc;
+  },
+  {} as Record<number, ProjectListItem[]>
+);
+
+// Sort years descending
+const years = Object.keys(projectsByYear)
+  .map(Number)
+  .sort((a, b) => b - a);
+
+// Calculate global index for project numbering (01, 02, etc.)
+let globalIndex = 1;
+---
+
+<Base title="Shain — Projects List" showFooter={false}>
+  <div class="champ-container">
+    {/* Fixed Sidebars */}
+    <aside class="sidebar-right">
+      {/* Placeholder for future detailed nav if needed */}
+    </aside>
+
+    <main class="main-content">
+      <header class="top-header">
+        <div class="header-info">
+          <span>Home, About, <strong>Projects</strong>, Play, Team, Contact</span>
+          <span class="location">Los Angeles, CA <span class="dot"></span></span>
+        </div>
+      </header>
+
+      <div class="content-scroll">
+        {
+          years.map((year) => (
+            <section id={`year-${year}`} class="year-section">
+              <div class="year-display">
+                <h2>'{year.toString().slice(2)}</h2>
+              </div>
+
+              <div class="projects-grid">
+                {projectsByYear[year].map((project) => {
+                  const currentIndex = globalIndex++;
+                  const paddedIndex = currentIndex.toString().padStart(2, "0");
+
+                  return (
+                    <div class="project-card">
+                      <a href={project.url} class="project-link">
+                        <div class="image-wrapper">
+                          <img
+                            src={project.cover}
+                            alt={project.coverAlt || project.title}
+                            loading="lazy"
+                          />
+                        </div>
+                        <div class="project-meta">
+                          <span class="project-number">{paddedIndex}</span>
+                          <span class="project-title">{project.title}</span>
+                        </div>
+                      </a>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          ))
+        }
+      </div>
+    </main>
+  </div>
+
+  <style>
+    /* Reset & Base */
+    :global(body) {
+      background-color: #000;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    .champ-container {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Main Content Area */
+    .main-content {
+      width: 100%;
+      padding: 2rem;
+      position: relative;
+    }
+
+    /* Header */
+    .top-header {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 6rem;
+      font-size: 0.875rem;
+      color: #999;
+      position: sticky;
+      top: 2rem;
+      z-index: 40;
+      mix-blend-mode: difference;
+    }
+
+    .header-info {
+      display: flex;
+      gap: 2rem;
+      text-align: right;
+    }
+
+    .header-info strong {
+      color: #fff;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background-color: #fff;
+      border-radius: 50%;
+      margin-left: 4px;
+    }
+
+    /* Year Sections */
+    .year-section {
+      margin-bottom: 8rem;
+      position: relative;
+      display: grid;
+      grid-template-columns: 200px 1fr; /* Space for large year label */
+      gap: 2rem;
+    }
+
+    .year-display {
+      position: relative;
+    }
+
+    .year-display h2 {
+      font-size: 8rem;
+      line-height: 0.8;
+      font-weight: 700;
+      color: #fff;
+      position: sticky;
+      top: 8rem;
+      margin: 0;
+      letter-spacing: -0.05em;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      width: 100%;
+    }
+
+    /* Project Cards */
+    .project-card {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .project-link {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .image-wrapper {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background-color: #1a1a1a;
+      overflow: hidden;
+      margin-bottom: 0.75rem;
+    }
+
+    .image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .project-link:hover .image-wrapper img {
+      transform: scale(1.05);
+    }
+
+    .project-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #fff;
+    }
+
+    .project-number {
+      color: #666;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .projects-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .champ-container {
+        flex-direction: column;
+      }
+
+      .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 1rem;
+      }
+
+      .top-header {
+        display: none; /* Simplify for mobile */
+      }
+
+      .year-section {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .year-display h2 {
+        position: relative;
+        top: 0;
+        font-size: 4rem;
+        margin-bottom: 1rem;
+      }
+
+      .projects-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</Base>

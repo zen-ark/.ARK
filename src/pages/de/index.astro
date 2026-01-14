@@ -5,6 +5,7 @@ import WhatArkDoes from "@/components/WhatArkDoes";
 import ProjectsV6 from "@/components/ProjectsV6";
 import OpenNewFile from "@/components/OpenNewFile";
 import SystemStateController from "@/components/SystemStateController";
+import Marquee from "@/components/Marquee";
 import FooterV2 from "@/layouts/partials/FooterV2.astro";
 import { getMode } from "@/lib/mode";
 
@@ -37,6 +38,7 @@ const mode = getMode(Astro.url.pathname);
 
   <!-- FooterV2 - Preview of inversa.com footer style -->
   <FooterV2 />
+  <Marquee />
 
   <script>
     // Handle hash-based scrolling to projects section

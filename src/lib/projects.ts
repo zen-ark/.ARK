@@ -11,6 +11,8 @@ export type ProjectFrontmatter = {
   coverAlt?: string;
   accent?: string;
   featured?: boolean;
+  showInAgency?: boolean;
+  showInPortfolio?: boolean;
 };
 
 export type ProjectListItem = {
@@ -24,6 +26,7 @@ export type ProjectListItem = {
   accent?: string;
   status?: string;
   year?: number;
+  featured?: boolean;
 };
 
 function sortProjects(a: ProjectListItem, b: ProjectListItem): number {
@@ -36,9 +39,24 @@ function sortProjects(a: ProjectListItem, b: ProjectListItem): number {
   return 0;
 }
 
-export async function loadFeaturedProjects(limit = 6): Promise<ProjectListItem[]> {
+export type LoadProjectsOptions = {
+  mode?: 'agency' | 'portfolio' | 'hiring'; // 'hiring' is alias for 'portfolio'
+  limit?: number;
+};
+
+export async function loadProjects({ mode = 'agency', limit }: LoadProjectsOptions = {}): Promise<ProjectListItem[]> {
   const all = await getCollection("projects");
-  const mapped: ProjectListItem[] = all.map((p) => ({
+  
+  const filtered = all.filter((p) => {
+    // If explicit flags are set, respect them
+    if (mode === 'portfolio' || mode === 'hiring') {
+      return p.data.showInPortfolio === true;
+    }
+    // Default to agency mode
+    return p.data.showInAgency !== false;
+  });
+
+  const mapped: ProjectListItem[] = filtered.map((p) => ({
     slug: p.slug,
     url: `/projects/${p.slug}`,
     title: p.data.title,
@@ -53,7 +71,16 @@ export async function loadFeaturedProjects(limit = 6): Promise<ProjectListItem[]
     ...(p.data.featured ? { featured: true } : {}),
   }));
 
-  return mapped.sort(sortProjects).slice(0, limit);
+  const sorted = mapped.sort(sortProjects);
+  
+  if (limit) {
+    return sorted.slice(0, limit);
+  }
+  
+  return sorted;
 }
 
-
+// Keep this for backward compatibility if needed, or deprecate
+export async function loadFeaturedProjects(limit = 6): Promise<ProjectListItem[]> {
+  return loadProjects({ mode: 'agency', limit });
+}

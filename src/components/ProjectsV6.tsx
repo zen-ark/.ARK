@@ -56,11 +56,11 @@ const CornerSvg = ({ className, style }: { className?: string, style?: React.CSS
 );
 
 // --- Constants ---
-const ARK_EASE = [0.16, 1, 0.3, 1] as const; // "OS-calm" easeOut
+const ARK_EASE = [0.16, 1, 0.3, 1]; // "OS-calm" easeOut
 const ARK_DURATION = 0.55; 
 const ARK_TRANSITION = { duration: ARK_DURATION, ease: ARK_EASE };
 // Even slower layout transition to prevent truncation - prevents box from shrinking faster than text exit
-const ARK_LAYOUT_TRANSITION = { type: "spring", stiffness: 180, damping: 45 } as const;
+const ARK_LAYOUT_TRANSITION = { type: "spring", stiffness: 180, damping: 45 };
 
 // Animation variants for text elements
 const titleVariants = {
@@ -153,7 +153,8 @@ export default function ProjectsV6() {
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end end"]
+    offset: ["start start", "end end"],
+    layoutEffect: false
   });
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {

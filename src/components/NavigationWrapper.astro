@@ -16,7 +16,7 @@ const toHref = (path: string) => {
   return `${prefix}${path}`;
 };
 
-const primaryLinks = [
+const agencyLinks = [
   { href: toHref("/"), label: isGerman ? "Startseite" : "Home" },
   { href: "#what-the-ark", label: "WHATS ARK" },
   { href: toHref("/projects"), label: isGerman ? "Projekte" : "Projects" },
@@ -24,6 +24,15 @@ const primaryLinks = [
   { href: "#behind-ark", label: "BEHIND ARK" },
   { href: toHref("/contact"), label: isGerman ? "Kontakt" : "Contact" },
 ];
+
+const portfolioLinks = [
+  { href: toHref("/"), label: "The studio ->" }, // Link back to agency
+  { href: toHref("/portfolio"), label: "Work" },
+  { href: toHref("/portfolio/about"), label: "About" },
+  { href: toHref("/portfolio/contact"), label: "Contact" },
+];
+
+const primaryLinks = mode === "hiring" ? portfolioLinks : agencyLinks;
 
 const projects = await getCollection("projects").catch(() => []);
 

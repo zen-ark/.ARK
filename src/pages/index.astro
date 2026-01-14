@@ -2,10 +2,11 @@
 import Base from "@/layouts/Base.astro";
 import Hero from "@/components/Hero";
 import WhatArkDoes from "@/components/WhatArkDoes";
+import NetworkRegistry from "@/components/NetworkRegistry";
 import ProjectsV6 from "@/components/ProjectsV6";
-import ProjectsTitle from "@/components/ProjectsTitle";
 import OpenNewFile from "@/components/OpenNewFile";
 import SystemStateController from "@/components/SystemStateController";
+import Marquee from "@/components/Marquee";
 import FooterV2 from "@/layouts/partials/FooterV2.astro";
 ---
 
@@ -23,6 +24,9 @@ import FooterV2 from "@/layouts/partials/FooterV2.astro";
     <!-- WHAT .ARK DOES Section -->
     <WhatArkDoes client:load />
 
+    <!-- Network Registry / Validation Log -->
+    <NetworkRegistry client:load />
+
     <!-- Projects V6 Liquid Folder -->
     <ProjectsV6 client:load />
 
@@ -35,6 +39,7 @@ import FooterV2 from "@/layouts/partials/FooterV2.astro";
 
   <!-- FooterV2 - Preview of inversa.com footer style -->
   <FooterV2 />
+  <Marquee />
 
   <script>
     // Handle hash-based scrolling to projects section

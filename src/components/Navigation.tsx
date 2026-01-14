@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import styles from "./navigation.module.css";
+import gsap from "gsap";
 
 const useSafeLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
@@ -34,6 +35,7 @@ interface Props {
   logoLines?: string[];
   activePath?: string;
   mode?: 'agency' | 'hiring';
+  isLanding?: boolean;
 }
 
 type GroupKey = "nav" | "projects" | "cta";
@@ -52,6 +54,7 @@ export default function Navigation({
   logoLines = DEFAULT_LOGO_LINES,
   activePath = "",
   mode = 'agency',
+  isLanding = false,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -65,6 +68,7 @@ export default function Navigation({
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const toggleRef = useRef<HTMLButtonElement | null>(null);
   const talkBtnRef = useRef<HTMLAnchorElement | null>(null);
+  const logoRef = useRef<HTMLAnchorElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLElement | null>(null);
   const firstLinkRef = useRef<HTMLAnchorElement | null>(null);
@@ -72,6 +76,10 @@ export default function Navigation({
   const menuLabelRef = useRef<HTMLSpanElement | null>(null);
   const closeLabelRef = useRef<HTMLSpanElement | null>(null);
   const [hoveredHref, setHoveredHref] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Standard cleanup of any lingering state if needed, but for now we remove the reveal logic
+  }, []);
 
   const measureToggleLabel = useCallback(() => {
     if (!menuLabelRef.current || !closeLabelRef.current) return;
@@ -353,8 +361,8 @@ export default function Navigation({
     <>
       <header ref={headerRef} className={`${styles.header} ${open ? styles.headerOpen : ""}`}>
         <div className={styles.headerInner}>
-          <a className={styles.logo} href={logoHref} aria-label="Go to home page">
-            <img src="/favicon.svg" alt="Ark Studio" style={{ height: '2.5rem', width: 'auto' }} />
+          <a ref={logoRef} className={styles.logo} href={logoHref} aria-label="Go to home page">
+            <img src="/logo-transparent.svg" alt="Ark Studio" style={{ height: '2.5rem', width: 'auto' }} />
           </a>
 
           <div className={styles.headerCenter} aria-hidden="true" />
@@ -614,5 +622,3 @@ export default function Navigation({
     </>
   );
 }
-
-

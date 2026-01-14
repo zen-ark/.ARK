@@ -30,6 +30,8 @@ const projects = defineCollection({
       featured: z.boolean().default(false),
       featuredAgency: z.boolean().default(false),
       featuredHiring: z.boolean().default(false),
+      showInAgency: z.boolean().default(true),
+      showInPortfolio: z.boolean().default(false),
       orderAgency: z.number().optional(),
       orderHiring: z.number().optional(),
     }),

@@ -35,12 +35,13 @@
   padding: var(--nav-padding-y) var(--nav-padding-x) 0;
   z-index: 1400;
   pointer-events: none;
-  color: var(--nav-text);
+  color: #fff;
+  mix-blend-mode: difference;
   transition: color 300ms ease;
 }
 
 .headerOpen {
-  color: var(--nav-text);
+  color: #fff;
 }
 
 .headerInner {
@@ -96,8 +97,8 @@
   height: var(--header-pill-height);
   padding: 0 var(--header-pill-padding-inline);
   border-radius: var(--nav-radius);
-  background: #fff;
-  color: var(--nav-text);
+  background: transparent;
+  color: currentColor;
   font-family: "Geist Mono", ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
   font-weight: 400;
   letter-spacing: 0.08em;
@@ -107,12 +108,14 @@
   border: none;
   box-shadow: none;
   cursor: pointer;
-  transition: opacity 140ms ease;
+  transition: opacity 140ms ease, background-color 300ms ease, border-color 300ms ease, backdrop-filter 300ms ease;
 }
 
-.headerPill:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(14, 23, 43, 0.18);
+.headerPill:hover,
+.menuToggle:hover .menuToggleInner {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  transition: background-color 300ms ease, backdrop-filter 300ms ease;
 }
 
 .headerPill:active {
@@ -122,12 +125,13 @@
 .talkBtn {
   position: relative;
   text-decoration: none;
-  color: #000000;
-  background: #ffffff;
+  color: currentColor;
+  background: transparent;
   border: none;
   box-shadow: none;
   cursor: pointer;
   overflow: hidden;
+  transition: background-color 300ms ease, backdrop-filter 300ms ease;
 }
 
 @media (max-width: 768px) {
@@ -155,13 +159,21 @@
   right: auto;
 }
 
+.talkBtn:hover,
+.talkBtn:focus-visible {
+  background: transparent;
+  backdrop-filter: none;
+}
+
+/* 
 .talkBtn:hover .talkSweep,
 .talkBtn:focus-visible .talkSweep {
   width: 100%;
   left: 0;
   right: auto;
   transition: width 240ms linear, left 0ms linear, right 0ms linear;
-}
+} 
+*/
 
 .talkBtn:not(:hover):not(:focus-visible) .talkSweep {
   width: 0%;
@@ -179,18 +191,20 @@
 
 .talkTextInner {
   display: inline-block;
-  color: #000000;
+  color: currentColor;
   transition: color 0ms;
 }
 
+/* 
 .talkBtn:hover .talkTextInner,
 .talkBtn:focus-visible .talkTextInner {
-  color: #050505;
+  color: #000;
   transition: color 0ms;
 }
+*/
 
 .talkBtn:not(:hover):not(:focus-visible) .talkTextInner {
-  color: #000000;
+  color: currentColor;
   transition: color 100ms linear;
   transition-delay: 180ms;
 }
@@ -206,11 +220,13 @@
   transition: filter 240ms linear;
 }
 
+/* 
 .talkBtn:hover .talkArrow,
 .talkBtn:focus-visible .talkArrow {
   filter: drop-shadow(0 0 4px hsl(79, 100%, 67%)) drop-shadow(0 0 8px hsl(79, 100%, 67%));
   transition: filter 240ms linear;
 }
+*/
 
 .menuToggle {
   position: relative;
@@ -234,13 +250,11 @@
   align-items: center;
   gap: var(--space-6);
   padding: 0 var(--space-8);
-  transition: box-shadow 400ms ease;
+  transition: box-shadow 400ms ease, background-color 300ms ease, backdrop-filter 300ms ease;
 }
 
 .menuToggle:hover .menuToggleInner {
-  box-shadow: 0 0 0 0 rgba(200, 180, 255, 0), 
-              0 0 6px 2px rgba(200, 180, 255, 0.25),
-              0 0 12px 4px rgba(200, 180, 255, 0.15);
+  /* box-shadow removed, handled by headerPill hover styles shared below */
 }
 
 .menuToggle:focus-visible .menuToggleInner {
@@ -618,7 +632,7 @@
   transition-timing-function: var(--motion-ease), var(--motion-ease), var(--motion-ease);
   transition-delay: var(--delay, 0ms), calc(var(--delay, 0ms) + 120ms + var(--group-opacity-delay, 0ms)), calc(var(--delay, 0ms) + var(--shadow-delay, 0ms));
   box-shadow: 0 0 0 0 rgb(15 23 42 / 0%);
-  border-radius: 26px;
+  border-radius: var(--nav-radius);
   overflow: hidden;
 }
 
@@ -663,7 +677,7 @@
 }
 
 .menuSection {
-  border-radius: 22px;
+  border-radius: var(--nav-radius);
   overflow: hidden;
   width: var(--panel-width, auto);
   min-width: var(--panel-width, auto);
@@ -674,7 +688,7 @@
   flex-direction: column;
   gap: clamp(6px, 1.6vw, 12px);
   padding: clamp(20px, 4vw, 32px) clamp(16px, 4vw, 24px);
-  border-radius: 22px;
+  border-radius: var(--nav-radius);
   background: rgba(255, 255, 255, 1);
   position: relative;
   --menu-indicator-right: clamp(18px, 3vw, 26px);
@@ -791,7 +805,7 @@
 
 .menuProjects {
   padding: clamp(18px, 3vw, 28px);
-  border-radius: 22px;
+  border-radius: var(--nav-radius);
   background: rgba(12, 12, 18, 1);
   color: #f5f5f5;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
@@ -845,7 +859,7 @@
 
 .menuTalk {
   padding: 1.4em 1.8em;
-  border-radius: 22px;
+  border-radius: var(--nav-radius);
   background: #101010;
   color: #f5f5f5;
   text-decoration: none;

@@ -14,6 +14,7 @@ interface Props {
   canonical?: string;
   ogType?: "website" | "article";
   showFooter?: boolean;
+  theme?: "light" | "dark";
 }
 
 const {
@@ -24,6 +25,7 @@ const {
   canonical,
   ogType = "website",
   showFooter = true,
+  theme = "light",
 } = Astro.props;
 
 const currentPath = Astro.url.pathname;
@@ -50,7 +52,7 @@ const websiteSchema = buildWebSiteSchema({
 });
 ---
 
-<html lang={lang} data-theme="light">
+<html lang={lang} data-theme={theme}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
@@ -91,12 +93,12 @@ const websiteSchema = buildWebSiteSchema({
       isProd && (
         <>
           <link rel="preconnect" href="https://plausible.io" />
-          <script defer data-domain={plausibleDomain} src="https://plausible.io/js/script.js" />
+          <script is:inline defer data-domain={plausibleDomain} src="https://plausible.io/js/script.js" />
         </>
       )
     }
   </head>
-  <body class="antialiased">
+  <body class="antialiased m-0 p-0">
     <Header />
 
     <slot />
@@ -108,3 +110,4 @@ const websiteSchema = buildWebSiteSchema({
     {showFooter && <Footer />}
   </body>
 </html>
+
