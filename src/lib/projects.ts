@@ -13,6 +13,8 @@ export type ProjectFrontmatter = {
   featured?: boolean;
   showInAgency?: boolean;
   showInPortfolio?: boolean;
+  orderAgency?: number;
+  orderHiring?: number;
 };
 
 export type ProjectListItem = {
@@ -27,6 +29,7 @@ export type ProjectListItem = {
   status?: string;
   year?: number;
   featured?: boolean;
+  orderHiring?: number;
 };
 
 function sortProjects(a: ProjectListItem, b: ProjectListItem): number {
@@ -67,11 +70,29 @@ export async function loadProjects({ mode = 'agency', limit }: LoadProjectsOptio
     accent: (p.data as any).accent,
     status: p.data.status,
     year: p.data.year,
+    orderHiring: p.data.orderHiring,
     // carry through featured for sorting (not in type on purpose)
     ...(p.data.featured ? { featured: true } : {}),
   }));
 
-  const sorted = mapped.sort(sortProjects);
+  let sorted = mapped;
+
+  if (mode === 'portfolio' || mode === 'hiring') {
+    sorted = mapped.sort((a, b) => {
+      // Sort by orderHiring if available (ascending: 1, 2, 3...)
+      if (a.orderHiring !== undefined && b.orderHiring !== undefined) {
+        return a.orderHiring - b.orderHiring;
+      }
+      // If one has order and other doesn't, put the one with order first
+      if (a.orderHiring !== undefined) return -1;
+      if (b.orderHiring !== undefined) return 1;
+      
+      // Fallback to default sort
+      return sortProjects(a, b);
+    });
+  } else {
+    sorted = mapped.sort(sortProjects);
+  }
   
   if (limit) {
     return sorted.slice(0, limit);

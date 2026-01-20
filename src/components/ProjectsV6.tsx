@@ -222,7 +222,7 @@ export default function ProjectsV6() {
             onMouseMove={handleMouseMove}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
-            className="relative flex-1 h-full w-full overflow-hidden rounded-tr-[24px] rounded-bl-[24px] bg-gray-200 cursor-none ml-[100px] md:ml-[152px]"
+            className="relative flex-1 h-full w-full overflow-hidden rounded-tr-[16px] rounded-bl-[16px] md:rounded-tr-[24px] md:rounded-bl-[24px] bg-gray-200 cursor-none ml-[70px] md:ml-[152px]"
         >
           <AnimatePresence initial={false} custom={direction}>
             <motion.div
@@ -258,8 +258,8 @@ export default function ProjectsV6() {
              ref={titleBoxRef}
              layout 
              transition={ARK_LAYOUT_TRANSITION}
-             className="absolute left-0 top-0 z-20 bg-white pr-12 pb-8 pt-10 pl-6 rounded-br-[24px] max-w-[75vw] md:max-w-[80vw]"
-             style={{ borderRadius: "0 0 24px 0" }} 
+             className="absolute left-0 top-0 z-20 bg-white pr-6 pb-6 pt-8 pl-4 md:pr-12 md:pb-8 md:pt-10 md:pl-6 rounded-br-[16px] md:rounded-br-[24px] max-w-[85vw] md:max-w-[80vw]"
+             style={{ borderRadius: "0 0 16px 0" }} 
           >
               {/* Inner text wrapper - removed overflow-hidden to prevent truncation during exit */}
               <div>
@@ -291,8 +291,8 @@ export default function ProjectsV6() {
           <motion.div 
              layout
              transition={ARK_LAYOUT_TRANSITION}
-             className="absolute bottom-0 right-[-1px] z-20 bg-white pl-12 pt-8 pb-6 pr-8 rounded-tl-[24px]"
-             style={{ borderRadius: "24px 0 0 0" }} 
+             className="absolute bottom-0 right-[-1px] z-20 bg-white pl-8 pt-6 pb-4 pr-6 md:pl-12 md:pt-8 md:pb-6 md:pr-8 rounded-tl-[16px] md:rounded-tl-[24px]"
+             style={{ borderRadius: "16px 0 0 0" }} 
           >
               <div>
                  <AnimatePresence mode="popLayout" initial={false}>

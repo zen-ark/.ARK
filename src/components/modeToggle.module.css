@@ -1,119 +1,275 @@
-/* Edge Rail Toggle Styles */
-.edgeRailToggle {
+/* Circular Toggle Button */
+.toggleButton {
   position: fixed;
   right: 16px;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 1300; /* Above hero content, below nav overlay */
-  pointer-events: auto;
-  transition: all 0.3s ease;
-}
-
-.edgeRailStack {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 56px;
-  width: 56px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(4px);
-  padding-block: 8px;
-  padding-inline: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  overflow: visible;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-/* Dark Mode Styles (Applied via JS detection) */
-.onDark .edgeRailStack {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-.edgeRailOptions {
-  position: relative;
-  display: grid;
-  gap: 8px;
-  width: 100%;
-  overflow: visible;
-}
-
-.edgeRailHighlight {
-  position: absolute;
-  left: 0;
-  right: 0;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(4px);
-  border-radius: 8px;
-  transition: top 200ms ease-out, height 200ms ease-out, opacity 180ms ease-out, background-color 0.3s ease;
-  pointer-events: none;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
-  z-index: 0;
-}
-
-.onDark .edgeRailHighlight {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-
-.edgeRailButton {
-  display: grid;
-  place-items: center;
-  width: 100%;
-  min-height: 48px;
-  border-radius: 8px;
-  position: relative;
-  z-index: 1;
-  padding-block: 12px;
-  padding-inline: 8px;
-  border: 1px solid transparent;
-  background: transparent;
-  color: rgba(0, 0, 0, 0.5);
-  font-size: 10px;
-  font-family: "Geist Mono", ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: #fff;
+  color: #000;
+  border: none;
   cursor: pointer;
-  transition: color 180ms ease-out, border-color 180ms ease-out;
-  overflow: visible;
-}
-
-.onDark .edgeRailButton {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.edgeRailButton:focus-visible {
-  outline: 1px solid rgba(108, 117, 255, 0.6);
-  outline-offset: 1px;
-}
-
-.edgeRailActive {
-  color: rgba(0, 0, 0, 1);
-}
-
-.onDark .edgeRailActive {
-  color: rgba(255, 255, 255, 1);
-}
-
-.edgeRailText {
-  display: block;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  line-height: 1;
-  white-space: nowrap;
-  overflow: visible;
-  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1300;
+  transition: transform 0.2s ease;
+  mix-blend-mode: difference;
   padding: 0;
 }
 
-/* Hide on mobile (screens smaller than 768px) */
-@media (max-width: 767px) {
-  .edgeRailToggle {
-    display: none;
+.toggleButton:hover {
+  transform: translateY(-50%) scale(1.05);
+}
+
+.toggleButton:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.toggleIcon {
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+
+/* Modal Overlay */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  padding: 1rem;
+}
+
+.modalOverlay.closing {
+  animation: fadeOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Modal Content */
+.modalContent {
+  background-color: #ffffff;
+  border-radius: 24px;
+  padding: 24px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 
+    0 20px 40px -10px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+  transform: scale(0.96) translateY(10px);
+  opacity: 0;
+  animation: modalEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+  color: #000;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modalOverlay.closing .modalContent {
+  animation: modalExit 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Modal Header */
+.modalHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.modalIconWrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background-color: #f5f5f5;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.modalIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.modalTitleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.modalTitle {
+  font-family: var(--font-sans, system-ui, sans-serif);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.modalSubtitle {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(0, 0, 0, 0.5);
+  font-weight: 500;
+}
+
+.modalText {
+  font-family: var(--font-sans, system-ui, sans-serif);
+  font-size: 0.9375rem;
+  color: rgba(0, 0, 0, 0.7);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Modal Actions */
+.modalActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+/* Buttons */
+.button {
+  padding: 0 20px;
+  height: 44px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  font-family: var(--font-sans, system-ui, sans-serif);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.buttonPrimary {
+  background-color: #000;
+  color: #fff;
+  border: 1px solid #000;
+  flex: 1;
+}
+
+.buttonPrimary:hover {
+  background-color: #222;
+  border-color: #222;
+}
+
+.buttonPrimary:active {
+  transform: translateY(0);
+}
+
+.buttonSecondary {
+  background-color: #fff;
+  color: #666;
+  border: 1px solid #e5e5e5;
+}
+
+.buttonSecondary:hover {
+  border-color: #d4d4d4;
+  background-color: #fafafa;
+  color: #000;
+}
+
+.buttonIcon {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.buttonPrimary:hover .buttonIcon {
+  transform: translateX(4px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes modalEnter {
+  from { 
+    transform: scale(0.96) translateY(10px);
+    opacity: 0;
+  }
+  to { 
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes modalExit {
+  from { 
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  to { 
+    transform: scale(0.96) translateY(10px);
+    opacity: 0;
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .toggleButton {
+    right: 12px;
+    width: 29px;
+    height: 29px;
+  }
+  
+  .toggleIcon {
+    width: 15px;
+    height: 15px;
+  }
+
+  .modalContent {
+    padding: 20px;
+    gap: 16px;
+  }
+  
+  .modalHeader {
+    gap: 12px;
+  }
+  
+  .modalIconWrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+  
+  .modalIcon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .modalTitle {
+    font-size: 1rem;
+  }
+  
+  .modalText {
+    font-size: 0.875rem;
+  }
+  
+  .button {
+    height: 40px;
+    font-size: 0.8125rem;
   }
 }

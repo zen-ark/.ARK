@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import { getMode, normalizePath, setModeInStorage, type Mode } from "@/lib/mode";
+import React, { useState, useEffect } from "react";
+import { getMode, setModeInStorage, type Mode } from "@/lib/mode";
 import styles from "./modeToggle.module.css";
 
 interface ModeToggleProps {
@@ -7,143 +7,198 @@ interface ModeToggleProps {
   isGerman: boolean;
 }
 
+function BuildingIcon({ className }: { className?: string }) {
+  return (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className={className}
+    >
+      <rect x="4" y="2" width="16" height="20" rx="2" ry="2" />
+      <line x1="9" y1="22" x2="9" y2="22.01" />
+      <line x1="15" y1="22" x2="15" y2="22.01" />
+      <line x1="9" y1="18" x2="9" y2="18.01" />
+      <line x1="15" y1="18" x2="15" y2="18.01" />
+      <line x1="9" y1="14" x2="9" y2="14.01" />
+      <line x1="15" y1="14" x2="15" y2="14.01" />
+      <line x1="9" y1="10" x2="9" y2="10.01" />
+      <line x1="15" y1="10" x2="15" y2="10.01" />
+      <line x1="9" y1="6" x2="9" y2="6.01" />
+      <line x1="15" y1="6" x2="15" y2="6.01" />
+    </svg>
+  );
+}
+
+function UserIcon({ className }: { className?: string }) {
+  return (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className={className}
+    >
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
+  );
+}
+
+function ArrowRight({ className }: { className?: string }) {
+  return (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className={className}
+    >
+      <path d="M5 12h14" />
+      <path d="m12 5 7 7-7 7" />
+    </svg>
+  );
+}
+
 export default function ModeToggle({ currentPath, isGerman }: ModeToggleProps) {
-  const normalizedPath = normalizePath(currentPath);
   const currentMode = getMode(currentPath);
-  const [hoveredMode, setHoveredMode] = useState<Mode | null>(null);
-  const [isOnDark, setIsOnDark] = useState(false);
-  const highlightRef = useRef<HTMLDivElement>(null);
-  const agencyButtonRef = useRef<HTMLButtonElement>(null);
-  const hiringButtonRef = useRef<HTMLButtonElement>(null);
-  const optionsRef = useRef<HTMLDivElement>(null);
-  
-  const updateHighlightPosition = (targetButton: HTMLButtonElement | null) => {
-    if (!highlightRef.current || !targetButton || !optionsRef.current) return;
-    
-    const buttonRect = targetButton.getBoundingClientRect();
-    const containerRect = optionsRef.current.getBoundingClientRect();
-    
-    const top = buttonRect.top - containerRect.top;
-    const height = targetButton.offsetHeight;
-    
-    highlightRef.current.style.top = `${top}px`;
-    highlightRef.current.style.height = `${height}px`;
-  };
-  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+
+  // Determine target mode and related info
+  // If current is agency (Studio), target is hiring (Portfolio)
+  // If current is hiring (Portfolio), target is agency (Studio)
+  const targetMode: Mode = currentMode === "agency" ? "hiring" : "agency";
+  const isTargetPortfolio = targetMode === "hiring";
+
+  // Prevent scrolling when modal is open
   useEffect(() => {
-    // Set initial position based on active mode
-    const activeButton = currentMode === "agency" ? agencyButtonRef.current : hiringButtonRef.current;
-    if (activeButton) {
-      updateHighlightPosition(activeButton);
-    }
-  }, [currentMode]);
-  
-  useEffect(() => {
-    // Update position on hover
-    if (hoveredMode) {
-      const hoveredButton = hoveredMode === "agency" ? agencyButtonRef.current : hiringButtonRef.current;
-      updateHighlightPosition(hoveredButton);
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
     } else {
-      // Snap back to active
-      const activeButton = currentMode === "agency" ? agencyButtonRef.current : hiringButtonRef.current;
-      updateHighlightPosition(activeButton);
+      document.body.style.overflow = "";
     }
-  }, [hoveredMode, currentMode]);
-
-  // Handle Theme Detection (Dark/Light background)
-  useEffect(() => {
-    let ticking = false;
-
-    const checkTheme = () => {
-      // Check the element at the center right of the screen (where the toggle is)
-      // The toggle itself is at fixed right: 16px, top: 50%
-      // We sample a point slightly to the left of the toggle to hit the content behind it
-      const x = window.innerWidth - 100; 
-      const y = window.innerHeight / 2;
-      
-      const elements = document.elementsFromPoint(x, y);
-      
-      // Look for a data-theme="dark" attribute on any element in the stack
-      const isDark = elements.some(el => {
-        // Check if the element or its closest parent has the theme attribute
-        return el.closest('[data-theme="dark"]');
-      });
-
-      setIsOnDark(isDark);
-      ticking = false;
-    };
-
-    const onScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(checkTheme);
-        ticking = true;
-      }
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    // Also check on resize and initially
-    window.addEventListener("resize", onScroll, { passive: true });
-    checkTheme();
-
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      document.body.style.overflow = "";
     };
-  }, []);
-  
-  const handleModeChange = (targetMode: Mode) => {
-    // Don't navigate if already in target mode
-    if (targetMode === currentMode) {
-      return;
-    }
-    
-    // Persist choice to localStorage
+  }, [isModalOpen]);
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+    setIsClosing(false);
+  };
+
+  const handleCloseModal = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsModalOpen(false);
+      setIsClosing(false);
+    }, 300); // Match animation duration
+  };
+
+  const handleConfirm = () => {
+    // Persist choice
     setModeInStorage(targetMode);
     
-    // Determine target path based on mode and locale
+    // Determine target path based on current language
     const prefix = isGerman ? "/de" : "";
-    const targetPath = targetMode === "hiring" 
-      ? `${prefix}/portfolio`.replace("//", "/")
-      : prefix || "/";
     
-    // Navigate to target path
-    window.location.href = targetPath;
+    // Construct target path
+    const targetPath = isTargetPortfolio 
+      ? `${prefix}/portfolio` 
+      : (prefix || "/");
+    
+    // Navigate
+    window.location.assign(targetPath);
+  };
+
+  // Text content based on target mode and language
+  const texts = {
+    title: isGerman 
+      ? (isTargetPortfolio ? "Portfolio" : "Studio") 
+      : (isTargetPortfolio ? "View Portfolio" : "Enter Studio"),
+    subtitle: isGerman
+      ? (isTargetPortfolio ? "Design & Engineering" : "Creative Agency")
+      : (isTargetPortfolio ? "Design & Engineering" : "Creative Agency"),
+    description: isGerman
+      ? `Du wechselst in den ${isTargetPortfolio ? "Portfolio-Bereich" : "Studio-Bereich"}. Diese Ansicht ist für ${isTargetPortfolio ? "Recruiter & Hiring Manager" : "Kunden & Partner"} optimiert.`
+      : `You are switching to the ${isTargetPortfolio ? "Portfolio view" : "Studio view"}. This experience is optimized for ${isTargetPortfolio ? "Recruiters & Hiring Managers" : "Clients & Partners"}.`,
+    stay: isGerman ? "Abbrechen" : "Cancel",
+    proceed: isGerman ? "Wechseln" : "Switch View"
   };
 
   return (
-    <div className={`${styles.edgeRailToggle} ${isOnDark ? styles.onDark : ''}`}>
-      <div className={styles.edgeRailStack}>
-        <div ref={optionsRef} className={styles.edgeRailOptions}>
-          <div 
-            ref={highlightRef}
-            className={styles.edgeRailHighlight}
-          />
-          <button
-            ref={agencyButtonRef}
-            type="button"
-            className={`${styles.edgeRailButton} ${currentMode === "agency" ? styles.edgeRailActive : ""}`}
-            onClick={() => handleModeChange("agency")}
-            onMouseEnter={() => setHoveredMode("agency")}
-            onMouseLeave={() => setHoveredMode(null)}
-            aria-pressed={currentMode === "agency"}
-            aria-label={isGerman ? "Zu Studio-Modus wechseln" : "Switch to Studio mode"}
-          >
-            <span className={styles.edgeRailText}>STUDIO</span>
-          </button>
-          <button
-            ref={hiringButtonRef}
-            type="button"
-            className={`${styles.edgeRailButton} ${currentMode === "hiring" ? styles.edgeRailActive : ""}`}
-            onClick={() => handleModeChange("hiring")}
-            onMouseEnter={() => setHoveredMode("hiring")}
-            onMouseLeave={() => setHoveredMode(null)}
-            aria-pressed={currentMode === "hiring"}
-            aria-label={isGerman ? "Zu Designer-Modus wechseln" : "Switch to Designer mode"}
-          >
-            <span className={styles.edgeRailText}>DESIGNER</span>
-          </button>
+    <>
+      <button 
+        type="button"
+        className={styles.toggleButton}
+        onClick={handleOpenModal}
+        aria-label={isGerman 
+          ? `Wechsle zu ${isTargetPortfolio ? "Portfolio" : "Studio"}` 
+          : `Switch to ${isTargetPortfolio ? "Portfolio" : "Studio"}`
+        }
+      >
+        {isTargetPortfolio ? (
+          <UserIcon className={styles.toggleIcon} />
+        ) : (
+          <BuildingIcon className={styles.toggleIcon} />
+        )}
+      </button>
+
+      {isModalOpen && (
+        <div 
+          className={`${styles.modalOverlay} ${isClosing ? styles.closing : ''}`}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) handleCloseModal();
+          }}
+        >
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
+              <div className={styles.modalIconWrapper}>
+                {isTargetPortfolio ? (
+                  <UserIcon className={styles.modalIcon} />
+                ) : (
+                  <BuildingIcon className={styles.modalIcon} />
+                )}
+              </div>
+              <div className={styles.modalTitleGroup}>
+                <h2 className={styles.modalTitle}>{texts.title}</h2>
+                <span className={styles.modalSubtitle}>{texts.subtitle}</span>
+              </div>
+            </div>
+            
+            <p className={styles.modalText}>{texts.description}</p>
+            
+            <div className={styles.modalActions}>
+              <button 
+                type="button"
+                className={`${styles.button} ${styles.buttonSecondary}`}
+                onClick={handleCloseModal}
+              >
+                {texts.stay}
+              </button>
+              <button 
+                type="button"
+                className={`${styles.button} ${styles.buttonPrimary}`}
+                onClick={handleConfirm}
+              >
+                <span>{texts.proceed}</span>
+                <ArrowRight className={styles.buttonIcon} />
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }

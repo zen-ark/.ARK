@@ -34,6 +34,17 @@ export default function PortfolioAnimation({ children }: PortfolioAnimationProps
 
       if (!logo || !intro || !grid) return;
 
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (prefersReducedMotion) {
+         // Set everything to visible immediately without animation
+         gsap.set(logo, { opacity: 1 });
+         gsap.set(letters, { y: 0, opacity: 1 });
+         gsap.set(intro, { y: 0, opacity: 1 });
+         gsap.set(document.querySelectorAll(".project-item"), { y: 0, opacity: 1 });
+         return;
+      }
+
       // 1. Initial Load Animation
       const tl = gsap.timeline({
         defaults: { ease: "power3.inOut" },
@@ -116,30 +127,26 @@ export default function PortfolioAnimation({ children }: PortfolioAnimationProps
         }, "-=0.4");
 
       // 2. Scroll Animation (Parallax/Sticky effect)
-      // The logo should stay fixed/sticky for a bit while content scrolls over it?
-      // Or just a parallax effect where the logo moves slower than the content.
+      // Use matchMedia to only apply parallax on desktop/tablet > 768px
+      const mm = gsap.matchMedia();
       
-      // Based on request: "headline text and everything below scrolls over the title SHAIN"
-      // This implies the logo is fixed or sticky at the top, and content (intro + grid) 
-      // is in a container that has a higher z-index and scrolls over it.
-
-      // We need to wrap the scrollable content in a container for the parallax effect to work smoothly 
-      // with a background color that covers the logo.
-      // The current implementation moves the logo down at 0.5 speed.
-      // The content (intro + grid) has z-index: 10 and background #111.
-      
-      ScrollTrigger.create({
-        trigger: document.body,
-        start: "top top",
-        end: "bottom bottom",
-        onUpdate: (self) => {
-          // Parallax effect for logo
-          // Move logo down at a slower rate than scroll (0.5 speed)
-          gsap.set(logo, { 
-            y: self.scroll() * 0.5 
-          });
-        }
+      mm.add("(min-width: 768px)", () => {
+        ScrollTrigger.create({
+          trigger: document.body,
+          start: "top top",
+          end: "bottom bottom",
+          onUpdate: (self) => {
+            // Parallax effect for logo
+            // Move logo down at a slower rate than scroll (0.5 speed)
+            gsap.set(logo, { 
+              y: self.scroll() * 0.5 
+            });
+          }
+        });
       });
+
+      // Cleanup
+      return () => mm.revert();
 
     },
     { scope: containerRef, dependencies: [isReady] }

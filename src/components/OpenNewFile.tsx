@@ -13,11 +13,11 @@ export default function OpenNewFile() {
         </p>
 
         {/* CTAs */}
-        <div className="flex flex-col sm:flex-row gap-4 items-start">
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
           {/* Primary CTA Button */}
           <a
             href="/contact"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-black text-white font-medium uppercase tracking-wider text-sm transition-all duration-200 ease-out hover:bg-[hsl(var(--color-brand-secondary))] hover:text-black focus-ring"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg bg-black text-white font-medium uppercase tracking-wider text-sm transition-all duration-200 ease-out hover:bg-[hsl(var(--color-brand-secondary))] hover:text-black focus-ring"
             style={{
               borderRadius: "var(--radius-12)",
               fontFamily: "var(--font-mono)",
@@ -43,7 +43,7 @@ export default function OpenNewFile() {
           {/* Secondary CTA Link */}
           <a
             href="/contact"
-            className="inline-block px-4 py-4 text-black/60 hover:text-black transition-colors duration-200 ease-out text-sm uppercase tracking-wider focus-ring"
+            className="w-full sm:w-auto text-center inline-block px-4 py-4 text-black/60 hover:text-black transition-colors duration-200 ease-out text-sm uppercase tracking-wider focus-ring"
             style={{
               fontFamily: "var(--font-mono)",
             }}

@@ -274,8 +274,9 @@ export default function WhatArkDoes() {
       if (containerRef.current && canvasRef.current) {
          const parent = canvasRef.current.parentElement;
          if (parent) {
-            canvasRef.current.width = parent.clientWidth * window.devicePixelRatio;
-            canvasRef.current.height = parent.clientHeight * window.devicePixelRatio;
+            const dpr = Math.min(window.devicePixelRatio, 2); // Cap DPR at 2 for performance
+            canvasRef.current.width = parent.clientWidth * dpr;
+            canvasRef.current.height = parent.clientHeight * dpr;
             // Force redraw of current frame?
             // (Simpler to just let the loop handle it or wait for next scroll)
          }
@@ -642,7 +643,7 @@ function OptimizedMetadataNode({
         }}
       >
         <div
-          className="rounded-lg overflow-hidden p-2 sm:p-3 w-40 sm:w-48 md:w-56 bg-white/85 backdrop-blur-sm"
+          className="rounded-lg overflow-hidden p-2 sm:p-3 w-36 sm:w-48 md:w-56 bg-white/85 backdrop-blur-sm"
           style={{ border: `1px solid ${lineColor}` }}
         >
           <div className="relative h-20 sm:h-24 w-full rounded-md overflow-hidden mb-3 bg-gray-100 border border-black/5">

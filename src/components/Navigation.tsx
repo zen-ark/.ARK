@@ -254,15 +254,22 @@ export default function Navigation({
       const talkBtnRect = talkBtnRef.current?.getBoundingClientRect();
       
       if (toggleRect) {
+        const isMobile = window.innerWidth < 768;
         const offset = window.innerWidth - toggleRect.right;
-        setPanelRight(Math.max(offset, 16));
         
-        // Calculate width from CTA button left to toggle button right
-        if (talkBtnRect) {
-          const width = toggleRect.right - talkBtnRect.left;
-          setPanelWidth(width);
+        if (isMobile) {
+             setPanelRight(16); // Fixed right offset on mobile
+             setPanelWidth(window.innerWidth - 32); // Full width minus padding
         } else {
-          setPanelWidth(null);
+             setPanelRight(Math.max(offset, 16));
+             
+             // Calculate width from CTA button left to toggle button right
+             if (talkBtnRect) {
+               const width = toggleRect.right - talkBtnRect.left;
+               setPanelWidth(width);
+             } else {
+               setPanelWidth(null);
+             }
         }
       } else {
         setPanelRight(null);
@@ -326,29 +333,31 @@ export default function Navigation({
     return { ["--toggle-label-width" as any]: `${toggleLabelWidth}px` } as React.CSSProperties;
   }, [toggleLabelWidth]);
 
+  const isMobile = typeof window !== "undefined" ? window.innerWidth < 768 : false;
+
   const navGroupStyle = {
     ["--delay" as any]: computeDelay(0),
-    ["--group-translate" as any]: `${groupTransforms.nav.translate}px`,
-    ["--group-close" as any]: `${groupTransforms.nav.closeTranslate}px`,
-    ["--group-rotate" as any]: `${groupTransforms.nav.rotate}deg`,
+    ["--group-translate" as any]: `${isMobile ? 12 : groupTransforms.nav.translate}px`,
+    ["--group-close" as any]: `${isMobile ? 8 : groupTransforms.nav.closeTranslate}px`,
+    ["--group-rotate" as any]: `${isMobile ? 1 : groupTransforms.nav.rotate}deg`,
     ["--group-scale" as any]: groupTransforms.nav.scale,
     pointerEvents: !isClosing && interactive ? "auto" : "none",
   } as React.CSSProperties;
 
   const projectsGroupStyle = {
     ["--delay" as any]: computeDelay(1),
-    ["--group-translate" as any]: `${groupTransforms.projects.translate}px`,
-    ["--group-close" as any]: `${groupTransforms.projects.closeTranslate}px`,
-    ["--group-rotate" as any]: `${groupTransforms.projects.rotate}deg`,
+    ["--group-translate" as any]: `${isMobile ? 14 : groupTransforms.projects.translate}px`,
+    ["--group-close" as any]: `${isMobile ? 10 : groupTransforms.projects.closeTranslate}px`,
+    ["--group-rotate" as any]: `${isMobile ? -1 : groupTransforms.projects.rotate}deg`,
     ["--group-scale" as any]: groupTransforms.projects.scale,
     pointerEvents: !isClosing && interactive ? "auto" : "none",
   } as React.CSSProperties;
 
   const ctaGroupStyle = {
     ["--delay" as any]: computeDelay(groupCount - 1, 40),
-    ["--group-translate" as any]: `${groupTransforms.cta.translate}px`,
-    ["--group-close" as any]: `${groupTransforms.cta.closeTranslate}px`,
-    ["--group-rotate" as any]: `${groupTransforms.cta.rotate}deg`,
+    ["--group-translate" as any]: `${isMobile ? 16 : groupTransforms.cta.translate}px`,
+    ["--group-close" as any]: `${isMobile ? 12 : groupTransforms.cta.closeTranslate}px`,
+    ["--group-rotate" as any]: `${isMobile ? 1 : groupTransforms.cta.rotate}deg`,
     ["--group-scale" as any]: groupTransforms.cta.scale,
     pointerEvents: !isClosing && interactive ? "auto" : "none",
   } as React.CSSProperties;

@@ -103,7 +103,7 @@ const GridNode = ({ item, index }: { item: RegistryItem; index: number }) => {
 
   return (
     <motion.div
-      className={`relative h-64 border border-white/10 bg-bg-surface overflow-hidden group rounded-[6px]
+      className={`relative h-56 md:h-64 border border-white/10 bg-bg-surface overflow-hidden group rounded-[6px]
         ${item.colSpan === 2 ? "md:col-span-2" : "col-span-1"}
       `}
       initial={{ opacity: 0, y: 20 }}
@@ -121,7 +121,7 @@ const GridNode = ({ item, index }: { item: RegistryItem; index: number }) => {
       transition={{ duration: 0.3 }}
     >
         {/* Content Container */}
-        <div className="absolute inset-0 p-6 flex flex-col justify-between z-20">
+        <div className="absolute inset-0 p-4 md:p-6 flex flex-col justify-between z-20">
             {/* Top Row */}
             <div className="flex justify-between items-start font-mono text-[10px] text-text-subtle/40 tracking-wider">
                 <div className="uppercase opacity-50">
@@ -144,8 +144,8 @@ const GridNode = ({ item, index }: { item: RegistryItem; index: number }) => {
                 <motion.img 
                     src={item.logo} 
                     alt={item.sector}
-                    className="w-16 h-16 max-h-16 grayscale opacity-60"
-                    animate={{ 
+                    className="w-12 h-12 md:w-16 md:h-16 max-h-16 grayscale opacity-60"
+                    animate={{  
                         opacity: isHovered ? 1 : 0.6,
                         filter: isHovered ? "grayscale(0%)" : "grayscale(100%)",
                         scale: isHovered ? 1.05 : 1
@@ -169,7 +169,7 @@ const GridLog = ({ item, index }: { item: RegistryItem; index: number }) => {
 
     return (
         <motion.div
-            className={`relative h-64 border border-white/10 bg-bg-surface p-8 flex flex-col justify-center overflow-hidden rounded-[6px]
+            className={`relative h-auto min-h-[220px] md:h-64 border border-white/10 bg-bg-surface p-6 md:p-8 flex flex-col justify-center overflow-hidden rounded-[6px]
                 ${item.colSpan === 2 ? "md:col-span-2" : "col-span-1"}
             `}
             initial={{ opacity: 0, y: 20 }}
@@ -190,7 +190,7 @@ const GridLog = ({ item, index }: { item: RegistryItem; index: number }) => {
              <div className="font-mono text-xs text-brand-secondary mb-4 tracking-wider uppercase opacity-80">
                 Project_Debrief
              </div>
-             <p className="font-sans text-xl md:text-2xl text-text-primary leading-tight mb-6 font-light">
+             <p className="font-sans text-lg md:text-2xl text-text-primary leading-tight mb-6 font-light">
                 "{item.content}"
              </p>
              <div className="font-mono text-[10px] text-text-subtle tracking-widest uppercase border-t border-border-default pt-4 w-full opacity-60">
@@ -202,9 +202,9 @@ const GridLog = ({ item, index }: { item: RegistryItem; index: number }) => {
 
 export default function NetworkRegistry() {
   return (
-    <section className="w-full bg-bg-surface py-24 px-4 md:px-8 relative z-10 border-t border-border-default">
+    <section className="w-full bg-bg-surface py-16 md:py-24 px-4 md:px-8 relative z-10 border-t border-border-default">
       <div className="max-w-[1800px] mx-auto">
-        <motion.div 
+        <motion.div  
             className="mb-12 flex items-baseline gap-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}

@@ -190,10 +190,19 @@ const currentYear = new Date().getFullYear();
 
   /* First Column - style-2 */
   .column-first {
-    padding: 48.84px;
+    padding: 24px;
     position: relative;
     box-sizing: border-box;
-    border-right: 1px solid rgba(255, 255, 255, 0.35);
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  }
+
+  @media (min-width: 768px) {
+    .column-first {
+      padding: 48.84px;
+      border-right: 1px solid rgba(255, 255, 255, 0.35);
+      border-bottom: none;
+    }
   }
 
   /* Middle Columns - style-16, style-23 */
@@ -207,7 +216,13 @@ const currentYear = new Date().getFullYear();
     position: relative;
     box-sizing: border-box;
     overflow: hidden;
-    padding: 48.84px;
+    padding: 24px;
+  }
+
+  @media (min-width: 768px) {
+    .column-right {
+      padding: 48.84px;
+    }
   }
 
   /* Title - style-3, style-17, style-24 */
@@ -322,7 +337,7 @@ const currentYear = new Date().getFullYear();
   .logo-text {
     color: rgb(235, 252, 114);
     font-family: "NB International Pro", sans-serif;
-    font-size: 10.4rem;
+    font-size: clamp(3rem, 15vw, 10.4rem);
     font-weight: 700;
     line-height: 1;
     text-transform: uppercase;
@@ -464,6 +479,10 @@ const currentYear = new Date().getFullYear();
   @media (max-width: 768px) {
     .row-first {
       grid-template-columns: 1fr;
+    }
+
+    .row-logo {
+      padding: 24px 12px;
     }
 
     .row-last {

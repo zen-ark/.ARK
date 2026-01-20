@@ -49,20 +49,26 @@ const articleSchema = buildArticleSchema({
     ogImage && (
       <div class="w-full px-4 pt-4">
         <div
-          class="w-full h-[60vh] relative overflow-hidden bg-transparent"
+          class="w-full h-[40vh] md:h-[60vh] relative overflow-hidden bg-transparent"
           style={{
             borderRadius: "var(--space-8)",
             backgroundColor: "transparent",
           }}
         >
-          <img src={ogImage} alt={title} class="w-full h-full object-cover" />
+          <img 
+            src={ogImage} 
+            alt={title} 
+            class="w-full h-full object-cover" 
+            loading="eager"
+            fetchpriority="high"
+          />
         </div>
       </div>
     )
   }
 
   <!-- Content Section - Constrained Width -->
-  <article class="max-w-6xl mx-auto px-6 py-12">
+  <article class="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-12">
     <slot />
   </article>
 

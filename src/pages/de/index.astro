@@ -2,14 +2,13 @@
 import Base from "@/layouts/Base.astro";
 import Hero from "@/components/Hero";
 import WhatArkDoes from "@/components/WhatArkDoes";
+import NetworkRegistry from "@/components/NetworkRegistry";
 import ProjectsV6 from "@/components/ProjectsV6";
 import OpenNewFile from "@/components/OpenNewFile";
 import SystemStateController from "@/components/SystemStateController";
 import Marquee from "@/components/Marquee";
 import FooterV2 from "@/layouts/partials/FooterV2.astro";
-import { getMode } from "@/lib/mode";
 
-const mode = getMode(Astro.url.pathname);
 ---
 
 <Base title=".ARK — Kreatives Studio" lang="de" showFooter={false}>
@@ -25,6 +24,9 @@ const mode = getMode(Astro.url.pathname);
 
     <!-- WHAT .ARK DOES Section -->
     <WhatArkDoes client:load />
+
+    <!-- Network Registry / Validation Log -->
+    <NetworkRegistry client:load />
 
     <!-- Projects V6 Liquid Folder -->
     <ProjectsV6 client:load />

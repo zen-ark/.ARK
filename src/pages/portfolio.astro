@@ -4,11 +4,17 @@ import { loadProjects } from "@/lib/projects";
 import PortfolioAnimation from "@/components/PortfolioAnimation";
 import ShainLogo from "@/components/ShainLogo";
 import SmoothScroll from "@/components/SmoothScroll";
+import LottiePlayer from "@/components/LottiePlayer";
 
 const projects = await loadProjects({ mode: "hiring" });
 ---
 
-<Base title="Shain — Portfolio" showFooter={false}>
+<Base
+  title="Shain — Portfolio"
+  showFooter={true}
+  footerMode="reveal"
+  wrapperClass="bg-[#111]"
+>
   <SmoothScroll client:load />
   <main class="portfolio-container">
     <PortfolioAnimation client:load>
@@ -40,12 +46,28 @@ const projects = await loadProjects({ mode: "hiring" });
               projects.map((project, index) => {
                 // Pattern: 4 cols, 2 cols, 2 cols, 4 cols (repeating)
                 const isBig = index % 4 === 0 || index % 4 === 3;
+                const isPriority = index < 2;
+                const isLottie = project.cover.endsWith(".json");
 
                 return (
                   <div class={`project-item ${isBig ? "span-4" : "span-2"}`}>
                     <a href={project.url} class="project-card-link">
                       <div class="project-image-container">
-                        <img src={project.cover} alt={project.coverAlt} class="project-image" />
+                        {isLottie ? (
+                          <LottiePlayer 
+                            src={project.cover} 
+                            className="project-image" 
+                            client:visible 
+                          />
+                        ) : (
+                          <img 
+                            src={project.cover} 
+                            alt={project.coverAlt} 
+                            class="project-image" 
+                            loading={isPriority ? "eager" : "lazy"}
+                            fetchpriority={isPriority ? "high" : "auto"}
+                          />
+                        )}
                       </div>
                       <div class="project-info">
                         <span class="project-title">{project.title}</span>
@@ -155,6 +177,8 @@ const projects = await loadProjects({ mode: "hiring" });
         display: flex;
         flex-direction: column;
         gap: var(--space-4);
+        padding: 24px 16px 32px 16px;
+        padding-top: max(24px, env(safe-area-inset-top));
       }
 
       .intro-link {
@@ -210,7 +234,7 @@ const projects = await loadProjects({ mode: "hiring" });
       grid-template-columns: 1fr;
       gap: var(--space-4);
       /* No top padding so background merges with intro */
-      padding: 0 16px var(--space-4) 16px;
+      padding: 0 16px max(var(--space-4), env(safe-area-inset-bottom)) 16px;
       position: relative;
       z-index: 10;
       background-color: #111; /* Cover the parallax logo */

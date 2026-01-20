@@ -176,17 +176,17 @@ const CornerUI = () => {
 
     return (
         <div className="absolute inset-0 pointer-events-none z-50 mix-blend-difference">
-            <div className="absolute bottom-8 left-12 md:left-24">
-                <h3 id="hud-title" className="font-mono text-xs font-bold tracking-widest mb-2 text-white">THE .ARK MODEL</h3>
-                <div id="hud-coords" className="font-mono text-xs tracking-widest opacity-60 text-white">47.3769° N, 8.5417° E</div>
+            <div className="absolute bottom-4 left-4 md:bottom-8 md:left-24">
+                <h3 id="hud-title" className="font-mono text-[10px] md:text-xs font-bold tracking-widest mb-1 md:mb-2 text-white">THE .ARK MODEL</h3>
+                <div id="hud-coords" className="font-mono text-[10px] md:text-xs tracking-widest opacity-60 text-white">47.3769° N, 8.5417° E</div>
             </div>
 
-            <div id="hud-right" className="absolute bottom-8 right-12 md:right-24 flex flex-col items-end gap-3 text-white">
-                <div className="flex items-center gap-3">
+            <div id="hud-right" className="absolute bottom-4 right-4 md:bottom-8 md:right-24 flex flex-col items-end gap-2 md:gap-3 text-white">
+                <div className="flex items-center gap-2 md:gap-3">
                     <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span id="hud-status" className="font-mono text-xs tracking-widest opacity-80">V.2.04 [STABLE]</span>
+                    <span id="hud-status" className="font-mono text-[10px] md:text-xs tracking-widest opacity-80">V.2.04 [STABLE]</span>
                 </div>
-                <div className="w-24 h-0.5 bg-white/10 rounded-full overflow-hidden mt-1">
+                <div className="w-16 md:w-24 h-0.5 bg-white/10 rounded-full overflow-hidden mt-1">
                     <div id="hud-progress" className="h-full bg-emerald-500 w-0" />
                 </div>
             </div>
@@ -426,19 +426,19 @@ export default function SystemStateController() {
                             <div className="max-w-4xl w-full pt-32 relative">
                                 <GSAPMaskedReveal isActive={isActive}>
                                     {/* Header */}
-                                    <div id={isLastItem ? "p1-exit-header" : undefined} className="mb-8 relative">
+                                    <div id={isLastItem ? "p1-exit-header" : undefined} className="mb-6 md:mb-8 relative">
                                         <RevealLine>
-                                            <h2 className="font-sans font-bold text-4xl md:text-5xl lg:text-7xl tracking-tight text-white mix-blend-normal uppercase leading-[0.9]">
+                                            <h2 className="font-sans font-bold text-3xl md:text-5xl lg:text-7xl tracking-tight text-white mix-blend-normal uppercase leading-[0.9]">
                                                 {item.title}
                                             </h2>
                                         </RevealLine>
                                     </div>
                                     
                                     {/* Body */}
-                                    <div id={isLastItem ? "p1-exit-body" : undefined} className="mb-12 space-y-1">
+                                    <div id={isLastItem ? "p1-exit-body" : undefined} className="mb-8 md:mb-12 space-y-1">
                                         {item.description.map((line, i) => (
                                             <RevealLine key={i}>
-                                                <p className="font-sans text-lg md:text-xl text-neutral-400 max-w-xl leading-relaxed">
+                                                <p className="font-sans text-base md:text-xl text-neutral-400 max-w-xl leading-relaxed">
                                                     {line}
                                                 </p>
                                             </RevealLine>
@@ -513,13 +513,13 @@ export default function SystemStateController() {
                                         {isFirstItem ? (
                                             <GSAPMaskedReveal isActive={shouldShowFirst}>
                                                 <RevealLine>
-                                                    <h3 className={`font-sans font-bold text-3xl md:text-5xl tracking-tight uppercase transition-colors duration-800 ease-[cubic-bezier(0.16,1,0.3,1)] ${isCurrent ? 'text-black' : 'text-[#E5E5E5]'}`}>
+                                                    <h3 className={`font-sans font-bold text-2xl md:text-5xl tracking-tight uppercase transition-colors duration-800 ease-[cubic-bezier(0.16,1,0.3,1)] ${isCurrent ? 'text-black' : 'text-[#E5E5E5]'}`}>
                                                         {module.title}
                                                     </h3>
                                                 </RevealLine>
                                             </GSAPMaskedReveal>
                                         ) : (
-                                            <h3 className={`font-sans font-bold text-3xl md:text-5xl tracking-tight uppercase transition-colors duration-800 ease-[cubic-bezier(0.16,1,0.3,1)] ${isCurrent ? 'text-black' : 'text-[#E5E5E5]'}`}>
+                                            <h3 className={`font-sans font-bold text-2xl md:text-5xl tracking-tight uppercase transition-colors duration-800 ease-[cubic-bezier(0.16,1,0.3,1)] ${isCurrent ? 'text-black' : 'text-[#E5E5E5]'}`}>
                                                 {module.title}
                                             </h3>
                                         )}

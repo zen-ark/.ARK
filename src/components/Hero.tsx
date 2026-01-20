@@ -118,12 +118,16 @@ export default function Hero({ videoSource, secondaryVideoSource, title, subtitl
       } else {
         // Locked/Released: almost fullscreen with visible frame
         // Force dimensions to be almost full viewport (accounting for margin + border)
-        heroCard.style.width = "calc(100vw - calc(var(--space-4) * 2))";
-        heroCard.style.height = "calc(100vh - calc(var(--space-4) * 2))";
-        heroCard.style.margin = "";
-        heroCard.style.borderRadius = "";
-        heroCard.style.borderWidth = "";
-        heroCard.style.clipPath = "inset(0 round var(--space-8))";
+        heroCard.style.width = "calc(100vw - 24px)"; // Mobile: smaller margins
+        heroCard.style.height = "calc(100vh - 24px)";
+        heroCard.style.clipPath = "inset(0 round 16px)"; // Mobile: smaller radius
+        
+        // Desktop override via media query or check width
+        if (window.innerWidth >= 768) {
+             heroCard.style.width = "calc(100vw - calc(var(--space-4) * 2))";
+             heroCard.style.height = "calc(100vh - calc(var(--space-4) * 2))";
+             heroCard.style.clipPath = "inset(0 round var(--space-8))";
+        }
       }
 
       ticking = false;
@@ -229,8 +233,8 @@ export default function Hero({ videoSource, secondaryVideoSource, title, subtitl
           <div 
             className="text-left relative z-10"
             style={{
-              marginLeft: 'clamp(1.5rem, 3vw, 2.5rem)',
-              marginBottom: 'clamp(1.5rem, 3vw, 2.5rem)',
+              marginLeft: 'clamp(1rem, 3vw, 2.5rem)', // Reduced min margin for mobile
+              marginBottom: 'clamp(1rem, 3vw, 2.5rem)', // Reduced min margin for mobile
               opacity: 0,
               transform: 'translateY(12px)',
               animation: 'heroTextFadeIn 0.6s ease-out 0.3s forwards',
@@ -238,9 +242,9 @@ export default function Hero({ videoSource, secondaryVideoSource, title, subtitl
           >
             <h1
               id="hero-title"
-              className="font-normal leading-[1.15] tracking-[-0.01em] mb-[clamp(1.75rem, 3vw, 2.5rem)] text-left"
+              className="font-normal leading-[1.15] tracking-[-0.01em] mb-[clamp(1.25rem, 3vw, 2.5rem)] text-left"
               style={{
-                fontSize: 'clamp(2rem, 3vw, 4rem)',
+                fontSize: 'clamp(1.75rem, 5vw, 4rem)', // Adjusted for better mobile scaling
                 color: 'rgba(255, 255, 255, 1)',
                 fontWeight: 400,
                 background: 'transparent',
@@ -257,12 +261,12 @@ export default function Hero({ videoSource, secondaryVideoSource, title, subtitl
             <p 
               className="font-normal text-left"
               style={{
-                fontSize: 'clamp(1rem, 1.4vw, 1.35rem)',
+                fontSize: 'clamp(0.9rem, 1.4vw, 1.35rem)', // Slightly smaller min size
                 color: 'rgba(255, 255, 255, 0.82)',
                 fontWeight: 400,
                 lineHeight: 1.45,
                 letterSpacing: '-0.015em',
-                maxWidth: '52ch',
+                maxWidth: '90%', // Ensure it doesn't hit the edge on small screens
                 textAlign: 'left',
               }}
             >

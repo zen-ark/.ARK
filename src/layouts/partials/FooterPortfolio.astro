@@ -1,0 +1,511 @@
+---
+import ShainLogo from "@/components/ShainLogo";
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="grid-wrapper">
+    <div class="junction j-top-left">
+      <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="j-icon">
+        <rect width="15" height="5" fill="currentColor"></rect>
+        <rect x="15" width="15" height="5" transform="rotate(90 15 0)" fill="currentColor"></rect>
+      </svg>
+    </div>
+    <div class="junction j-top-center">
+      <svg viewBox="0 0 25 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="j-icon">
+        <rect width="25" height="5" fill="currentColor"></rect>
+        <rect x="15" width="15" height="5" transform="rotate(90 15 0)" fill="currentColor"></rect>
+      </svg>
+    </div>
+    <div class="junction j-top-right">
+      <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="j-icon">
+        <rect width="15" height="5" fill="currentColor"></rect>
+        <rect x="15" width="15" height="5" transform="rotate(90 15 0)" fill="currentColor"></rect>
+      </svg>
+    </div>
+    <div class="junction j-mid-left">
+      <svg viewBox="0 0 25 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="j-icon">
+        <rect width="25" height="5" fill="currentColor"></rect>
+        <rect x="15" width="15" height="5" transform="rotate(90 15 0)" fill="currentColor"></rect>
+      </svg>
+    </div>
+    <div class="junction j-mid-center">
+      <svg viewBox="0 0 25 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="j-icon">
+        <rect width="25" height="5" fill="currentColor"></rect>
+        <rect x="15" width="15" height="5" transform="rotate(90 15 0)" fill="currentColor"></rect>
+      </svg>
+    </div>
+    <div class="junction j-mid-right">
+      <svg viewBox="0 0 25 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="j-icon">
+        <rect width="25" height="5" fill="currentColor"></rect>
+        <rect x="15" width="15" height="5" transform="rotate(90 15 0)" fill="currentColor"></rect>
+      </svg>
+    </div>
+    <div class="junction j-bottom-left">
+      <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="j-icon">
+        <rect width="15" height="5" fill="currentColor"></rect>
+        <rect x="15" width="15" height="5" transform="rotate(90 15 0)" fill="currentColor"></rect>
+      </svg>
+    </div>
+    <div class="junction j-bottom-right">
+      <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="j-icon">
+        <rect width="15" height="5" fill="currentColor"></rect>
+        <rect x="15" width="15" height="5" transform="rotate(90 15 0)" fill="currentColor"></rect>
+      </svg>
+    </div>
+
+    <!-- First Row: Contact, Connect -->
+    <div class="row-first">
+      <!-- Contact Column -->
+      <div class="column-first">
+        <h3 class="title">Contact</h3>
+        <ul class="links">
+          <li class="item">
+            <a href="mailto:info@ark.com" rel="noopener noreferrer" class="link"> info@ark.com </a>
+          </li>
+          <li class="item">
+            <a href="/contact" class="link"> Get in touch </a>
+          </li>
+          <li class="item leathers">
+            <a
+              href="https://www.arkleathers.com/"
+              rel="noopener noreferrer"
+              target="_blank"
+              class="sublink"
+            >
+              ARK Origin powers<br />
+              ARK Leathers<br />
+              <div class="more">
+                Learn more
+                <svg
+                  viewBox="0 0 7 7"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="link-svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M1.2 7L0.5 6.3L5.3 1.5H1V0.5H7V6.5H6V2.2L1.2 7Z"
+                    fill="currentcolor"></path>
+                </svg>
+              </div>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Right Column (Connect only) -->
+      <div class="column-right">
+        <div class="connect">
+          <h3 class="title">Connect</h3>
+          <ul class="links">
+            <li class="item">
+              <a
+                href="https://www.instagram.com/mondzhain/"
+                rel="noopener noreferrer"
+                target="_blank"
+                class="link"
+              >
+                Instagram
+              </a>
+            </li>
+            <li class="item">
+              <a
+                href="https://www.linkedin.com/company/ark-leathers/"
+                rel="noopener noreferrer"
+                target="_blank"
+                class="link"
+              >
+                LinkedIn
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Second Row: SHAIN Logo -->
+    <div class="row-logo">
+      <div class="logo text-[#EBFC72] w-full max-w-[85vw] md:max-w-[70vw]">
+        <ShainLogo />
+      </div>
+    </div>
+  </div>
+
+  <!-- Third Row: Copyright, Privacy Policy, Crafted by -->
+  <div class="row-last">
+    <a href="/" class="copyright-link"> ©{currentYear} .ARK </a>
+    <ul class="legal">
+      <li class="item">
+        <a href="/privacy-policy" class="legal-link"> Privacy Policy </a>
+      </li>
+    </ul>
+    <a href="/" class="legal-link">
+      Crafted by .ARK
+      <svg viewBox="0 0 7 7" fill="none" xmlns="http://www.w3.org/2000/svg" class="link-svg">
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M1.2 7L0.5 6.3L5.3 1.5H1V0.5H7V6.5H6V2.2L1.2 7Z"
+          fill="currentcolor"></path>
+      </svg>
+    </a>
+  </div>
+</footer>
+
+<style>
+  /* Footer - style-0 */
+  .footer {
+    margin: 48.1px 0 0 0;
+    padding: 1rem;
+    border-top: 1px solid rgb(64, 64, 64);
+    background-color: #000000;
+    color: rgb(244, 243, 232);
+    box-sizing: border-box;
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    overflow: visible;
+    --brand-secondary: #d3fd45;
+  }
+
+  /* Grid wrapper for rows */
+  .grid-wrapper {
+    position: relative;
+    width: 100%;
+    z-index: 1;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    padding: 0;
+  }
+
+  /* First Row - style-1 */
+  .row-first {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    position: relative;
+    box-sizing: border-box;
+    gap: 0;
+  }
+
+  /* First Column - style-2 */
+  .column-first {
+    padding: 24px;
+    position: relative;
+    box-sizing: border-box;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  }
+
+  @media (min-width: 768px) {
+    .column-first {
+      padding: 48.84px;
+      border-right: 1px solid rgba(255, 255, 255, 0.35);
+      border-bottom: none;
+    }
+  }
+
+  /* Middle Columns - style-16, style-23 */
+  .column-middle {
+    padding: 48.84px;
+    position: relative;
+    box-sizing: border-box;
+  }
+
+  .column-right {
+    position: relative;
+    box-sizing: border-box;
+    overflow: hidden;
+    padding: 24px;
+  }
+
+  @media (min-width: 768px) {
+    .column-right {
+      padding: 48.84px;
+    }
+  }
+
+  /* Title - style-3, style-17, style-24 */
+  .title {
+    margin-bottom: 32px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 14.8px;
+    font-weight: 300;
+    line-height: 18.5px;
+    text-transform: uppercase;
+    align-items: center;
+    display: flex;
+    box-sizing: border-box;
+  }
+
+  /* Links List - style-4, style-18 */
+  .links {
+    margin: 0px;
+    list-style: outside none none;
+    padding: 0px;
+    box-sizing: border-box;
+  }
+
+  /* List Item - style-5, style-7, style-19, style-21 */
+  .item {
+    margin: 0px;
+    box-sizing: border-box;
+  }
+
+  /* Regular Link - style-6, style-8, style-20, style-22 */
+  .link {
+    font-family: "NB International Pro", sans-serif;
+    font-size: 11.84px;
+    font-weight: 400;
+    line-height: 19.1808px;
+    position: relative;
+    color: rgb(244, 243, 232);
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+
+  /* Leathers Link - style-10 */
+  .sublink {
+    flex-direction: column;
+    display: flex;
+    font-family: "NB International Pro", sans-serif;
+    font-size: 10.36px;
+    font-weight: 400;
+    line-height: 12.95px;
+    position: relative;
+    color: rgb(244, 243, 232);
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+
+  /* Leathers Item - style-9 */
+  .item.leathers {
+    margin-top: 85.1px;
+    display: inline-flex;
+    box-sizing: border-box;
+  }
+
+  /* Learn More - style-13 */
+  .more {
+    display: flex;
+    margin-top: 7.4px;
+    box-sizing: border-box;
+  }
+
+  /* Link SVG - style-14, style-49 */
+  .link-svg {
+    color: rgb(139, 114, 252);
+    height: 5.17188px;
+    margin: 4.44px 0px 0px 4.44px;
+    width: 0.7rem;
+    overflow: visible;
+    display: block;
+    user-select: none;
+    box-sizing: border-box;
+  }
+
+  /* Form styles removed with Subscribe section */
+
+  /* Logo Row - style-34 */
+  .row-logo {
+    overflow: hidden;
+    padding: 48.84px 11.84px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  }
+
+  /* Last Row - style-36 */
+  .row-last {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Logo SVG - style-35 */
+  .logo {
+    translate: none;
+    rotate: none;
+    scale: none;
+    display: block;
+    user-select: none;
+    box-sizing: border-box;
+  }
+
+  /* Last Row - style-43 */
+  .row-last {
+    justify-content: space-between;
+    margin: 0;
+    padding: 1rem;
+    display: flex;
+    box-sizing: border-box;
+  }
+
+  /* Junctions */
+  .junction {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    color: var(--brand-secondary);
+    pointer-events: none;
+  }
+
+  .j-icon {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Slightly larger T shapes */
+  .j-top-center .j-icon,
+  .j-mid-left .j-icon,
+  .j-mid-center .j-icon,
+  .j-mid-right .j-icon {
+    transform: scale(1.45);
+    transform-origin: center;
+  }
+
+  /* Horizontal divider at bottom of the first row */
+  .grid-wrapper::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--row-first-height, 0px);
+    height: 1px;
+    background: rgba(255, 255, 255, 0.35);
+    pointer-events: none;
+  }
+
+  /* Junction placement */
+  .j-top-left {
+    top: 0.4%;
+    left: 0.25%;
+    transform: translate(-40%, -40%) rotate(-90deg);
+  }
+
+  .j-top-center {
+    top: 0.2%;
+    left: 50%;
+    transform: translate(-50%, -40%);
+  }
+
+  .j-top-right {
+    top: 0.4%;
+    right: 0.25%;
+    transform: translate(40%, -40%) rotate(0deg);
+  }
+
+  .j-mid-left {
+    top: var(--row-first-height, 0px);
+    left: 0.1%;
+    transform: translate(-40%, -50%) rotate(-90deg);
+  }
+
+  .j-mid-center {
+    top: var(--row-first-height, 0px);
+    left: 50%;
+    transform: translate(-50%, -65%) rotate(180deg);
+  }
+
+  .j-mid-right {
+    top: var(--row-first-height, 0px);
+    left: 0.1%;
+    transform: translate(40%, -50%) rotate(90deg);
+  }
+
+  .j-bottom-left {
+    bottom: 0.51%;
+    left: 0.27%;
+    transform: translate(-40%, 40%) rotate(180deg);
+  }
+
+  .j-bottom-right {
+    bottom: 0.51%;
+    right: 0.26%;
+    transform: translate(40%, 40%) rotate(90deg);
+  }
+
+  /* Copyright Link - style-44 */
+  .copyright-link {
+    display: flex;
+    font-family: "NB International Pro", sans-serif;
+    font-size: 10.36px;
+    font-weight: 400;
+    line-height: 12.95px;
+    position: relative;
+    color: rgb(244, 243, 232);
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+
+  /* Legal List - style-45 */
+  .legal {
+    display: flex;
+    gap: 23.68px;
+    margin: 0px;
+    list-style: outside none none;
+    padding: 0px;
+    box-sizing: border-box;
+  }
+
+  /* Legal Link - style-47, style-48 */
+  .legal-link {
+    display: flex;
+    font-family: "NB International Pro", sans-serif;
+    font-size: 10.36px;
+    font-weight: 400;
+    line-height: 12.95px;
+    position: relative;
+    color: rgb(244, 243, 232);
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .row-first {
+      grid-template-columns: 1fr;
+    }
+
+    .row-logo {
+      padding: 24px 12px;
+    }
+
+    .row-last {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5em;
+    }
+
+    .logo {
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+</style>
+
+<script>
+  const syncGridMetrics = () => {
+    const footer = document.querySelector(".footer") as HTMLElement | null;
+    const rowFirst = footer?.querySelector(".row-first") as HTMLElement | null;
+    const rowLast = footer?.querySelector(".row-last") as HTMLElement | null;
+    if (!footer || !rowFirst || !rowLast) return;
+
+    const rowFirstHeight = rowFirst.offsetHeight;
+    const rowLastHeight = rowLast.offsetHeight;
+    footer.style.setProperty("--row-first-height", `${rowFirstHeight}px`);
+    footer.style.setProperty("--row-last-height", `${rowLastHeight}px`);
+  };
+
+  const scheduleSync = () => requestAnimationFrame(syncGridMetrics);
+
+  window.addEventListener("load", scheduleSync);
+  window.addEventListener("resize", scheduleSync);
+  scheduleSync();
+</script>

@@ -34,9 +34,9 @@ const EqualizerTick = ({ tickIndex, totalTicks, smoothProgress, totalSegments, m
   
   // Calculate bar width using Gaussian distribution (responsive)
   const barWidth = useTransform(distanceFromWave, (distance) => {
-    const milestoneWidth = isMobile ? 28 : 40;
-    const baseWidth = isMobile ? 8 : 12;
-    const maxWidth = isMobile ? 28 : 40;
+    const milestoneWidth = isMobile ? 20 : 40;
+    const baseWidth = isMobile ? 6 : 12;
+    const maxWidth = isMobile ? 20 : 40;
     
     if (isMilestone) {
       return milestoneWidth;
@@ -158,7 +158,7 @@ export default function EqualizerScroll({ scrollYProgress, projects, activeProje
   return (
     <motion.div 
       ref={containerRef}
-      className="absolute left-4 bottom-0 w-[80px] md:w-[120px] flex flex-col items-start justify-end z-30"
+      className="absolute left-2 bottom-0 w-[60px] md:w-[120px] flex flex-col items-start justify-end z-30"
       initial={false}
       animate={{
         height: cutoutHeight ? `calc(100% - ${cutoutHeight}px)` : '75vh'
