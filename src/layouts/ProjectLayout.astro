@@ -75,7 +75,7 @@ const articleSchema = buildArticleSchema({
 
   <!-- Content Section -->
   {isCaseStudy ? (
-    <div class="w-full bg-black text-white min-h-screen">
+    <div class="w-full bg-black text-white min-h-screen overflow-hidden">
       <slot />
     </div>
   ) : (

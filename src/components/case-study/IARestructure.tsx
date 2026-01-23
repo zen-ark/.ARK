@@ -17,7 +17,7 @@ interface NodeProps {
 }
 
 const BranchNode = ({ label, children, delay = 0, isFirst, isLast }: NodeProps) => (
-  <RevealOnScroll delay={delay} className="flex flex-col items-center min-w-[120px] flex-1 relative px-1">
+  <RevealOnScroll delay={delay} className="flex flex-col items-center min-w-[120px] flex-1 relative px-2">
     
     {/* Horizontal Connector Line for Tree Structure */}
     {/* We use pseudo-elements simulation with divs to ensure lines connect perfectly to centers */}
@@ -35,11 +35,11 @@ const BranchNode = ({ label, children, delay = 0, isFirst, isLast }: NodeProps) 
     {/* Vertical Connector Line Top */}
     <div className="h-6 w-px bg-white/20 mb-0 relative">
         {/* Dot at intersection */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-white/40 rounded-full"></div>
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_4px_rgba(255,255,255,0.5)]"></div>
     </div>
     
     {/* Level 1 Node */}
-    <div className="w-full bg-white/10 backdrop-blur-sm border border-white/20 p-2.5 rounded-lg text-center mb-3 hover:bg-white/20 transition-colors duration-300">
+    <div className="w-full bg-white/10 backdrop-blur-sm border border-white/20 p-2.5 rounded-lg text-center mb-3 transition-colors duration-300">
       <span className="text-xs font-semibold text-white tracking-wide block truncate">{label}</span>
     </div>
 
@@ -50,7 +50,7 @@ const BranchNode = ({ label, children, delay = 0, isFirst, isLast }: NodeProps) 
         <div className="absolute -top-3 left-1/2 -translate-x-1/2 h-3 w-px bg-white/20"></div>
         
         {children.map((child, idx) => (
-          <div key={idx} className="bg-black/40 border border-white/10 py-1.5 px-2 rounded text-center hover:border-white/30 transition-colors">
+          <div key={idx} className="bg-black/40 border border-white/10 py-1.5 px-2 rounded text-center transition-colors">
             <span className="text-[10px] text-white/70 block truncate">{child}</span>
           </div>
         ))}
@@ -119,7 +119,7 @@ export default function IARestructure({ title, description, imageSrc, seniorNote
                 <div className="h-6 w-px bg-white/20"></div>
                 
                 {/* Branches Container */}
-                <div className="flex justify-between w-full gap-2 pt-0 relative">
+                <div className="flex justify-between w-full pt-0 relative">
                     {/* Note: The horizontal connecting line is now handled by each BranchNode */}
                     
                     {sitemapData.map((branch, idx) => (
