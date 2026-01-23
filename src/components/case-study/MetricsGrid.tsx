@@ -9,7 +9,7 @@ interface MetricItemProps {
   delay?: number
 }
 
-const CountUp = ({ value, className }: { value: string, className?: string }) => {
+const CountUp = ({ value, className, delay = 0 }: { value: string, className?: string, delay?: number }) => {
   const ref = useRef<HTMLSpanElement>(null)
   const isInView = useInView(ref, { once: true, amount: 0.5 })
   const motionValue = useMotionValue(0)
@@ -40,9 +40,12 @@ const CountUp = ({ value, className }: { value: string, className?: string }) =>
 
   useEffect(() => {
     if (isInView) {
-      motionValue.set(num);
+      const timeoutId = setTimeout(() => {
+        motionValue.set(num);
+      }, delay * 1000);
+      return () => clearTimeout(timeoutId);
     }
-  }, [isInView, num, motionValue]);
+  }, [isInView, num, motionValue, delay]);
 
   useEffect(() => {
     const unsubscribe = springValue.on("change", (latest) => {
@@ -63,6 +66,7 @@ const MetricItem = ({ value, label, description, delay = 0 }: MetricItemProps) =
     <CountUp 
       value={value} 
       className="text-5xl md:text-7xl font-bold text-white mb-4 tracking-tighter"
+      delay={0.8}
     />
     <h4 className="text-lg font-mono uppercase tracking-wider text-white/60 mb-2">
       {label}
