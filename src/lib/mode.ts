@@ -22,7 +22,11 @@ export function normalizePath(pathname: string): string {
  */
 export function getMode(pathname: string): Mode {
   const normalized = normalizePath(pathname);
-  return normalized.endsWith('/portfolio') ? 'hiring' : 'agency';
+  // Check for portfolio/hiring paths
+  if (normalized.includes('/portfolio')) {
+    return 'hiring';
+  }
+  return 'agency';
 }
 
 /**

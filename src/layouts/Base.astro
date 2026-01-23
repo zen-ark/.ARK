@@ -103,11 +103,11 @@ const websiteSchema = buildWebSiteSchema({
       )
     }
   </head>
-  <body class="antialiased m-0 p-0">
+  <body class={`antialiased m-0 p-0 ${footerMode === "reveal" ? "bg-black" : ""}`}>
     {
       footerMode === "reveal" ? (
         <>
-          <div class={`relative z-10 bg-[hsl(var(--color-bg-canvas))] ${wrapperClass} min-h-screen shadow-2xl`}>
+          <div class={`relative z-10 bg-[#111] ${wrapperClass} min-h-screen mb-0 md:mb-[calc(var(--footer-height)-1px)]`}>
             <Header />
             <slot />
           </div>
@@ -117,7 +117,7 @@ const websiteSchema = buildWebSiteSchema({
           )}
 
           {showFooter && (
-            <div class="md:sticky md:bottom-0 md:left-0 md:w-full md:-z-10 md:h-auto">
+            <div class="relative z-0 md:fixed md:bottom-0 md:left-0 md:w-full md:-z-10 md:h-auto">
               <FooterPortfolio />
             </div>
           )}

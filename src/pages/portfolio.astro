@@ -44,20 +44,27 @@ const projects = await loadProjects({ mode: "hiring" });
           <div class="projects-grid projects-grid-content">
             {
               projects.map((project, index) => {
-                // Pattern: 4 cols, 2 cols, 2 cols, 4 cols (repeating)
-                const isBig = index % 4 === 0 || index % 4 === 3;
-                const isPriority = index < 2;
+                // Uniform 50/50 Layout
+                // All items take up half the grid (6/12 columns)
+                let gridClass = "span-6";
+                
+                const isPriority = index < 3;
                 const isLottie = project.cover.endsWith(".json");
+                // Identifying projects that need background color patching
+                // Note: user asked to change background color for Trauffer and Movieworld
+                const needsDarkBg = project.slug === 'trauffer' || project.slug === 'movieworld-spiez';
 
                 return (
-                  <div class={`project-item ${isBig ? "span-4" : "span-2"}`}>
+                  <div class={`project-item ${gridClass}`}>
                     <a href={project.url} class="project-card-link">
                       <div class="project-image-container">
                         {isLottie ? (
                           <LottiePlayer 
                             src={project.cover} 
                             className="project-image" 
+                            loop={true}
                             client:visible 
+                            backgroundColor={needsDarkBg ? "#111111" : undefined}
                           />
                         ) : (
                           <img 
@@ -233,8 +240,7 @@ const projects = await loadProjects({ mode: "hiring" });
       display: grid;
       grid-template-columns: 1fr;
       gap: var(--space-4);
-      /* No top padding so background merges with intro */
-      padding: 0 16px max(var(--space-4), env(safe-area-inset-bottom)) 16px;
+      padding: 0 16px 2rem 16px; /* Reduced bottom padding */
       position: relative;
       z-index: 10;
       background-color: #111; /* Cover the parallax logo */
@@ -244,8 +250,45 @@ const projects = await loadProjects({ mode: "hiring" });
 
     @media (min-width: 768px) {
       .projects-grid {
-        grid-template-columns: repeat(6, 1fr);
-        gap: 1rem;
+        grid-template-columns: repeat(12, 1fr);
+        column-gap: 2rem;
+        row-gap: 4rem;
+        padding: 0 16px 2rem 16px;
+      }
+      
+      .span-6 {
+        grid-column: span 6;
+      }
+      
+      .span-7 {
+        grid-column: span 7;
+      }
+      
+      .span-5 {
+        grid-column: span 5;
+      }
+      
+      .span-7 .project-image-container,
+      .span-5 .project-image-container {
+        aspect-ratio: 16/9;
+      }
+      
+      /* Vertical Offset for every second item (Right Column) */
+      .project-item:nth-child(even) {
+        margin-top: 10vh;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .intro-text h1 span {
+        text-align: left !important;
+      }
+
+      .span-6,
+      .span-4,
+      .span-3,
+      .span-2 {
+        grid-column: span 1;
       }
     }
 
@@ -270,7 +313,7 @@ const projects = await loadProjects({ mode: "hiring" });
       aspect-ratio: 16/9;
     }
 
-    .span-4 .project-image-container {
+    .span-6 .project-image-container {
       aspect-ratio: 16/9;
     }
 
@@ -304,26 +347,6 @@ const projects = await loadProjects({ mode: "hiring" });
     .project-date {
       text-align: right;
       opacity: 0.7;
-    }
-
-    @media (min-width: 768px) {
-      .span-4 {
-        grid-column: span 4;
-      }
-      .span-2 {
-        grid-column: span 2;
-      }
-    }
-
-    @media (max-width: 767px) {
-      .intro-text h1 span {
-        text-align: left !important;
-      }
-
-      .span-4,
-      .span-2 {
-        grid-column: span 1;
-      }
     }
   </style>
 </Base>

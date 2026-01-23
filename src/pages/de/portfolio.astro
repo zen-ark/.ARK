@@ -5,6 +5,7 @@ import PortfolioAnimation from "@/components/PortfolioAnimation";
 import ShainLogo from "@/components/ShainLogo";
 import SmoothScroll from "@/components/SmoothScroll";
 import LottiePlayer from "@/components/LottiePlayer";
+import RevealOnScroll from "@/components/RevealOnScroll";
 
 const allProjects = await getCollection("projects");
 const projects = allProjects
@@ -17,8 +18,18 @@ const projects = allProjects
     coverAlt: p.data.coverAlt ?? p.data.title,
     year: p.data.year,
     featured: p.data.featured,
+    orderHiring: p.data.orderHiring,
   }))
   .sort((a, b) => {
+    // Sort by orderHiring if available (ascending: 1, 2, 3...)
+    if (a.orderHiring !== undefined && b.orderHiring !== undefined) {
+      return a.orderHiring - b.orderHiring;
+    }
+    // If one has order and other doesn't, put the one with order first
+    if (a.orderHiring !== undefined) return -1;
+    if (b.orderHiring !== undefined) return 1;
+
+    // Fallback to default sort
     const yearA = a.year ?? 0;
     const yearB = b.year ?? 0;
     if (yearA !== yearB) return yearB - yearA;
@@ -29,7 +40,13 @@ const projects = allProjects
   });
 ---
 
-<Base title="Shain — Portfolio" lang="de" showFooter={true} footerMode="reveal" wrapperClass="bg-[#111]">
+<Base
+  title="Shain — Portfolio"
+  lang="de"
+  showFooter={true}
+  footerMode="reveal"
+  wrapperClass="bg-[#111]"
+>
   <SmoothScroll client:load />
   <main class="portfolio-container">
     <PortfolioAnimation client:load>
@@ -49,7 +66,8 @@ const projects = allProjects
                   >UI/UX-Designer, der Komplexität in klare Bildschirme verwandelt —</span
                 >
                 <span class="block w-full text-left"
-                  >von der Konzeption bis zur entwicklungsfertigen Übergabe, mit hochwertigem 3D & Motion, um Schlüsselmomente zu steigern, ohne die Usability zu opfern.</span
+                  >von der Konzeption bis zur entwicklungsfertigen Übergabe, mit hochwertigem 3D &
+                  Motion, um Schlüsselmomente zu steigern, ohne die Usability zu opfern.</span
                 >
               </h1>
             </div>
@@ -58,36 +76,46 @@ const projects = allProjects
           <div class="projects-grid projects-grid-content">
             {
               projects.map((project, index) => {
-                // Pattern: 4 cols, 2 cols, 2 cols, 4 cols (repeating)
-                const isBig = index % 4 === 0 || index % 4 === 3;
-                const isPriority = index < 2;
+                // Uniform 50/50 Layout
+                // All items take up half the grid (6/12 columns)
+                let gridClass = "span-6";
+
+                const isPriority = index < 3;
                 const isLottie = project.cover.endsWith(".json");
+                // Identifying projects that need background color patching
+                const needsDarkBg =
+                  project.slug === "trauffer" || project.slug === "movieworld-spiez";
 
                 return (
-                  <div class={`project-item ${isBig ? "span-4" : "span-2"}`}>
-                    <a href={project.url} class="project-card-link">
-                      <div class="project-image-container">
-                        {isLottie ? (
-                          <LottiePlayer 
-                            src={project.cover} 
-                            className="project-image" 
-                            client:visible 
-                          />
-                        ) : (
-                          <img 
-                            src={project.cover} 
-                            alt={project.coverAlt} 
-                            class="project-image" 
-                            loading={isPriority ? "eager" : "lazy"}
-                            fetchpriority={isPriority ? "high" : "auto"}
-                          />
-                        )}
-                      </div>
-                      <div class="project-info">
-                        <span class="project-title">{project.title}</span>
-                        <span class="project-date">{project.year}</span>
-                      </div>
-                    </a>
+                  <div class={`project-item ${gridClass}`}>
+                    <div class="project-item-content">
+                      <a href={project.url} class="project-card-link">
+                        <div class="project-image-container">
+                          {isLottie ? (
+                            <LottiePlayer
+                              src={project.cover}
+                              className="project-image"
+                              loop={true}
+                              client:visible
+                              backgroundColor={needsDarkBg ? "#111111" : undefined}
+                              isFirst={index === 0}
+                            />
+                          ) : (
+                            <img
+                              src={project.cover}
+                              alt={project.coverAlt}
+                              class="project-image"
+                              loading={isPriority ? "eager" : "lazy"}
+                              fetchpriority={isPriority ? "high" : "auto"}
+                            />
+                          )}
+                        </div>
+                        <div class="project-info">
+                          <span class="project-title">{project.title}</span>
+                          <span class="project-date">{project.year}</span>
+                        </div>
+                      </a>
+                    </div>
                   </div>
                 );
               })
@@ -247,8 +275,7 @@ const projects = allProjects
       display: grid;
       grid-template-columns: 1fr;
       gap: var(--space-4);
-      /* No top padding so background merges with intro */
-      padding: 0 16px max(var(--space-4), env(safe-area-inset-bottom)) 16px;
+      padding: 0 16px 2rem 16px; /* Reduced bottom padding */
       position: relative;
       z-index: 10;
       background-color: #111; /* Cover the parallax logo */
@@ -258,11 +285,63 @@ const projects = allProjects
 
     @media (min-width: 768px) {
       .projects-grid {
-        grid-template-columns: repeat(6, 1fr);
-        gap: 1rem;
+        grid-template-columns: repeat(12, 1fr);
+        column-gap: 2rem;
+        row-gap: 4rem;
+        padding: 0 16px 2rem 16px;
+      }
+
+      .span-6 {
+        grid-column: span 6;
+      }
+
+      .span-7 {
+        grid-column: span 7;
+      }
+
+      .span-5 {
+        grid-column: span 5;
+      }
+
+      .span-7 .project-image-container,
+      .span-5 .project-image-container {
+        aspect-ratio: 16/9;
+      }
+
+      /* Vertical Offset for every second item (Right Column) - APPLIED TO INNER CONTENT */
+      /* Note: We target the inner content div because the outer div is now a React component wrapper */
+      /* But wait, in Astro, the React component renders a div with the class we passed. */
+      /* So .project-item:nth-child(even) should still work if RevealOnScroll renders a div with that class. */
+      /* However, RevealOnScroll is a sibling in the grid now. */
+
+      /* Let's double check the CSS selector. */
+      /* The projects-grid contains RevealOnScroll elements. */
+      /* RevealOnScroll renders a motion.div with className="project-item span-6" */
+      /* So :nth-child(even) on .project-item should work if we target .project-item directly or use child selector on grid */
+
+      /* The CSS below targets .project-item:nth-child(even) .project-item-content */
+      /* This assumes .project-item is the direct child of the grid. */
+      /* Since RevealOnScroll renders the div with .project-item class, this is correct. */
+
+      .project-item:nth-child(even) .project-item-content {
+        margin-top: 10vh;
       }
     }
 
+    @media (max-width: 767px) {
+      .intro-text h1 span {
+        text-align: left !important;
+      }
+
+      .span-6,
+      .span-4,
+      .span-3,
+      .span-2 {
+        grid-column: span 1;
+      }
+    }
+
+    /* .project-item is now applied to the RevealOnScroll wrapper */
     .project-item {
       position: relative;
       display: flex;
@@ -277,14 +356,14 @@ const projects = allProjects
 
     .project-image-container {
       width: 100%;
-      background-color: #e5e5e5;
+      background-color: rgb(0, 0, 0);
       border-radius: 0px;
       overflow: hidden;
       margin-bottom: 0.5rem;
       aspect-ratio: 16/9;
     }
 
-    .span-4 .project-image-container {
+    .span-6 .project-image-container {
       aspect-ratio: 16/9;
     }
 
@@ -293,12 +372,7 @@ const projects = allProjects
       height: 100%;
       object-fit: cover;
       display: block;
-      opacity: 0.9;
-      transition: opacity 0.3s ease;
-    }
-
-    .project-card-link:hover .project-image {
-      opacity: 1;
+      opacity: 1; /* Fully visible by default */
     }
 
     .project-info {
@@ -318,26 +392,6 @@ const projects = allProjects
     .project-date {
       text-align: right;
       opacity: 0.7;
-    }
-
-    @media (min-width: 768px) {
-      .span-4 {
-        grid-column: span 4;
-      }
-      .span-2 {
-        grid-column: span 2;
-      }
-    }
-
-    @media (max-width: 767px) {
-      .intro-text h1 span {
-        text-align: left !important;
-      }
-
-      .span-4,
-      .span-2 {
-        grid-column: span 1;
-      }
     }
   </style>
 </Base>

@@ -36,6 +36,7 @@ interface Props {
   activePath?: string;
   mode?: 'agency' | 'hiring';
   isLanding?: boolean;
+  backHref?: string;
 }
 
 type GroupKey = "nav" | "projects" | "cta";
@@ -55,6 +56,7 @@ export default function Navigation({
   activePath = "",
   mode = 'agency',
   isLanding = false,
+  backHref,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -255,11 +257,12 @@ export default function Navigation({
       
       if (toggleRect) {
         const isMobile = window.innerWidth < 768;
-        const offset = window.innerWidth - toggleRect.right;
+        const clientWidth = document.documentElement.clientWidth;
+        const offset = clientWidth - toggleRect.right;
         
         if (isMobile) {
              setPanelRight(16); // Fixed right offset on mobile
-             setPanelWidth(window.innerWidth - 32); // Full width minus padding
+             setPanelWidth(clientWidth - 32); // Full width minus padding
         } else {
              setPanelRight(Math.max(offset, 16));
              
@@ -377,23 +380,42 @@ export default function Navigation({
           <div className={styles.headerCenter} aria-hidden="true" />
 
           <div className={styles.headerRight}>
-            <a ref={talkBtnRef} className={`${styles.headerPill} ${styles.talkBtn}`} href={talkHref}>
-              <span className={styles.talkSweep} aria-hidden></span>
-              <span className={styles.talkText}>
-                <span className={styles.talkTextInner}>Let&#39;s talk</span>
-              </span>
-              <span className={styles.talkArrow} aria-hidden>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M2.343 8h11.314m0 0L8.673 3.016M13.657 8 8.673 12.984"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </span>
-            </a>
+            {backHref ? (
+              <a href={backHref} className={`${styles.headerPill} ${styles.talkBtn}`}>
+                <span className={styles.talkArrow} style={{ transform: 'rotate(180deg)' }}>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M2.343 8h11.314m0 0L8.673 3.016M13.657 8 8.673 12.984"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+                <span className={styles.talkText} style={{ marginLeft: '0.5em' }}>
+                  <span className={styles.talkTextInner}>Back</span>
+                </span>
+              </a>
+            ) : mode !== 'hiring' && (
+              <a ref={talkBtnRef} className={`${styles.headerPill} ${styles.talkBtn}`} href={talkHref}>
+                <span className={styles.talkSweep} aria-hidden></span>
+                <span className={styles.talkText}>
+                  <span className={styles.talkTextInner}>Let&#39;s talk</span>
+                </span>
+                <span className={styles.talkArrow} aria-hidden>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M2.343 8h11.314m0 0L8.673 3.016M13.657 8 8.673 12.984"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+              </a>
+            )}
 
             <button
               type="button"
@@ -414,11 +436,7 @@ export default function Navigation({
                     Close
                   </span>
                 </div>
-                <div className={styles.menuToggleDots} aria-hidden data-phase={togglePhase}>
-                  <span />
-                  <span />
-                  <span />
-                </div>
+                {/* Dots menu removed */}
               </div>
             </button>
           </div>

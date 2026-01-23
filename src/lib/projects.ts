@@ -61,7 +61,7 @@ export async function loadProjects({ mode = 'agency', limit }: LoadProjectsOptio
 
   const mapped: ProjectListItem[] = filtered.map((p) => ({
     slug: p.slug,
-    url: `/projects/${p.slug}`,
+    url: (mode === 'portfolio' || mode === 'hiring') ? `/portfolio/projects/${p.slug}` : `/projects/${p.slug}`,
     title: p.data.title,
     tags: p.data.tags ?? [],
     summary: p.data.summary,

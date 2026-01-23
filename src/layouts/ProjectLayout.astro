@@ -9,8 +9,10 @@ interface Props {
   author?: string;
   ogImage?: string;
   slug: string;
-  prevProject?: { slug: string; title: string };
-  nextProject?: { slug: string; title: string };
+  prevProject?: { slug: string; title: string; cover?: string };
+  nextProject?: { slug: string; title: string; cover?: string };
+  isCaseStudy?: boolean;
+  basePath?: string;
 }
 
 const {
@@ -22,10 +24,12 @@ const {
   slug,
   prevProject,
   nextProject,
+  isCaseStudy = false,
+  basePath = "/projects",
 } = Astro.props;
 
 const siteUrl = import.meta.env.SITE || "https://ark.studio.ch";
-const projectUrl = new URL(`/projects/${slug}`, siteUrl).toString();
+const projectUrl = new URL(`${basePath}/${slug}`, siteUrl).toString();
 
 const articleSchema = buildArticleSchema({
   headline: title,
@@ -43,10 +47,12 @@ const articleSchema = buildArticleSchema({
   ogImage={ogImage}
   canonical={projectUrl}
   ogType="article"
+  footerMode={basePath.includes("portfolio") ? "reveal" : "default"}
+  wrapperClass={basePath.includes("portfolio") ? "bg-[#111]" : ""}
 >
   <!-- Hero Image Section - Full Width with Border -->
   {
-    ogImage && (
+    !isCaseStudy && ogImage && (
       <div class="w-full px-4 pt-4">
         <div
           class="w-full h-[40vh] md:h-[60vh] relative overflow-hidden bg-transparent"
@@ -67,10 +73,16 @@ const articleSchema = buildArticleSchema({
     )
   }
 
-  <!-- Content Section - Constrained Width -->
-  <article class="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-12">
-    <slot />
-  </article>
+  <!-- Content Section -->
+  {isCaseStudy ? (
+    <div class="w-full bg-black text-white min-h-screen">
+      <slot />
+    </div>
+  ) : (
+    <article class="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-12">
+      <slot />
+    </article>
+  )}
 
   {
     (prevProject || nextProject) && (
@@ -78,7 +90,7 @@ const articleSchema = buildArticleSchema({
         <div class="flex justify-between items-center gap-4 pt-8 border-t border-black/10">
           {prevProject ? (
             <a
-              href={`/projects/${prevProject.slug}`}
+              href={`${basePath}/${prevProject.slug}`}
               class="text-sm text-black/70 hover:text-black transition-colors focus-ring"
             >
               ← {prevProject.title}
@@ -88,7 +100,7 @@ const articleSchema = buildArticleSchema({
           )}
           {nextProject && (
             <a
-              href={`/projects/${nextProject.slug}`}
+              href={`${basePath}/${nextProject.slug}`}
               class="text-sm text-black/70 hover:text-black transition-colors focus-ring"
             >
               {nextProject.title} →

@@ -27,10 +27,10 @@ export default function PortfolioAnimation({ children }: PortfolioAnimationProps
     () => {
       if (!isReady) return;
 
-      const logo = document.querySelector(".shain-logo-wrapper");
-      const letters = document.querySelectorAll(".shain-logo .letter");
-      const intro = document.querySelector(".portfolio-intro-content");
-      const grid = document.querySelector(".projects-grid-content");
+      const logo = containerRef.current?.querySelector(".shain-logo-wrapper");
+      const letters = containerRef.current?.querySelectorAll(".shain-logo .letter");
+      const intro = containerRef.current?.querySelector(".portfolio-intro-content");
+      const grid = containerRef.current?.querySelector(".projects-grid-content");
 
       if (!logo || !intro || !grid) return;
 
@@ -81,21 +81,15 @@ export default function PortfolioAnimation({ children }: PortfolioAnimationProps
           "-=0.8"
         )
         .add(() => {
-          // 1. First two projects: Animate once and stay
+          // 1. First two projects: Animate immediately
           if (firstTwo.length > 0) {
-            ScrollTrigger.batch(firstTwo, {
-              onEnter: (batch) => {
-                gsap.to(batch, {
-                  opacity: 1,
-                  y: 0,
-                  duration: 1,
-                  stagger: 0.15,
-                  ease: "power3.inOut",
-                  overwrite: true,
-                });
-              },
-              start: "top 95%",
-              once: true,
+            gsap.to(firstTwo, {
+              opacity: 1,
+              y: 0,
+              duration: 1,
+              stagger: 0.15,
+              ease: "power3.out",
+              overwrite: true,
             });
           }
 
@@ -108,17 +102,13 @@ export default function PortfolioAnimation({ children }: PortfolioAnimationProps
                   y: 0,
                   duration: 1,
                   stagger: 0.15,
-                  ease: "power3.inOut",
+                  ease: "power3.out",
                   overwrite: true,
                 });
               },
               onLeaveBack: (batch) => {
-                // Reset when scrolling back up (element leaves bottom of viewport)
-                gsap.set(batch, {
-                  opacity: 0,
-                  y: 50,
-                  overwrite: true,
-                });
+                // Do not hide when scrolling back up
+                // Keeping them visible ensures smooth experience
               },
               start: "top 90%", // Slightly earlier to ensure they are visible when expected
               // markers: true, // For debugging if needed

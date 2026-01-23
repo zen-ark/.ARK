@@ -1,5 +1,5 @@
 :root {
-  --nav-padding-x: clamp(24px, 5vw, 64px);
+  --nav-padding-x: 16px;
   --nav-padding-y: clamp(18px, 4vw, 42px);
   --nav-radius: var(--radius-12);
   --nav-accent: rgba(108, 117, 255, 1);
@@ -111,15 +111,14 @@
   transition: opacity 140ms ease, background-color 300ms ease, border-color 300ms ease, backdrop-filter 300ms ease;
 }
 
-.headerPill:hover,
-.menuToggle:hover .menuToggleInner {
+.headerPill:active {
+  opacity: 0.95;
+}
+
+.talkBtn:hover {
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(4px);
   transition: background-color 300ms ease, backdrop-filter 300ms ease;
-}
-
-.headerPill:active {
-  opacity: 0.95;
 }
 
 .talkBtn {
@@ -248,13 +247,16 @@
   position: relative;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-6);
   padding: 0 var(--space-8);
   transition: box-shadow 400ms ease, background-color 300ms ease, backdrop-filter 300ms ease;
 }
 
 .menuToggle:hover .menuToggleInner {
-  /* box-shadow removed, handled by headerPill hover styles shared below */
+  /* Hover effect removed */
+  background: transparent;
+  backdrop-filter: none;
 }
 
 .menuToggle:focus-visible .menuToggleInner {
@@ -333,6 +335,7 @@
   0% {
     transform: translateY(0);
   }
+
   100% {
     transform: translateY(-100%);
   }
@@ -342,6 +345,7 @@
   0% {
     transform: translateY(100%);
   }
+
   100% {
     transform: translateY(0);
   }
@@ -351,6 +355,7 @@
   0% {
     transform: translateY(0);
   }
+
   100% {
     transform: translateY(100%);
   }
@@ -360,6 +365,7 @@
   0% {
     transform: translateY(-100%);
   }
+
   100% {
     transform: translateY(0);
   }
@@ -444,16 +450,19 @@
     transform: translate(calc(-50% - var(--menu-dot-closed-gap)), -50%) scale(1);
     opacity: 0.9;
   }
+
   42.857% {
     animation-timing-function: var(--menu-dot-open-pulse-ease);
     transform: translate(-50%, -50%) scale(1);
     opacity: 0.95;
   }
+
   60% {
     animation-timing-function: var(--menu-dot-open-split-ease);
     transform: translate(-50%, calc(-50% - (var(--menu-dot-separation) / 2))) scale(1);
     opacity: 0.95;
   }
+
   100% {
     transform: translate(-50%, calc(-50% - var(--menu-dot-separation))) scale(1);
     opacity: 0.9;
@@ -466,16 +475,19 @@
     transform: translate(-50%, -50%) scale(1);
     opacity: 0.9;
   }
+
   42.857% {
     animation-timing-function: var(--menu-dot-open-pulse-ease);
     transform: translate(-50%, -50%) scale(1);
     opacity: 0.95;
   }
+
   52.381% {
     animation-timing-function: var(--menu-dot-open-split-ease);
     transform: translate(-50%, -50%) scale(1.2);
     opacity: 1;
   }
+
   100% {
     transform: translate(-50%, -50%) scale(1);
     opacity: 0.95;
@@ -488,16 +500,19 @@
     transform: translate(calc(-50% + var(--menu-dot-closed-gap)), -50%) scale(1);
     opacity: 0.9;
   }
+
   42.857% {
     animation-timing-function: var(--menu-dot-open-pulse-ease);
     transform: translate(-50%, -50%) scale(1);
     opacity: 0.95;
   }
+
   60% {
     animation-timing-function: var(--menu-dot-open-split-ease);
     transform: translate(-50%, calc(-50% + (var(--menu-dot-separation) / 2))) scale(1);
     opacity: 0.95;
   }
+
   100% {
     transform: translate(-50%, calc(-50% + var(--menu-dot-separation))) scale(1);
     opacity: 0.9;
@@ -509,14 +524,17 @@
     transform: translate(-50%, calc(-50% - var(--menu-dot-separation))) scale(1);
     opacity: 0.9;
   }
+
   47% {
     transform: translate(-50%, -50%) scale(1.05);
     opacity: 0.96;
   }
+
   57% {
     transform: translate(-50%, -50%) scale(1.1);
     opacity: 0.98;
   }
+
   100% {
     transform: translate(calc(-50% - var(--menu-dot-closed-gap)), -50%) scale(1);
     opacity: 0.9;
@@ -528,14 +546,17 @@
     transform: translate(-50%, -50%) scale(1);
     opacity: 0.95;
   }
+
   47% {
     transform: translate(-50%, -50%) scale(1.15);
     opacity: 1;
   }
+
   57% {
     transform: translate(-50%, -50%) scale(1.2);
     opacity: 1;
   }
+
   100% {
     transform: translate(-50%, -50%) scale(1);
     opacity: 0.9;
@@ -547,14 +568,17 @@
     transform: translate(-50%, calc(-50% + var(--menu-dot-separation))) scale(1);
     opacity: 0.9;
   }
+
   47% {
     transform: translate(-50%, -50%) scale(1.05);
     opacity: 0.96;
   }
+
   57% {
     transform: translate(-50%, -50%) scale(1.1);
     opacity: 0.98;
   }
+
   100% {
     transform: translate(calc(-50% + var(--menu-dot-closed-gap)), -50%) scale(1);
     opacity: 0.9;
@@ -679,8 +703,8 @@
 .menuSection {
   border-radius: var(--nav-radius);
   overflow: hidden;
-  width: var(--panel-width, auto);
-  min-width: var(--panel-width, auto);
+  width: var(--panel-width, 20vw);
+  min-width: var(--panel-width, 12vw);
 }
 
 .menuLinks {
@@ -934,48 +958,62 @@
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .overlay, .overlay.open, .overlay.closing {
+
+  .overlay,
+  .overlay.open,
+  .overlay.closing {
     transition: opacity 100ms ease !important;
   }
+
   .menuSection {
     transition: opacity 100ms ease !important;
     transform: none !important;
     opacity: 1 !important;
   }
+
   .menuToggleInner,
   .headerPill {
     transition: none !important;
     transform: none !important;
   }
+
   .menuToggleDots span {
     animation: none !important;
     transition: none !important;
   }
+
   .menuActiveDot {
     transition: none !important;
   }
+
   .menuLinkArrowIcon {
     transition: none !important;
     transform: none !important;
   }
+
   .menuLinkLabelPrimary,
   .menuLinkLabelClone {
     transition: none !important;
   }
+
   .menuLink[data-hovered="true"] .menuLinkLabelPrimary,
   .menuLink[data-hovered="true"] .menuLinkLabelClone {
     transform: none !important;
   }
+
   .menuLinkBackground {
     transition: opacity 150ms ease !important;
     transform: none !important;
   }
+
   .menuLink[data-hovered="true"] .menuLinkArrowIcon {
     opacity: 1 !important;
   }
+
   .menuToggleLabel {
     height: auto !important;
   }
+
   .menuToggleLabel span {
     position: relative;
     opacity: 0;
@@ -983,48 +1021,55 @@
     animation: none !important;
     transition: opacity 160ms ease !important;
   }
+
   .menuToggleLabel[data-phase="closed"] span[data-state="close"],
   .menuToggleLabel[data-phase="closing"] span[data-state="close"] {
     opacity: 1;
   }
+
   .menuToggleLabel[data-phase="open"] span[data-state="menu"],
   .menuToggleLabel[data-phase="opening"] span[data-state="menu"] {
     opacity: 1;
   }
+
   .menuToggleLabel[data-phase="opening"] span[data-state="close"],
   .menuToggleLabel[data-phase="closing"] span[data-state="menu"] {
     opacity: 0;
   }
+
   .menuToggleDots[data-phase="closed"] span:nth-child(1),
   .menuToggleDots[data-phase="closing"] span:nth-child(1) {
     transform: translate(calc(-50% - var(--menu-dot-closed-gap)), -50%) scale(1) !important;
     opacity: 0.9 !important;
   }
+
   .menuToggleDots[data-phase="closed"] span:nth-child(2),
   .menuToggleDots[data-phase="closing"] span:nth-child(2) {
     transform: translate(-50%, -50%) scale(1) !important;
     opacity: 0.9 !important;
   }
+
   .menuToggleDots[data-phase="closed"] span:nth-child(3),
   .menuToggleDots[data-phase="closing"] span:nth-child(3) {
     transform: translate(calc(-50% + var(--menu-dot-closed-gap)), -50%) scale(1) !important;
     opacity: 0.9 !important;
   }
+
   .menuToggleDots[data-phase="opening"] span:nth-child(1),
   .menuToggleDots[data-phase="open"] span:nth-child(1) {
     transform: translate(-50%, calc(-50% - var(--menu-dot-separation))) scale(1) !important;
     opacity: 0.9 !important;
   }
+
   .menuToggleDots[data-phase="opening"] span:nth-child(2),
   .menuToggleDots[data-phase="open"] span:nth-child(2) {
     transform: translate(-50%, -50%) scale(1) !important;
     opacity: 0.95 !important;
   }
+
   .menuToggleDots[data-phase="opening"] span:nth-child(3),
   .menuToggleDots[data-phase="open"] span:nth-child(3) {
     transform: translate(-50%, calc(-50% + var(--menu-dot-separation))) scale(1) !important;
     opacity: 0.9 !important;
   }
 }
-
-

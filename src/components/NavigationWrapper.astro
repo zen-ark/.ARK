@@ -26,17 +26,18 @@ const agencyLinks = [
 ];
 
 const portfolioLinks = [
-  { href: toHref("/"), label: "The studio ->" }, // Link back to agency
   { href: toHref("/portfolio"), label: "Work" },
   { href: toHref("/portfolio/about"), label: "About" },
+  { href: "/cv.pdf", label: "CV" },
   { href: toHref("/portfolio/contact"), label: "Contact" },
+  { href: toHref("/"), label: "{ Studio }" },
 ];
 
 const primaryLinks = mode === "hiring" ? portfolioLinks : agencyLinks;
 
 const projects = await getCollection("projects").catch(() => []);
 
-const sorted =
+const sortedProjects =
   projects && projects.length
     ? [...projects]
         .sort((a, b) => {
@@ -57,16 +58,23 @@ const sorted =
         },
       ];
 
+// In hiring mode (portfolio), we hide the projects column in the menu
+const finalProjects = mode === "hiring" ? [] : sortedProjects;
+
 const talkHref = "mailto:hello@ark.studio.ch";
 const logoLines = ["ark", "studio", "ch"];
+
+const isPortfolioProject = currentPath.includes("/portfolio/projects/") || currentPath.includes("/de/portfolio/projects/");
+const backHref = isPortfolioProject ? toHref("/portfolio") : undefined;
 ---
 
 <Navigation
   client:load
-  projects={sorted}
+  projects={finalProjects}
   primaryLinks={primaryLinks}
   talkHref={talkHref}
   logoLines={logoLines}
   activePath={currentPath}
   mode={mode}
+  backHref={backHref}
 />
