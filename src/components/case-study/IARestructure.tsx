@@ -1,11 +1,17 @@
 import React from 'react'
 import RevealOnScroll from '../RevealOnScroll'
 
+export interface SitemapNode {
+  label: string;
+  children?: string[];
+}
+
 interface IARestructureProps {
   title: string
   description: string
   imageSrc?: string
   seniorNote?: string
+  data?: SitemapNode[]
 }
 
 interface NodeProps {
@@ -59,9 +65,9 @@ const BranchNode = ({ label, children, delay = 0, isFirst, isLast }: NodeProps) 
   </RevealOnScroll>
 )
 
-export default function IARestructure({ title, description, imageSrc, seniorNote }: IARestructureProps) {
+export default function IARestructure({ title, description, imageSrc, seniorNote, data }: IARestructureProps) {
   
-  const sitemapData = [
+  const defaultSitemapData = [
     {
       label: "Shop",
       children: []
@@ -91,6 +97,8 @@ export default function IARestructure({ title, description, imageSrc, seniorNote
       children: ["History", "Team", "Careers", "Contact"]
     }
   ];
+
+  const sitemapData = data || defaultSitemapData;
 
   return (
     <section className="w-full max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-24 bg-transparent">

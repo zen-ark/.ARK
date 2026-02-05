@@ -19,6 +19,7 @@ const projects = allProjects
     year: p.data.year,
     featured: p.data.featured,
     orderHiring: p.data.orderHiring,
+    workInProgress: p.data.workInProgress,
   }))
   .sort((a, b) => {
     // Sort by orderHiring if available (ascending: 1, 2, 3...)
@@ -85,36 +86,55 @@ const projects = allProjects
                 // Identifying projects that need background color patching
                 const needsDarkBg =
                   project.slug === "trauffer" || project.slug === "movieworld-spiez";
+                const isWIP = project.workInProgress;
+
+                const content = (
+                  <>
+                    <div class="project-image-container relative">
+                      {isWIP && (
+                        <div class="wip-banner">
+                          Work in Progress
+                        </div>
+                      )}
+                      {isLottie ? (
+                        <LottiePlayer
+                          src={project.cover}
+                          className="project-image"
+                          loop={true}
+                          client:visible
+                          backgroundColor={needsDarkBg ? "#111111" : undefined}
+                          isFirst={index === 0}
+                        />
+                      ) : (
+                        <img
+                          src={project.cover}
+                          alt={project.coverAlt}
+                          class={`project-image ${isWIP ? 'opacity-50' : ''}`}
+                          loading={isPriority ? "eager" : "lazy"}
+                          fetchpriority={isPriority ? "high" : "auto"}
+                        />
+                      )}
+                      {!isWIP && <div class="image-overlay"></div>}
+                    </div>
+                    <div class="project-info">
+                      <span class="project-title">{project.title}</span>
+                      <span class="project-date">{project.year}</span>
+                    </div>
+                  </>
+                );
 
                 return (
                   <div class={`project-item ${gridClass}`}>
                     <div class="project-item-content">
-                      <a href={project.url} class="project-card-link">
-                        <div class="project-image-container">
-                          {isLottie ? (
-                            <LottiePlayer
-                              src={project.cover}
-                              className="project-image"
-                              loop={true}
-                              client:visible
-                              backgroundColor={needsDarkBg ? "#111111" : undefined}
-                              isFirst={index === 0}
-                            />
-                          ) : (
-                            <img
-                              src={project.cover}
-                              alt={project.coverAlt}
-                              class="project-image"
-                              loading={isPriority ? "eager" : "lazy"}
-                              fetchpriority={isPriority ? "high" : "auto"}
-                            />
-                          )}
+                      {isWIP ? (
+                        <div class="project-card-link cursor-default">
+                          {content}
                         </div>
-                        <div class="project-info">
-                          <span class="project-title">{project.title}</span>
-                          <span class="project-date">{project.year}</span>
-                        </div>
-                      </a>
+                      ) : (
+                        <a href={project.url} class="project-card-link">
+                          {content}
+                        </a>
+                      )}
                     </div>
                   </div>
                 );
@@ -356,11 +376,12 @@ const projects = allProjects
 
     .project-image-container {
       width: 100%;
-      background-color: rgb(0, 0, 0);
+      background-color: #111; /* Match page background to prevent flickering */
       border-radius: 0px;
       overflow: hidden;
       margin-bottom: 0.5rem;
       aspect-ratio: 16/9;
+      transform: translateZ(0); /* Fix for Safari flickering */
     }
 
     .span-6 .project-image-container {
@@ -373,6 +394,42 @@ const projects = allProjects
       object-fit: cover;
       display: block;
       opacity: 1; /* Fully visible by default */
+    }
+    
+    .wip-banner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      padding: 0.5rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      z-index: 20;
+      border-radius: 9999px;
+      pointer-events: none;
+    }
+
+    .image-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.05) 100%);
+      opacity: 1;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .project-card-link:hover .image-overlay {
+      opacity: 0;
+    }
+
+    .project-card-link.cursor-default {
+      cursor: default;
     }
 
     .project-info {

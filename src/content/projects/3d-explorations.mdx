@@ -1,9 +1,9 @@
 ---
-title: "3D Explorations"
+title: "3D Motion & Product Visualization"
 date: "2025-12-01"
 year: 2025
 client: "Personal"
-summary: "A collection of 3D experiments and motion design studies."
+summary: "A curated evolution of 3D experiments, product renders, and motion loops."
 services: ["3D Design", "Motion Graphics"]
 tags: ["3D", "Motion", "WebGL"]
 cover: "/portfolio projects/3d/3d.json"
@@ -13,8 +13,77 @@ status: "live"
 featured: true
 showInPortfolio: true
 orderHiring: 3
+isCaseStudy: true
 ---
 
-## Overview
+import CaseStudyHeader from "../../components/case-study/CaseStudyHeader";
+import MetricsGrid from "../../components/case-study/MetricsGrid";
+import StickyScrollSection from "../../components/case-study/StickyScrollSection.astro";
+import CaseStudyResults from "../../components/case-study/CaseStudyResults.astro";
+import GalleryButton from "../../components/case-study/GalleryButton.astro";
 
-A playground for experimenting with 3D graphics, motion design, and interactive web experiences. Exploring the boundaries of what's possible in the browser.
+<GalleryButton href="/explorations" />
+
+<CaseStudyHeader
+  client:load
+  label="Executive Summary"
+  title="3D Motion & Product Visualization: An 8-Year Exploration"
+  subtitle="A curated evolution of 3D experiments, product renders, and motion loops designed to bridge the gap between high-end visual art and commercial web implementation. Lead 3D Designer & Creative Technologist • 2017 – Present."
+  imageSrc="/portfolio projects/3d/3d.json"
+  clientName="Personal / R&D"
+  services={["3D Design", "Motion Graphics"]}
+  tech={["Blender", "Three.js", "R3F"]}
+  className="h-[85vh] min-h-[600px] mb-4 mt-0"
+/>
+
+<MetricsGrid
+  client:visible
+  className="py-8 md:py-12"
+  items={[
+    {
+      value: "08",
+      label: "Years of Mastery",
+      description: "A deep-rooted passion for Blender, lighting, and physics-based motion.",
+    },
+    {
+      value: "50+",
+      label: "R&D Explorations",
+      description: "A vast library of technical experiments in material science and optics.",
+    },
+    {
+      value: "03",
+      label: "Key Growth Sectors",
+      description: "Strategic focus on FinTech, MedTech, and Premium E-commerce.",
+    },
+  ]}
+/>
+
+<StickyScrollSection title="Discovery & Logic: The 8-Year Evolution" heading="Tactile Appeal">
+  With over eight years of experience in the 3D space, my work lives at the intersection of aesthetic obsession and technical optimization. What began as a passion for creating visually arresting product loops has evolved into a strategic pursuit: bridging the gap between high-fidelity 3D and the practical constraints of the modern web.
+
+My design philosophy is rooted in Tactile Appeal. I’ve found that the most engaging 3D work makes the user want to reach out and touch the screen. For a FinTech brand, this means 3D that communicates "security" through heavy, metallic textures; for MedTech, it’s using "transparency" and light to signal biological precision.
+
+  <div slot="visuals" class="space-y-8">
+     <video src="/portfolio projects/3d/optimized/2_loops.mp4" class="w-full rounded-2xl" autoplay loop muted playsinline></video>
+     <img src="/portfolio projects/3d/optimized/65d8dfc3070ef7ee2bfce43b_mhhh.webp" class="w-full rounded-2xl" alt="Product Visualization" />
+  </div>
+</StickyScrollSection>
+
+<StickyScrollSection title="Visual Excellence: The 'Zero-Latency' Pipeline" heading="Open-Source Power">
+  My process is built on Open-Source Power (Blender) and Professional Grade Color (DaVinci Resolve). I don't just "hit render." I hand-sculpt light paths and utilize custom shaders to ensure that every loop is optimized for the web. This allows me to deliver a "Retina-level" 3D experience without the loading times typically associated with high-end motion.
+
+  <div slot="visuals" class="space-y-8">
+     <img src="/portfolio projects/3d/optimized/65d34c7279fcc4fe46944a60_artboard_1.webp" class="w-full rounded-2xl" alt="Abstract Composition" />
+     <img src="/portfolio projects/3d/optimized/65d8d261b3f9a45ddcf47acb_sick.webp" class="w-full rounded-2xl" alt="Character Study" />
+     <img src="/portfolio projects/3d/optimized/65d8d261932a0a6d0ea6fccf_sick_2.webp" class="w-full rounded-2xl" alt="Character Study" />
+  </div>
+</StickyScrollSection>
+
+<div id="gallery"></div>
+
+<CaseStudyResults currentSlug="3d-explorations">
+  The most significant lesson from 8 years of 3D design is that optimization is a creative tool. By
+  learning to optimize scenes at the source, I’ve unlocked the ability to use 3D in ways that were
+  previously too "expensive" for most businesses. The Goal: To continue helping companies transition
+  from flat, 2D identities to immersive, 3D-first brand worlds.
+</CaseStudyResults>

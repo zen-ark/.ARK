@@ -1,0 +1,8 @@
+---
+import Base from "@/layouts/Base.astro";
+import { InfiniteGallery } from "@/components/case-study/InfiniteGallery";
+---
+
+<Base title="Explorations — .ARK" footerMode="reveal" wrapperClass="bg-[#111]">
+  <InfiniteGallery client:only="react" />
+</Base>

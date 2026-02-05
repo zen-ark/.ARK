@@ -13,7 +13,7 @@ export default function CaseStudyHero({ title, subtitle, imageSrc, className }: 
   const isLottie = imageSrc?.endsWith('.json');
 
   return (
-    <div className={`w-[calc(100%-2rem)] relative bg-[#f5f5f5] overflow-hidden mt-4 mx-4 ${className ? className : "h-[80vh] min-h-[600px] mb-16"}`}>
+    <div className={`w-full relative bg-[#f5f5f5] overflow-hidden ${className ? className : "h-[80vh] min-h-[600px] mb-16"}`}>
       <RevealOnScroll className="w-full h-full">
         {/* Media Content */}
         <div className="absolute inset-x-0 bottom-0 top-0 flex items-center justify-center">

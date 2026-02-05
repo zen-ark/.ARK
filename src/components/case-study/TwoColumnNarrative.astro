@@ -7,19 +7,17 @@ interface Props {
 const { title, subtitle } = Astro.props;
 ---
 
-<section class="w-full max-w-6xl mx-auto px-4 md:px-6 py-16 md:py-24">
+<section class="w-full max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-24">
   <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
     <div class="md:col-span-4">
       <h2 class="text-sm md:text-base font-mono uppercase tracking-wider text-white/50 mb-4">
         {title}
       </h2>
-      {subtitle && (
-        <p class="text-xl md:text-2xl font-medium text-white/90">
-          {subtitle}
-        </p>
-      )}
+      {subtitle && <p class="text-xl md:text-2xl font-medium text-white/90">{subtitle}</p>}
     </div>
-    <div class="md:col-span-8 prose prose-lg prose-invert max-w-none text-white/80 font-light leading-relaxed">
+    <div
+      class="md:col-span-8 prose prose-lg prose-invert max-w-none text-white/80 font-light leading-relaxed"
+    >
       <slot />
     </div>
   </div>

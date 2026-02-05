@@ -17,19 +17,19 @@ const cards: CardData[] = [
     label: "SYSTEMATIC",
     mode: "MODE: STRUCTURE",
     status: "STATUS: STABLE",
-    imageSrc: "/OBJ 1.png",
+    imageSrc: "/OBJ_1.png",
   },
   {
     label: "CREATIVE",
     mode: "MODE: EXPLORATION",
     status: "STATUS: ACTIVE",
-    imageSrc: "/OBJ 2.png",
+    imageSrc: "/OBJ_2.png",
   },
   {
     label: "INTERACTIVE",
     mode: "MODE: INPUT / OUTPUT",
     status: "STATUS: RESPONSIVE",
-    imageSrc: "/OBJ 3.png",
+    imageSrc: "/OBJ_3.png",
   },
 ];
 

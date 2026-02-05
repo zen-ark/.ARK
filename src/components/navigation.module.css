@@ -33,7 +33,7 @@
   position: fixed;
   inset: 0 0 auto;
   padding: var(--nav-padding-y) var(--nav-padding-x) 0;
-  z-index: 1400;
+  z-index: 10005;
   pointer-events: none;
   color: #fff;
   mix-blend-mode: difference;
@@ -594,7 +594,7 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--overlay-open) var(--overlay-ease);
-  z-index: 1200;
+  z-index: 10000;
 }
 
 .overlay.open {

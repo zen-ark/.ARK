@@ -26,9 +26,9 @@ const agencyLinks = [
 ];
 
 const portfolioLinks = [
-  { href: toHref("/portfolio"), label: "Work" },
+  { href: toHref("/portfolio"), label: "Home" },
   { href: toHref("/portfolio/about"), label: "About" },
-  { href: "/cv.pdf", label: "CV" },
+  { href: "/portfolio/resume", label: "CV" },
   { href: toHref("/portfolio/contact"), label: "Contact" },
   { href: toHref("/"), label: "{ Studio }" },
 ];
@@ -64,7 +64,8 @@ const finalProjects = mode === "hiring" ? [] : sortedProjects;
 const talkHref = "mailto:hello@ark.studio.ch";
 const logoLines = ["ark", "studio", "ch"];
 
-const isPortfolioProject = currentPath.includes("/portfolio/projects/") || currentPath.includes("/de/portfolio/projects/");
+const isPortfolioProject =
+  currentPath.includes("/portfolio/projects/") || currentPath.includes("/de/portfolio/projects/");
 const backHref = isPortfolioProject ? toHref("/portfolio") : undefined;
 ---
 

@@ -13,42 +13,97 @@ status: "live"
 featured: true
 showInPortfolio: true
 orderHiring: 1
+isCaseStudy: true
 ---
-import CaseStudyHero from '../../components/case-study/CaseStudyHero';
-import TwoColumnNarrative from '../../components/case-study/TwoColumnNarrative.astro';
-import IARestructure from '../../components/case-study/IARestructure';
-import AlternatingGallery from '../../components/case-study/AlternatingGallery';
-import MetricsGrid from '../../components/case-study/MetricsGrid';
-import CaseStudyResults from '../../components/case-study/CaseStudyResults.astro';
-import LeanSystem from '../../components/case-study/LeanSystem';
 
-<CaseStudyHero
+import CaseStudyHeader from "../../components/case-study/CaseStudyHeader";
+import TwoColumnNarrative from "../../components/case-study/TwoColumnNarrative.astro";
+import IARestructure from "../../components/case-study/IARestructure";
+import BrandContrast from "../../components/case-study/BrandContrast";
+import MetricsGrid from "../../components/case-study/MetricsGrid";
+import CaseStudyResults from "../../components/case-study/CaseStudyResults.astro";
+import LeanSystem from "../../components/case-study/LeanSystem";
+
+<div class="bg-[#111] text-white min-h-screen">
+
+<CaseStudyHeader
   client:load
+  label="Heritage Brand Rescue"
   title="Trauffer: The 25-Hour Rescue"
   subtitle="Architecting a multi-branch tourism and e-commerce ecosystem under extreme temporal constraints for Switzerland’s iconic heritage brand."
   imageSrc="/portfolio projects/trauffer/trauffer.json"
-  className="h-[75vh] min-h-[500px] mb-4"
+  clientName="Trauffer"
+  services={["Web Design", "Development"]}
+  tech={["Astro", "WebGL"]}
+  className="h-[75vh] min-h-[500px] mb-4 mt-0 pt-4"
 />
 
-<MetricsGrid client:load className="py-8 md:py-12" />
+<MetricsGrid
+  client:load
+  className="py-8 md:py-12"
+  items={[
+    {
+      value: "25h",
+      label: "Turnaround",
+      description:
+        "From project takeover to final handoff, delivering a complete redesign under tight constraints.",
+    },
+    {
+      value: "42",
+      label: "Pages Architected",
+      description:
+        "Transformed a stalled project into a 42-page high-fidelity system within the 25-hour window.",
+    },
+    {
+      value: "05",
+      label: "Business Units",
+      description: "Unified the Shop, Hotel, Restaurant, Events, and HQ under one system.",
+    },
+  ]}
+/>
 
-<TwoColumnNarrative title="THE CHALLENGE" subtitle="Project Rescue">
-  I stepped into this project as a 'rescue' lead. With a previous design phase stalled and a strict 25-hour remaining budget, the mission was to overhaul the digital presence for one of Switzerland’s most beloved heritage brands.
-  
-  Trauffer isn't just toys; it’s a multifaceted ecosystem including the Bretterhotel, world-class restaurants, and an event-driven 'Erlebniswelt.' My goal was to unify these under one cohesive digital language while meeting the exacting standards of a high-end Swiss clientele.
-</TwoColumnNarrative>
+<section class="w-full max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-24">
+  <div class="flex flex-col gap-12 md:gap-16">
+    <div class="flex flex-col max-w-3xl">
+      <h2 class="text-sm md:text-base font-mono uppercase tracking-wider text-white/50 mb-4">
+        THE CHALLENGE
+      </h2>
+      <p class="text-xl md:text-2xl font-medium text-white/90 mb-6">Project Rescue</p>
+      <div class="prose prose-lg prose-invert max-w-none text-white/80 font-light leading-relaxed">
+        I stepped into this project as a 'rescue' lead. With a previous design phase stalled and a
+        strict 25-hour remaining budget, the mission was to overhaul the digital presence for one of
+        Switzerland’s most beloved heritage brands. Trauffer isn't just toys; it’s a multifaceted
+        ecosystem including the Bretterhotel, world-class restaurants, and an event-driven
+        'Erlebniswelt.' My goal was to unify these under one cohesive digital language while meeting
+        the exacting standards of a high-end Swiss clientele.
+      </div>
+    </div>
+    <div class="w-full">
+      <img
+        src="/portfolio projects/trauffer/long img mockup.png"
+        alt="Trauffer Project Rescue Mockup"
+        class="w-full h-auto rounded-lg shadow-lg"
+      />
+    </div>
+  </div>
+</section>
 
-<IARestructure 
+<IARestructure
   client:load
   title="Visualizing Logic"
   description="The primary UX challenge was navigation. I redesigned the Information Architecture to create a 'Master Hub' that seamlessly funnels users into five distinct business branches. This required a balance between e-commerce (toys) and high-end hospitality booking (hotel/restaurants)."
   seniorNote="With 25 hours on the clock, I prioritized Information Architecture as the single source of truth. By solving the navigation for five distinct business units (Hotel, Shop, Events, Food, HQ) first, the UI became a logical extension of the map rather than a decorative exercise."
 />
 
-<AlternatingGallery client:load />
+<BrandContrast client:load />
 
 <LeanSystem client:load />
 
 <CaseStudyResults currentSlug="trauffer">
-  The project was delivered 100% on-spec. By leading direct client meetings and eliminating feedback loops, we bypassed the traditional 'agency lag.' The result is a unified digital ecosystem that respects Trauffer’s 80-year history while functioning as a modern, high-conversion hospitality platform.
+  The project was delivered 100% on-spec. By leading direct client meetings and eliminating feedback
+  loops, we bypassed the traditional 'agency lag.' The result is a unified digital ecosystem that
+  respects Trauffer’s 80-year history while functioning as a modern, high-conversion hospitality
+  platform.
 </CaseStudyResults>
+
+</div>

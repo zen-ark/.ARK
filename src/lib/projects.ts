@@ -30,6 +30,7 @@ export type ProjectListItem = {
   year?: number;
   featured?: boolean;
   orderHiring?: number;
+  workInProgress?: boolean;
 };
 
 function sortProjects(a: ProjectListItem, b: ProjectListItem): number {
@@ -71,6 +72,7 @@ export async function loadProjects({ mode = 'agency', limit }: LoadProjectsOptio
     status: p.data.status,
     year: p.data.year,
     orderHiring: p.data.orderHiring,
+    workInProgress: p.data.workInProgress,
     // carry through featured for sorting (not in type on purpose)
     ...(p.data.featured ? { featured: true } : {}),
   }));

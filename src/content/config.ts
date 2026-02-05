@@ -6,7 +6,7 @@ const projects = defineCollection({
     z.object({
       title: z.string(),
       date: z.string(),
-      year: z.number().optional(),
+      year: z.union([z.number(), z.string()]).optional(),
       client: z.string().optional(),
       summary: z.string(),
       services: z.array(z.string()).default([]),
@@ -34,6 +34,8 @@ const projects = defineCollection({
       showInPortfolio: z.boolean().default(false),
       orderAgency: z.number().optional(),
       orderHiring: z.number().optional(),
+      workInProgress: z.boolean().default(false),
+      isCaseStudy: z.boolean().default(false),
     }),
 });
 

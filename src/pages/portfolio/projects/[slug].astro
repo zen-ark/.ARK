@@ -31,7 +31,8 @@ const { project, prevProject, nextProject } = Astro.props;
 const { Content } = await project.render();
 const { data } = project;
 
-const isCaseStudy = project.slug === 'trauffer';
+const isCaseStudy =
+  data.isCaseStudy || project.slug === "trauffer" || project.slug === "naturheilpraxis-nadja";
 ---
 
 <ProjectLayout

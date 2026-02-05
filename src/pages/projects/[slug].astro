@@ -28,7 +28,9 @@ const { project, prevProject, nextProject } = Astro.props;
 const { Content } = await project.render();
 const { data } = project;
 
-const isCaseStudy = project.slug === 'trauffer';
+// Force isCaseStudy true for known case study slugs to prevent caching/schema issues
+const isCaseStudy =
+  data.isCaseStudy || project.slug === "trauffer" || project.slug === "naturheilpraxis-nadja";
 ---
 
 <ProjectLayout
@@ -41,36 +43,34 @@ const isCaseStudy = project.slug === 'trauffer';
   nextProject={nextProject}
   isCaseStudy={isCaseStudy}
 >
-  {!isCaseStudy && (
-    <header class="space-y-4 mb-6 md:mb-8">
-      <div class="flex items-start justify-between gap-4">
-        <h1 class="text-2xl md:text-4xl font-semibold text-black">{data.title}</h1>
-        {data.year && <span class="text-black/50 shrink-0 text-sm md:text-base">{data.year}</span>}
-      </div>
+  {
+    !isCaseStudy && (
+      <header class="space-y-4 mb-6 md:mb-8">
+        <div class="flex items-start justify-between gap-4">
+          <h1 class="text-2xl md:text-4xl font-semibold text-black">{data.title}</h1>
+          {data.year && (
+            <span class="text-black/50 shrink-0 text-sm md:text-base">{data.year}</span>
+          )}
+        </div>
 
-      <p class="text-black/70 text-base md:text-lg leading-relaxed">{data.summary}</p>
+        <p class="text-black/70 text-base md:text-lg leading-relaxed">{data.summary}</p>
 
-      <div class="flex flex-wrap gap-6 pt-2 text-sm">
-        {
-          data.client && (
+        <div class="flex flex-wrap gap-6 pt-2 text-sm">
+          {data.client && (
             <div>
               <span class="text-black/50">Client:</span>{" "}
               <span class="text-black/80">{data.client}</span>
             </div>
-          )
-        }
-        {
-          data.services && data.services.length > 0 && (
+          )}
+          {data.services && data.services.length > 0 && (
             <div>
               <span class="text-black/50">Services:</span>{" "}
               <span class="text-black/80">{data.services.join(", ")}</span>
             </div>
-          )
-        }
-      </div>
+          )}
+        </div>
 
-      {
-        data.tech && data.tech.length > 0 && (
+        {data.tech && data.tech.length > 0 && (
           <div class="pt-2">
             <span class="text-xs text-black/50 block mb-2">Technologies:</span>
             <ul class="flex flex-wrap gap-2 list-none m-0 p-0">
@@ -81,11 +81,9 @@ const isCaseStudy = project.slug === 'trauffer';
               ))}
             </ul>
           </div>
-        )
-      }
+        )}
 
-      {
-        data.links?.demo && (
+        {data.links?.demo && (
           <div class="pt-2">
             <a
               class="inline-flex items-center gap-1 text-sm underline hover:text-black/80 transition-colors focus-ring text-black/70"
@@ -110,16 +108,18 @@ const isCaseStudy = project.slug === 'trauffer';
               </svg>
             </a>
           </div>
-        )
-      }
-    </header>
-  )}
+        )}
+      </header>
+    )
+  }
 
-  {isCaseStudy ? (
-    <Content />
-  ) : (
-    <article class="prose prose-lg max-w-none">
+  {
+    isCaseStudy ? (
       <Content />
-    </article>
-  )}
+    ) : (
+      <article class="prose prose-lg max-w-none">
+        <Content />
+      </article>
+    )
+  }
 </ProjectLayout>

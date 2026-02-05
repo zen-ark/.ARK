@@ -8,13 +8,96 @@ services: ["Web Design", "Branding"]
 tags: ["Health", "Design", "Nature"]
 cover: "/portfolio projects/nadja/nadja.json"
 roles: ["Design", "Development"]
-tech: ["Astro", "React"]
+tech: ["Astro", "React", "Framer"]
 status: "live"
 featured: true
 showInPortfolio: true
 orderHiring: 4
+isCaseStudy: true
+links:
+  demo: "https://naturheilpraxis-nadja.ch/"
 ---
 
-## Overview
+import CaseStudyHeader from "../../components/case-study/CaseStudyHeader";
+import MetricsGrid from "../../components/case-study/MetricsGrid";
+import StickyScrollSection from "../../components/case-study/StickyScrollSection.astro";
+import CaseStudyResults from "../../components/case-study/CaseStudyResults.astro";
 
-A calming and informative digital presence for a natural healing practice, reflecting the holistic approach to health.
+<CaseStudyHeader
+  label="Boutique Wellness, Accelerated"
+  title="Naturheilpraxis Nadja: Holistic Design at Speed."
+  subtitle="A seamless concept-to-launch journey designed and developed in Framer for a premium wellness brand."
+  imageSrc="/portfolio projects/nadja/nadja.json"
+  clientName="Naturheilpraxis Nadja"
+  services={["Web Design", "Branding", "Development"]}
+  tech={["Framer", "React", "CMS"]}
+  liveUrl="https://naturheilpraxis-nadja.ch/"
+  className="h-[85vh] min-h-[600px] mb-4 mt-0"
+  client:load
+/>
+
+<MetricsGrid
+  items={[
+    {
+      value: "04",
+      label: "Weeks to Launch",
+      description: "End-to-end sprint from discovery to live production.",
+    },
+    {
+      value: "02",
+      label: "Feedback Sprints",
+      description: "Achieved final sign-off through high-velocity communication.",
+    },
+    {
+      value: "01",
+      label: "Unified Experience",
+      description: "High-conversion one-pager designed for trust and accessibility.",
+    },
+  ]}
+  client:visible
+/>
+
+<StickyScrollSection 
+  title="The Visual Language of Calm" 
+  heading="The Aesthetic of Trust"
+>
+  <p class="mb-4">
+    For a practitioner in the health space, the UI must bridge clinical professionalism with holistic warmth. I utilized an organic palette and fluid typography to reflect Nadja’s personal approach to wellness.
+  </p>
+
+  <div slot="visuals" class="flex flex-col gap-8">
+    <div class="w-full aspect-[4/3] bg-white/5 rounded-lg overflow-hidden border border-white/10">
+      <img src="/portfolio projects/nadja/1.png" alt="Typography Showcase" class="w-full h-full object-cover" />
+    </div>
+    <div class="w-full aspect-[4/3] bg-white/5 rounded-lg overflow-hidden border border-white/10">
+      <img src="/portfolio projects/nadja/2.png" alt="Service Blocks" class="w-full h-full object-cover" />
+    </div>
+  </div>
+</StickyScrollSection>
+
+<StickyScrollSection 
+  title="High-Fidelity Execution" 
+  heading="Framer Partner Implementation"
+>
+  <p class="mb-4">
+    As a Certified Framer Partner, I leveraged advanced CMS logic and scroll-triggered interactions to ensure the final build matches the design 1:1.
+  </p>
+  <p>
+    This eliminated the handoff gap, moving from approved prototype to live production in days.
+  </p>
+
+  <div slot="visuals" class="flex flex-col gap-8">
+     <div class="aspect-[9/19] bg-white/5 rounded-lg overflow-hidden border border-white/10 mx-auto max-w-sm w-full">
+        <img src="/portfolio projects/nadja/3.png" alt="Responsive Mobile" class="w-full h-full object-cover" />
+     </div>
+     <div class="w-full aspect-video bg-white/5 rounded-lg overflow-hidden border border-white/10">
+         <video src="/portfolio projects/nadja/loading animation.mov" class="w-full h-full object-cover" autoplay muted loop playsinline></video>
+     </div>
+  </div>
+</StickyScrollSection>
+
+<CaseStudyResults currentSlug="naturheilpraxis-nadja">
+  Naturheilpraxis Nadja demonstrates the power of the Designer-as-Developer model. By utilizing
+  Framer, we delivered a boutique digital presence that feels artisanal yet functions with modern
+  technical precision.
+</CaseStudyResults>

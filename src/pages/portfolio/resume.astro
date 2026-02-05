@@ -1,0 +1,266 @@
+---
+import Base from "@/layouts/Base.astro";
+
+const experience = [
+  {
+    period: "2024 – Present",
+    company: ".ARK",
+    role: "Founder / Creative Technologist",
+    description:
+      "Independent studio focused on interactive design, 3D, motion, and experimental web experiences.",
+    items: [
+      "Led end-to-end design and build of interactive brand and web experiences",
+      "Bridged UX, motion, and 3D into production-ready systems",
+      "Worked directly with clients from concept to launch",
+    ],
+  },
+  {
+    period: "2025",
+    company: "Freelance / Project Lead",
+    role: "UI / UX Design Lead",
+    description:
+      "Design lead responsible for UX strategy, visual systems, and interface quality across client projects.",
+  },
+  {
+    period: "2024 – 2025",
+    company: "Agency Environment",
+    role: "Interaction Designer",
+    description:
+      "Concept and design of interactive digital experiences with a strong focus on motion, storytelling, and user flow.",
+  },
+  {
+    period: "2021 – 2024",
+    company: "Maxomedia",
+    role: "Interactive Media Designer (EFZ Apprenticeship)",
+    description:
+      "Design and production of digital media and interactive content within a large corporate environment, bridging design quality and technical constraints.",
+  },
+  {
+    period: "2017 – 2019",
+    company: "Lüthi Holzbau Zimmermann",
+    role: "Apprenticeship (i.A)",
+    description: "",
+  },
+];
+
+const education = [
+  {
+    period: "2024 – 2027",
+    institution: "Höchere Fachschule",
+    degree: "Interaction Design",
+    description:
+      "Practice-oriented studies in interaction design with a strong focus on UX, concept development, and real-world digital systems. Ongoing, part-time studies alongside professional practice.",
+  },
+  {
+    period: "2020 – 2021",
+    institution: "Invers Schule für Gestaltung",
+    degree: "Vorkurs Kunst & Gestaltung",
+    description: "",
+  },
+  {
+    period: "2012 – 2017",
+    institution: "Hermosa Valley High School, Costa Rica",
+    degree: "International High School",
+    description: "Education in English & Spanish",
+  },
+];
+
+const skills = [
+  { name: "Figma", desc: "UX/UI Design, Prototyping, Design Systems" },
+  { name: "Framer", desc: "Interactive Prototypes, Motion, Web Experiences" },
+  { name: "Adobe Suite", desc: "Visual Design, Motion, Media Production" },
+  { name: "Blender", desc: "3D Modeling, Materials, Motion Design" },
+  { name: "Da Vinci Resolve", desc: "Video Editing, Color, Motion" },
+  { name: "Webflow", desc: "Responsive Websites, CMS, Animations" },
+  { name: "Spline", desc: "Real-time 3D for Web" },
+];
+
+const languages = [
+  { lang: "German", level: "Native" },
+  { lang: "English", level: "Native (C1 Certified)" },
+  { lang: "Spanish", level: "Fluent" },
+];
+
+const interests = [
+  "Video shooting",
+  "Video editing",
+  "AI Testing",
+  "Creativity development",
+  "3D art",
+];
+---
+
+<Base
+  title="CV — Shain Gerstner"
+  description="Curriculum Vitae of Shain Gerstner - Interactive Media Designer"
+  theme="dark"
+  showFooter={true}
+  footerMode="reveal"
+  wrapperClass="bg-[#111]"
+>
+  <main class="min-h-screen px-4 py-24 md:py-32 w-full max-w-4xl mx-auto space-y-20">
+    {/* Header */}
+    <div class="space-y-6">
+      <h1 class="text-5xl md:text-6xl font-bold tracking-tighter">Shain Gerstner</h1>
+      <p class="text-xl md:text-2xl text-text-subtle max-w-2xl font-light">
+        Interactive Media Designer bridging UX, motion and 3D systems
+      </p>
+
+      <div
+        class="flex flex-wrap gap-y-2 gap-x-6 text-sm text-text-subtle font-mono pt-4 border-t border-border/40"
+      >
+        <a href="mailto:shaingerstner@gmail.com" class="hover:text-text-primary transition-colors"
+          >shaingerstner@gmail.com</a
+        >
+        <a
+          href="https://shain.ch"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="hover:text-text-primary transition-colors">shain.ch</a
+        >
+        <span>+41 79 780 79 16</span>
+        <span>Bürglenstr. 10, 3600 Thun</span>
+      </div>
+
+      <div class="pt-4">
+        <a
+          href="/cv.pdf"
+          download="Shain_Gerstner_CV.pdf"
+          class="group inline-flex items-center gap-3 bg-text text-bg-canvas px-6 py-3 rounded-full font-medium transition-all hover:bg-text-subtle"
+        >
+          Download CV
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="group-hover:translate-y-0.5 transition-transform"
+            ><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline
+              points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg
+          >
+        </a>
+      </div>
+    </div>
+
+    {/* Experience */}
+    <section>
+      <h2
+        class="text-sm font-mono uppercase tracking-wider text-text-subtle mb-10 border-b border-border/40 pb-4"
+      >
+        Experience
+      </h2>
+      <div class="space-y-12">
+        {
+          experience.map((job) => (
+            <div class="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-10">
+              <div class="text-text-subtle font-mono text-sm pt-1">{job.period}</div>
+              <div class="space-y-2">
+                <h3 class="text-xl font-semibold tracking-tight">{job.company}</h3>
+                {job.role && <div class="text-brand font-medium text-lg">{job.role}</div>}
+                {job.description && (
+                  <p class="text-text-subtle leading-relaxed max-w-prose">{job.description}</p>
+                )}
+                {job.items && (
+                  <ul class="list-disc list-outside ml-4 text-text-subtle text-sm space-y-2 pt-2 marker:text-brand-accent">
+                    {job.items.map((item) => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    {/* Education */}
+    <section>
+      <h2
+        class="text-sm font-mono uppercase tracking-wider text-text-subtle mb-10 border-b border-border/40 pb-4"
+      >
+        Education
+      </h2>
+      <div class="space-y-12">
+        {
+          education.map((edu) => (
+            <div class="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-10">
+              <div class="text-text-subtle font-mono text-sm pt-1">{edu.period}</div>
+              <div class="space-y-2">
+                <h3 class="text-xl font-semibold tracking-tight">{edu.institution}</h3>
+                <div class="text-brand font-medium text-lg">{edu.degree}</div>
+                {edu.description && (
+                  <p class="text-text-subtle leading-relaxed max-w-prose">{edu.description}</p>
+                )}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    {/* Skills & Languages Grid */}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-16">
+      <section>
+        <h2
+          class="text-sm font-mono uppercase tracking-wider text-text-subtle mb-8 border-b border-border/40 pb-4"
+        >
+          Tools & Skills
+        </h2>
+        <div class="grid grid-cols-1 gap-6">
+          {
+            skills.map((skill) => (
+              <div class="group">
+                <div class="font-medium text-lg group-hover:text-brand transition-colors">
+                  {skill.name}
+                </div>
+                <div class="text-sm text-text-subtle">{skill.desc}</div>
+              </div>
+            ))
+          }
+        </div>
+      </section>
+
+      <div class="space-y-16">
+        <section>
+          <h2
+            class="text-sm font-mono uppercase tracking-wider text-text-subtle mb-8 border-b border-border/40 pb-4"
+          >
+            Languages
+          </h2>
+          <div class="space-y-4">
+            {
+              languages.map((lang) => (
+                <div class="flex justify-between items-baseline border-b border-border/30 pb-3 last:border-0">
+                  <span class="font-medium text-lg">{lang.lang}</span>
+                  <span class="text-sm text-text-subtle">{lang.level}</span>
+                </div>
+              ))
+            }
+          </div>
+        </section>
+
+        <section>
+          <h2
+            class="text-sm font-mono uppercase tracking-wider text-text-subtle mb-8 border-b border-border/40 pb-4"
+          >
+            Interests
+          </h2>
+          <div class="flex flex-wrap gap-2">
+            {
+              interests.map((interest) => (
+                <span class="px-3 py-1 bg-bg-elevated rounded-full text-sm text-text-subtle hover:text-text-primary hover:bg-bg-elevated/80 transition-all cursor-default border border-border/50">
+                  {interest}
+                </span>
+              ))
+            }
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</Base>

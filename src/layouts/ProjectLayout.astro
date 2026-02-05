@@ -61,10 +61,10 @@ const articleSchema = buildArticleSchema({
             backgroundColor: "transparent",
           }}
         >
-          <img 
-            src={ogImage} 
-            alt={title} 
-            class="w-full h-full object-cover" 
+          <img
+            src={ogImage}
+            alt={title}
+            class="w-full h-full object-cover"
             loading="eager"
             fetchpriority="high"
           />
@@ -74,40 +74,15 @@ const articleSchema = buildArticleSchema({
   }
 
   <!-- Content Section -->
-  {isCaseStudy ? (
-    <div class="w-full bg-black text-white min-h-screen overflow-hidden">
-      <slot />
-    </div>
-  ) : (
-    <article class="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-12">
-      <slot />
-    </article>
-  )}
-
   {
-    (prevProject || nextProject) && (
-      <nav class="max-w-6xl mx-auto px-6 pb-12" aria-label="Project navigation">
-        <div class="flex justify-between items-center gap-4 pt-8 border-t border-black/10">
-          {prevProject ? (
-            <a
-              href={`${basePath}/${prevProject.slug}`}
-              class="text-sm text-black/70 hover:text-black transition-colors focus-ring"
-            >
-              ← {prevProject.title}
-            </a>
-          ) : (
-            <span />
-          )}
-          {nextProject && (
-            <a
-              href={`${basePath}/${nextProject.slug}`}
-              class="text-sm text-black/70 hover:text-black transition-colors focus-ring"
-            >
-              {nextProject.title} →
-            </a>
-          )}
-        </div>
-      </nav>
+    isCaseStudy ? (
+      <div class="w-full bg-[#111] text-white min-h-screen">
+        <slot />
+      </div>
+    ) : (
+      <article class="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-12">
+        <slot />
+      </article>
     )
   }
 
