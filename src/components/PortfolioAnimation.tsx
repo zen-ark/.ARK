@@ -1,3 +1,4 @@
+// Remove unused import if it was added
 import { useRef, useLayoutEffect, useState, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -121,16 +122,16 @@ export default function PortfolioAnimation({ children }: PortfolioAnimationProps
       const mm = gsap.matchMedia();
       
       mm.add("(min-width: 768px)", () => {
-        ScrollTrigger.create({
-          trigger: document.body,
-          start: "top top",
-          end: "bottom bottom",
-          onUpdate: (self) => {
-            // Parallax effect for logo
-            // Move logo down at a slower rate than scroll (0.5 speed)
-            gsap.set(logo, { 
-              y: self.scroll() * 0.5 
-            });
+        // Optimized: Use scrub instead of onUpdate for better performance on main thread
+        gsap.to(logo, {
+          y: () => ScrollTrigger.maxScroll(window) * 0.15, // Move slower than scroll (parallax)
+          ease: "none",
+          scrollTrigger: {
+            trigger: document.body,
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 0, // Instant scrub for direct mapping
+            invalidateOnRefresh: true
           }
         });
       });
