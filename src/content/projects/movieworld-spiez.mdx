@@ -19,12 +19,9 @@ isCaseStudy: true
 ---
 
 import CaseStudyHeader from "@/components/case-study/CaseStudyHeader";
-import TwoColumnNarrative from "@/components/case-study/TwoColumnNarrative.astro";
-import IARestructure from "@/components/case-study/IARestructure";
 import CaseStudyResults from "@/components/case-study/CaseStudyResults.astro";
-import RevealOnScroll from "@/components/RevealOnScroll";
 
-<div class="bg-[#111] text-white min-h-screen">
+<div className="bg-[#000] text-white min-h-screen font-sans selection:bg-[#00FF00] selection:text-black">
 
 <CaseStudyHeader
   client:load
@@ -38,146 +35,22 @@ import RevealOnScroll from "@/components/RevealOnScroll";
   className="h-[75vh] min-h-[500px] mb-4 mt-0 pt-4"
 />
 
-{/* Executive Summary */}
-
+{/* Strategic Pivot */}
 <section className="max-w-7xl mx-auto px-4 md:px-6 py-24">
-  <div className="bg-[#111] border border-white/10 rounded-2xl p-8 md:p-12">
-    <h2 className="text-3xl font-bold text-white mb-12">Executive Summary</h2>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-      <div>
-        <h3 className="text-white/40 uppercase tracking-wider text-sm font-mono mb-4 text-red-400">
-          Problem
-        </h3>
-        <p className="text-white/80 leading-relaxed">
-          The legacy site relied on outdated iframes, creating a disjointed UI and poor mobile
-          performance.
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <div>
+      <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">The Strategic Pivot</h2>
+      <div className="space-y-6 text-lg text-white/80 leading-relaxed">
+        <p>
+          The existing digital presence for Movieworld Spiez was held back by a reliance on rigid, third-party iFrame integrations. While the backend accounting system was robust, the "Front-of-House" user experience was disjointed, especially on mobile devices where iFrames struggled to scale.
         </p>
-      </div>
-      <div>
-        <h3 className="text-white/40 uppercase tracking-wider text-sm font-mono mb-4 text-green-400">
-          Solution
-        </h3>
-        <p className="text-white/80 leading-relaxed">
-          Architected a bespoke API integration using serverless functions to serve a
-          high-performance, Swiss-minimalist interface.
-        </p>
-      </div>
-      <div>
-        <h3 className="text-white/40 uppercase tracking-wider text-sm font-mono mb-4 text-blue-400">
-          Result
-        </h3>
-        <p className="text-white/80 leading-relaxed">
-          100% stakeholder approval and a modernized, conversion-focused user journey.
+        <p>
+          We needed a solution that preserved the operational integrity of the legacy backend while delivering a modern, high-performance interface. The strategy was a complete "Headless" decouple: using the legacy system purely as a data source and building a bespoke React frontend to handle the presentation.
         </p>
       </div>
     </div>
-  </div>
-</section>
-
-{/* Context & Logic */}
-
-<TwoColumnNarrative title="Context & Logic: The 'Why'">
-  <h3 className="text-xl font-bold text-white mb-4">The Constraint</h3>
-  <p className="mb-8">Limited hours + technical debt.</p>
-  
-  <h3 className="text-xl font-bold text-white mb-4">The Strategy</h3>
-  <p className="mb-8">Simplification. I audited the IA to remove redundant sub-navigation, focusing entirely on "What’s playing" and "Tickets."</p>
-
-    {/* IA Map Placeholder */}
-    <div className="w-full aspect-video bg-white/5 border border-white/10 rounded-xl flex items-center justify-center p-8">
-        <div className="text-center">
-          <div className="w-16 h-16 border-2 border-white/20 rounded-full mx-auto mb-4 flex items-center justify-center">
-            <span className="text-2xl">⚡</span>
-          </div>
-          <p className="text-white/40 font-mono">IA Map Comparison Visual</p>
-        </div>
-    </div>
-
-</TwoColumnNarrative>
-
-{/* Technical Pivot */}
-
-<section className="max-w-7xl mx-auto px-4 md:px-6 py-24">
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-        <div>
-             <h2 className="text-sm md:text-base font-mono uppercase tracking-wider text-white/50 mb-4">The Technical Pivot</h2>
-             <h3 className="text-3xl font-bold text-white mb-8">Vibecoding & Security</h3>
-             
-             <div className="mb-8">
-                <h4 className="text-lg font-bold text-white mb-2">The Challenge</h4>
-                <p className="text-white/80">Connecting Framer to a raw API without exposing sensitive keys.</p>
-             </div>
-             
-             <div className="mb-8">
-                <h4 className="text-lg font-bold text-white mb-2">The Solve</h4>
-                <p className="text-white/80">Using AI agents, I "vibecoded" a serverless middleware to act as a secure bridge.</p>
-             </div>
-
-             <div className="mb-8">
-                <h4 className="text-lg font-bold text-white mb-2">The Learning</h4>
-                <p className="text-white/80">Navigating the trial-and-error of complex state management within a low-code environment like Framer.</p>
-             </div>
-        </div>
-
-        {/* Code Window Placeholder */}
-        <div className="bg-[#1e1e1e] border border-white/10 rounded-xl p-6 font-mono text-sm overflow-hidden shadow-2xl relative group">
-            <div className="absolute top-0 right-0 p-4 opacity-50">
-               <span className="text-xs text-white/20">serverless.ts</span>
-            </div>
-            <div className="flex gap-2 mb-4">
-                <div className="w-3 h-3 rounded-full bg-red-500/20 group-hover:bg-red-500 transition-colors"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-500/20 group-hover:bg-yellow-500 transition-colors"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500/20 group-hover:bg-green-500 transition-colors"></div>
-            </div>
-            <div className="text-blue-400">export const <span className="text-yellow-300">middleware</span> = <span className="text-purple-400">async</span> (req) ={'>'} {'{'}</div>
-            <div className="pl-4 text-white/80">
-                <span className="text-gray-500 italic">// Secure bridge logic generated via AI</span>
-                <br/>
-                <span className="text-purple-400">const</span> {'{'} apiKey {'}'} = process.env;
-                <br/>
-                <span className="text-purple-400">if</span> (!apiKey) <span className="text-purple-400">throw</span> <span className="text-yellow-300">Error</span>(<span className="text-green-300">"No key"</span>);
-                <br/>
-                <br/>
-                <span className="text-purple-400">return</span> <span className="text-yellow-300">fetch</span>(API_URL, {'{'}
-                <br/>
-                &nbsp;&nbsp;headers: {'{'} <span className="text-green-300">"Authorization"</span>: apiKey {'}'}
-                <br/>
-                {'}'});
-            </div>
-            <div className="text-blue-400">{'}'}</div>
-        </div>
-    </div>
-
-</section>
-
-{/* Visual Excellence */}
-
-<section className="max-w-7xl mx-auto px-4 md:px-6 py-24">
-  <h2 className="text-3xl font-bold text-white mb-12">Visual Excellence: Swiss Craft</h2>
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-    <div className="bg-white/5 border border-white/10 p-8 rounded-xl backdrop-blur-sm">
-      <h3 className="text-xl font-bold text-white mb-4">Nostalgic UI</h3>
-      <p className="text-white/80">
-        Custom navigation inspired by vintage perforated cinema tickets.
-      </p>
-    </div>
-    <div className="bg-white/5 border border-white/10 p-8 rounded-xl backdrop-blur-sm">
-      <h3 className="text-xl font-bold text-white mb-4">Precision</h3>
-      <p className="text-white/80">
-        Dark mode palette with high-contrast "Cinema Green" CTAs for accessibility.
-      </p>
-    </div>
-    <div className="bg-white/5 border border-white/10 p-8 rounded-xl backdrop-blur-sm">
-      <h3 className="text-xl font-bold text-white mb-4">Interactive Hero</h3>
-      <p className="text-white/80">
-        A gesture-based swipe interaction for movie browsing, featuring a 3-second auto-nudge on
-        mobile.
-      </p>
-    </div>
-  </div>
-  <div className="grid grid-cols-1 gap-12 mt-12">
-    {/* Desktop Video - Full Width Presentation */}
-    <div className="w-full bg-[#0a0a0a] border border-white/10 rounded-xl overflow-hidden group">
+    
+    <div className="relative w-full rounded-xl overflow-hidden border border-white/10 bg-[#0a0a0a] shadow-2xl group">
       <div className="w-full relative">
          <video 
            src="/portfolio projects/movieworld spiez/Desktop video.mov"
@@ -188,34 +61,104 @@ import RevealOnScroll from "@/components/RevealOnScroll";
            className="w-full h-auto object-contain"
          />
       </div>
-      <div className="p-4 border-t border-white/10 bg-white/5">
-        <span className="text-white/40 font-mono text-sm">Desktop Experience</span>
+      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <span className="text-[#00FF00] font-mono text-sm uppercase tracking-wider">Desktop Experience • React Frontend</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* Engineering the Filter */}
+<section className="w-full bg-[#0a0a0a] border-y border-white/5 py-24">
+  <div className="max-w-4xl mx-auto px-4 md:px-6 text-center">
+    <div className="inline-block px-3 py-1 mb-6 rounded-full border border-[#00FF00]/20 bg-[#00FF00]/10 text-[#00FF00] text-sm font-mono uppercase tracking-wider">
+      Backend Logic
+    </div>
+    <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">Engineering the Filter</h2>
+    <p className="text-xl text-white/80 leading-relaxed mb-12">
+      One of the core technical challenges was dealing with "mushed" API responses where dates, times, and movie categories were returned as combined strings. I engineered a custom string-splitting logic to parse this raw data into structured objects.
+    </p>
+    
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left max-w-3xl mx-auto">
+        <div className="p-6 rounded-xl bg-black/50 border border-white/10">
+            <h3 className="text-white font-bold mb-2 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#00FF00]"></span>
+                Data Parsing
+            </h3>
+            <p className="text-white/60 text-sm">Transforming chaos into order. We strip strict types from the legacy feed to create a clean, queryable internal API.</p>
+        </div>
+        <div className="p-6 rounded-xl bg-black/50 border border-white/10">
+            <h3 className="text-white font-bold mb-2 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#00FF00]"></span>
+                Exclusive Navigation
+            </h3>
+            <p className="text-white/60 text-sm">To prevent "No Results" states, filters are mutually exclusive: users browse by <strong>Date</strong> OR <strong>Category</strong>, never both simultaneously.</p>
+        </div>
+    </div>
+  </div>
+</section>
+
+{/* Mobile Interaction */}
+<section className="max-w-7xl mx-auto px-4 md:px-6 py-24">
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+    
+    {/* Mobile Video - Left on Desktop */}
+    <div className="order-2 lg:order-1 flex justify-center lg:justify-end">
+        <div className="relative w-full max-w-sm rounded-[2rem] overflow-hidden border-[6px] border-[#1a1a1a] bg-[#0a0a0a] shadow-2xl">
+            <video 
+               src="/portfolio projects/movieworld spiez/mobile video.mov"
+               autoPlay 
+               loop 
+               muted 
+               playsInline
+               className="w-full h-auto object-contain"
+             />
+             {/* Notch overlay simulation */}
+             <div className="absolute top-0 left-1/2 -translate-x-1/2 h-6 w-32 bg-[#1a1a1a] rounded-b-xl z-10"></div>
+        </div>
+    </div>
+
+    {/* Content - Right on Desktop */}
+    <div className="order-1 lg:order-2">
+      <h2 className="text-3xl md:text-4xl font-bold text-white mb-12">Mobile Interaction</h2>
+      
+      <div className="space-y-12">
+        <div className="group">
+          <h3 className="text-xl font-bold text-white mb-3 flex items-center gap-3 group-hover:text-[#00FF00] transition-colors">
+            <span className="text-[#00FF00]">01.</span> Nostalgic UI
+          </h3>
+          <p className="text-white/70 leading-relaxed pl-9 border-l border-white/10 group-hover:border-[#00FF00]/30 transition-colors">
+            Custom navigation elements inspired by vintage perforated cinema tickets. This skeuomorphic touch brings a tactile, physical quality to the digital interface, connecting the user to the cinema experience before they even enter the theater.
+          </p>
+        </div>
+
+        <div className="group">
+          <h3 className="text-xl font-bold text-white mb-3 flex items-center gap-3 group-hover:text-[#00FF00] transition-colors">
+            <span className="text-[#00FF00]">02.</span> Precision
+          </h3>
+          <p className="text-white/70 leading-relaxed pl-9 border-l border-white/10 group-hover:border-[#00FF00]/30 transition-colors">
+             Designed for the environment. The deep dark mode palette isn't just aesthetic—it's functional, preventing screen glare in dimly lit theater lobbies. High-contrast "Cinema Green" (#00FF00) CTAs guide the user effortlessly to checkout.
+          </p>
+        </div>
+
+        <div className="group">
+          <h3 className="text-xl font-bold text-white mb-3 flex items-center gap-3 group-hover:text-[#00FF00] transition-colors">
+            <span className="text-[#00FF00]">03.</span> Interactive Hero
+          </h3>
+          <p className="text-white/70 leading-relaxed pl-9 border-l border-white/10 group-hover:border-[#00FF00]/30 transition-colors">
+             A bespoke gesture-based swipe interaction for browsing "Now Playing" movies. On mobile, the interface performs a subtle 3-second auto-nudge on load, intuitively teaching the user that horizontal scrolling is available without using explicit arrows.
+          </p>
+        </div>
       </div>
     </div>
 
-    {/* Mobile Video - Centered Presentation */}
-    <div className="w-full max-w-sm mx-auto bg-[#0a0a0a] border border-white/10 rounded-xl overflow-hidden group">
-      <div className="w-full relative">
-         <video 
-           src="/portfolio projects/movieworld spiez/mobile video.mov"
-           autoPlay 
-           loop 
-           muted 
-           playsInline
-           className="w-full h-auto object-contain"
-         />
-      </div>
-      <div className="p-4 border-t border-white/10 bg-white/5 text-center">
-        <span className="text-white/40 font-mono text-sm">Mobile Interaction</span>
-      </div>
-    </div>
   </div>
 </section>
 
 <CaseStudyResults currentSlug="movieworld-spiez">
   <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-left">
     <div>
-      <h3 className="text-xl font-bold text-white mb-4 text-green-400">Outcome</h3>
+      <h3 className="text-xl font-bold text-white mb-4 text-[#00FF00]">Outcome</h3>
       <p className="text-white/90 text-2xl leading-relaxed">
         Delivered a premium, "big-budget" feel on a lean timeline.
       </p>
