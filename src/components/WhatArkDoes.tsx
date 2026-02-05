@@ -129,41 +129,70 @@ function usePrefersReducedMotion() {
 // ----------------------------------------------------------------------
 
 function useImageSequence(frameCount: number) {
-  const [loaded, setLoaded] = useState(false);
+  const [isReady, setIsReady] = useState(false); // Ready to show (first batch loaded)
+  const [isFullyLoaded, setIsFullyLoaded] = useState(false); // All frames loaded
   const blobsRef = useRef<string[]>([]); // ObjectURLs
   const imagesRef = useRef<Map<number, HTMLImageElement>>(new Map()); // Cache
   const loadProgressRef = useRef(0);
 
   useEffect(() => {
     let active = true;
+    // Load in batches to prevent network/main thread saturation
+    const BATCH_SIZE = 20; 
+    
+    const loadBatch = async (startIndex: number) => {
+      if (!active) return;
+      
+      const endIndex = Math.min(startIndex + BATCH_SIZE, frameCount);
+      const promises = [];
 
-    const loadImages = async () => {
-      // 1. Fetch all blobs
-      const promises = Array.from({ length: frameCount }, async (_, i) => {
+      for (let i = startIndex; i < endIndex; i++) {
+        // Skip if already loaded (safety check)
+        if (blobsRef.current[i]) continue;
+
         const id = (i + 1).toString().padStart(4, "0");
         const url = `/no bg webp sequence/no bg${id}.webp`;
-        try {
-          const res = await fetch(url);
-          const blob = await res.blob();
-          if (!active) return;
-          // Create object URL immediately so we can use it
-          blobsRef.current[i] = URL.createObjectURL(blob);
-          loadProgressRef.current = (i + 1) / frameCount;
-        } catch (e) {
-          console.error(`Failed to load frame ${i}`, e);
-        }
-      });
+        
+        const p = fetch(url)
+          .then(res => res.blob())
+          .then(blob => {
+             if (!active) return;
+             blobsRef.current[i] = URL.createObjectURL(blob);
+          })
+          .catch(e => console.error(`Failed to load frame ${i}`, e));
+          
+        promises.push(p);
+      }
 
       await Promise.all(promises);
-      if (active) setLoaded(true);
+
+      if (!active) return;
+
+      loadProgressRef.current = endIndex / frameCount;
+
+      // If this was the first batch, mark as ready
+      if (startIndex === 0) {
+        setIsReady(true);
+      }
+
+      // Check if we need to load more
+      if (endIndex < frameCount) {
+        // Schedule next batch with a small delay to yield to main thread
+        // This is crucial for keeping the UI responsive during load
+        setTimeout(() => loadBatch(endIndex), 50);
+      } else {
+        setIsFullyLoaded(true);
+      }
     };
 
-    loadImages();
+    loadBatch(0);
 
     return () => {
       active = false;
       // Cleanup ObjectURLs
-      blobsRef.current.forEach((url) => URL.revokeObjectURL(url));
+      blobsRef.current.forEach((url) => {
+        if (url) URL.revokeObjectURL(url);
+      });
     };
   }, [frameCount]);
 
@@ -183,7 +212,7 @@ function useImageSequence(frameCount: number) {
       imagesRef.current.set(index, img);
       
       // Basic cleanup if map gets too big (simple LRU approximation)
-      if (imagesRef.current.size > 50) {
+      if (imagesRef.current.size > 100) { // Increased cache size slightly
         // Delete the oldest entry (first key)
         const firstKey = imagesRef.current.keys().next().value;
         if (firstKey !== undefined) imagesRef.current.delete(firstKey);
@@ -192,7 +221,7 @@ function useImageSequence(frameCount: number) {
     return img;
   };
 
-  return { loaded, getFrame, progress: loadProgressRef.current };
+  return { isReady, isFullyLoaded, getFrame, progress: loadProgressRef.current };
 }
 
 export default function WhatArkDoes() {
@@ -201,7 +230,7 @@ export default function WhatArkDoes() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const progressListenersRef = useRef(new Set<(value: number) => void>());
   
-  const { loaded, getFrame } = useImageSequence(FRAME_COUNT);
+  const { isReady, isFullyLoaded, getFrame } = useImageSequence(FRAME_COUNT);
 
   // Calculate header height for padding
   useEffect(() => {
@@ -233,7 +262,7 @@ export default function WhatArkDoes() {
 
   const drawFrame = useCallback((progress: number) => {
     const canvas = canvasRef.current;
-    if (!canvas || !loaded) return;
+    if (!canvas || !isReady) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -266,7 +295,7 @@ export default function WhatArkDoes() {
        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
     }
-  }, [loaded, getFrame]);
+  }, [isReady, getFrame]);
 
   // Handle Canvas Resize
   useEffect(() => {
@@ -448,7 +477,7 @@ export default function WhatArkDoes() {
               style={{ display: 'block' }}
             />
             
-            {!loaded && (
+            {!isReady && (
                <div className="absolute inset-0 flex items-center justify-center bg-white z-10">
                   <span className="text-sm font-mono opacity-50">LOADING ASSETS...</span>
                </div>

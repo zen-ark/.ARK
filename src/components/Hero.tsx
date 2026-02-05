@@ -37,6 +37,13 @@ export default function Hero({ videoSource, secondaryVideoSource, title, subtitl
   const secondaryVideoRef = useRef<HTMLVideoElement>(null);
   const primaryVideoRef = useRef<HTMLVideoElement>(null);
 
+  // Cache dimensions to avoid layout thrashing during scroll
+  const metricsRef = useRef({
+    sectionTop: 0,
+    sectionHeight: 0,
+    viewportHeight: 0
+  });
+
   const getVideoType = (src: string) => {
     if (src.toLowerCase().endsWith('.webm')) return 'video/webm';
     return 'video/mp4';
@@ -76,21 +83,35 @@ export default function Hero({ videoSource, secondaryVideoSource, title, subtitl
     let rafId: number;
     let ticking = false;
 
-    const updateHeroTransform = () => {
-      const rect = section.getBoundingClientRect();
-      const sectionTop = rect.top;
-      const sectionHeight = rect.height;
-      const viewportHeight = window.innerHeight;
+    const measure = () => {
+      if (!sectionRef.current) return;
+      const rect = sectionRef.current.getBoundingClientRect();
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      
+      metricsRef.current = {
+        // Absolute top position relative to document
+        sectionTop: rect.top + scrollTop,
+        sectionHeight: rect.height,
+        viewportHeight: window.innerHeight
+      };
+    };
 
-      // Calculate progress: 0 when section top hits viewport top,
-      // 1 when section bottom leaves viewport bottom
+    const updateHeroTransform = () => {
+      if (!heroCardRef.current) return;
+
+      const { sectionTop, sectionHeight, viewportHeight } = metricsRef.current;
+      const currentScrollY = window.scrollY || document.documentElement.scrollTop;
+
+      // Calculate progress using cached dimensions
       const scrollStart = sectionTop;
-      const scrollEnd = sectionTop + sectionHeight - viewportHeight;
       const scrollDistance = sectionHeight - viewportHeight;
+      
+      // Calculate how far we've scrolled past the start
+      const scrolled = currentScrollY - scrollStart;
       
       let progress = 0;
       if (scrollDistance > 0) {
-        progress = -scrollStart / scrollDistance;
+        progress = scrolled / scrollDistance;
       }
       
       // Clamp progress between 0 and 1
@@ -107,6 +128,7 @@ export default function Hero({ videoSource, secondaryVideoSource, title, subtitl
       }
 
       // Apply visual transformations based on mode
+      const heroCard = heroCardRef.current;
       if (mode === "fullscreen") {
         // Full viewport: force full width/height and remove all decorative styling
         heroCard.style.width = "100vw";
@@ -140,15 +162,19 @@ export default function Hero({ videoSource, secondaryVideoSource, title, subtitl
       }
     };
 
+    // Initial measurement
+    measure();
     // Initial calculation
     updateHeroTransform();
 
     // Listen to scroll
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", measure, { passive: true });
     window.addEventListener("resize", updateHeroTransform, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", measure);
       window.removeEventListener("resize", updateHeroTransform);
       if (rafId) cancelAnimationFrame(rafId);
     };

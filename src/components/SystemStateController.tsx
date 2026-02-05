@@ -309,7 +309,10 @@ export default function SystemStateController() {
                  // During Wipe (5.5 -> 7.0), index stays at 0
                  const p2Prog = Math.max(0, (p - 7.0) / 4);
                  const idx = Math.floor(p2Prog * 5);
-                 setPhase2Index(Math.min(4, idx));
+                 const newIndex = Math.min(4, idx);
+                 if (newIndex !== phase2Index) {
+                   setPhase2Index(newIndex);
+                 }
                  
                  // HUD Progress
                  gsap.set("#hud-progress", { width: `${Math.min(100, p2Prog * 100)}%` });
