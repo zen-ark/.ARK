@@ -40,7 +40,7 @@ export default function CaseStudyHeader({
               </div>
             ) : isVideo ? (
               <video
-                src={imageSrc}
+                src={imageSrc?.replace(/ /g, '%20')}
                 autoPlay
                 loop
                 muted

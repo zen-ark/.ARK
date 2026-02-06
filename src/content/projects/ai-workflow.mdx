@@ -1,14 +1,14 @@
 ---
-title: "The AI-Driven Workflow"
+title: "Passion Projects: The .ARK Ecosystem"
 date: "2026-02-05"
 year: 2026
-client: "Internal / R&D"
-summary: "Bridging the gap between design systems and complex engineering."
-services: ["AI Strategy", "Fullstack", "UI/UX"]
-tags: ["AI Strategy", "Fullstack", "UI/UX"]
+client: "Personal / Studio"
+summary: "From systemic design to logic engines and visual storytelling."
+services: ["Art Direction", "Fullstack", "Video Production"]
+tags: ["Design System", "React", "Video"]
 cover: "/portfolio projects/ai-workflow/hero.mp4"
-roles: ["Product Designer", "Fullstack Engineer"]
-tech: ["Astro", "React", "AI Agents", "Cursor"]
+roles: ["Creative Director", "Engineer"]
+tech: ["Astro", "React", "Three.js", "Premiere"]
 status: "live"
 featured: true
 showInPortfolio: true
@@ -18,24 +18,22 @@ isCaseStudy: true
 
 import CaseStudyHeader from "../../components/case-study/CaseStudyHeader";
 import MetricsGrid from "../../components/case-study/MetricsGrid";
-import TwoColumnNarrative from "../../components/case-study/TwoColumnNarrative.astro";
-import StickyScrollSection from "../../components/case-study/StickyScrollSection.astro";
-import FeatureWindow from "../../components/case-study/FeatureWindow";
 import TechnicalSection from "../../components/case-study/TechnicalSection";
 import CodeFlowDiagram from "../../components/case-study/CodeFlowDiagram";
-import DesignSystemGrid from "../../components/case-study/DesignSystemGrid";
-import AgencyWindow from "../../components/case-study/AgencyWindow";
+import DesignSystemShowcase from "../../components/case-study/DesignSystemShowcase";
+import BrowserWindow from "../../components/case-study/BrowserWindow";
+import MusicVideoGallery from "../../components/case-study/MusicVideoGallery";
 import CaseStudyResults from "../../components/case-study/CaseStudyResults.astro";
 
 <CaseStudyHeader
   client:load
-  label="Executive Summary"
-  title="The AI-Driven Workflow"
-  subtitle="Bridging the gap between design systems and complex engineering."
+  label="The Ecosystem"
+  title="Passion Projects: The .ARK Ecosystem"
+  subtitle="A journey through systemic design, logic engines, and visual storytelling."
   imageSrc="/portfolio projects/ai-workflow/hero.mp4"
-  clientName="Internal / R&D"
-  services={["AI Strategy", "Fullstack", "UI/UX"]}
-  tech={["Astro", "React", "AI Agents", "Cursor"]}
+  clientName="Personal / Studio"
+  services={["Art Direction", "Fullstack", "Video Production"]}
+  tech={["Astro", "React", "Three.js", "Premiere"]}
   className="h-[85vh] min-h-[600px] mb-4 mt-0"
 />
 
@@ -44,64 +42,112 @@ import CaseStudyResults from "../../components/case-study/CaseStudyResults.astro
   className="py-8 md:py-12"
   items={[
     {
-      value: "100%",
-      label: "AI Augmented",
+      value: "3",
+      label: "Disciplines",
       description:
-        "Leveraging LLMs for data parsing, logic generation, and complex 3D implementations.",
+        "Merging Systemic Design, Technical Logic, and Visual Experimentation into one cohesive ecosystem.",
     },
     {
-      value: "2",
-      label: "Unified Worlds",
+      value: ".ARK",
+      label: "The Studio",
       description:
-        "Seamlessly bridging the 'Recruiter' view and the 'Agency' view in a single hybrid codebase.",
+        "A modular digital design studio built on precision and cinematic aesthetics.",
     },
     {
-      value: "0",
-      label: "Legacy Code",
+      value: "∞",
+      label: "Iteration",
       description:
-        "Iterative refactoring of the existing 'clusterfuck' into a modern modular architecture.",
+        "Continuous refinement of the creative process through code and visual media.",
     },
   ]}
 />
 
-{/* Technical Section: Logic Engine */}
+{/* Section 1: .ARK Digital Design Studio */}
+
+<div className="bg-[#0a0a0a] border-t border-white/10 pb-24">
+  <div className="w-full max-w-7xl mx-auto px-4 md:px-6 pt-24">
+    <div className="md:w-8/12 mb-16">
+      <h2 className="text-sm md:text-base font-mono uppercase tracking-wider text-white/50 mb-4">
+        Chapter 01
+      </h2>
+      <p className="text-4xl md:text-5xl font-medium text-white mb-6">.ARK Studio</p>
+      <p className="text-xl text-white/80 font-light leading-relaxed max-w-2xl">
+        .ARK is a digital design studio built like a system: precise, modular, and cinematic. The name comes from the .ark file format—a container that bundles structure, assets, and logic into one coherent unit.
+      </p>
+    </div>
+
+    <DesignSystemShowcase />
+
+    <div className="mt-24 grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+       <div className="md:col-span-5 prose prose-lg prose-invert max-w-none text-white/80 font-light leading-relaxed">
+        <h3 className="text-2xl font-medium text-white mb-4">The Agency Interface</h3>
+        <p>
+          The studio needed a face that reflected its internal logic. I built a live agency site that serves as both a portfolio and a capability statement. It uses the same underlying design tokens as the rest of the ecosystem, ensuring visual consistency across all touchpoints.
+        </p>
+        
+        <div className="mt-8">
+           <a href="/" className="group relative inline-flex items-center gap-4 px-8 py-4 bg-white text-black rounded-full text-base font-medium overflow-hidden transition-all hover:pr-10">
+            <span className="relative z-10">Switch to Studio View</span>
+            <div className="absolute inset-0 bg-neutral-200 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="relative z-10 transition-transform group-hover:translate-x-1">
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+      </div>
+      <div className="md:col-span-7">
+        <BrowserWindow url="ark-studio.com" className="transform md:rotate-1 hover:rotate-0 transition-transform duration-500">
+          <img src="/portfolio projects/ai-workflow/ark-interface.png" alt="Agency Interface" className="w-full h-full object-cover" />
+        </BrowserWindow>
+      </div>
+    </div>
+  </div>
+</div>
+
+{/* Section 2: The Logic Engine (Hausarztpraxis Five) */}
 
 <TechnicalSection title="Hausarztpraxis Five" subtitle="The Logic Engine">
+  <div className="mb-12">
+     <h2 className="text-sm md:text-base font-mono uppercase tracking-wider text-white/50 mb-4">
+        Chapter 02
+      </h2>
+  </div>
+
   <h3 className="text-xl font-medium text-white mb-4">The Challenge</h3>
   <p className="mb-8">
     Transforming a "clusterfuck" of physical PDF documentation into a structured, interactive digital assistant. The goal was to modernize the practice's knowledge base without disrupting their existing workflows.
   </p>
 
-<h3 className="text-xl font-medium text-white mb-4">AI Implementation & Security</h3>
-<p className="mb-6">
-  The core of this system is a secure bridge between unstructured data and a conversational
-  interface. We utilize AI not just for text generation, but for <strong>structural parsing</strong>
-  .
-</p>
-<ul className="list-disc pl-5 space-y-2 mb-8 text-white/70">
-  <li>
-    <strong>Vector Data Parsing:</strong> PDFs are ingested and chunked into vector embeddings,
-    allowing for semantic search rather than just keyword matching.
-  </li>
-  <li>
-    <strong>Secure Backend Bridge:</strong> A Node.js middleware layer sits between the client and
-    the LLM provider, managing API keys and enforcing rate limits. This ensures that sensitive
-    medical data structure is handled compliantly.
-  </li>
-  <li>
-    <strong>Persona Engineering:</strong> The "medical persona" isn't a prompt trick; it's a
-    fine-tuned system instruction set that forces the model to cite its sources from the uploaded
-    PDF knowledge base.
-  </li>
-</ul>
+  <h3 className="text-xl font-medium text-white mb-4">AI Implementation & Security</h3>
+  <p className="mb-6">
+    The core of this system is a secure bridge between unstructured data and a conversational
+    interface. We utilize AI not just for text generation, but for <strong>structural parsing</strong>.
+  </p>
+  <ul className="list-disc pl-5 space-y-2 mb-8 text-white/70">
+    <li>
+      <strong>Vector Data Parsing:</strong> PDFs are ingested and chunked into vector embeddings,
+      allowing for semantic search rather than just keyword matching.
+    </li>
+    <li>
+      <strong>Secure Backend Bridge:</strong> A Node.js middleware layer sits between the client and
+      the LLM provider, managing API keys and enforcing rate limits. This ensures that sensitive
+      medical data structure is handled compliantly.
+    </li>
+    <li>
+      <strong>Persona Engineering:</strong> The "medical persona" isn't a prompt trick; it's a
+      fine-tuned system instruction set that forces the model to cite its sources from the uploaded
+      PDF knowledge base.
+    </li>
+  </ul>
 
-<CodeFlowDiagram client:visible />
+  <CodeFlowDiagram client:visible />
 
-<h3 className="text-xl font-medium text-white mb-4 mt-8">Outcome</h3>
-<p className="mb-8">
-  A functional frontend where patients or staff can interact with a knowledge base that was
-  previously trapped in paper form.
-</p>
+  <h3 className="text-xl font-medium text-white mb-4 mt-8">Outcome</h3>
+  <p className="mb-8">
+    A functional frontend where patients or staff can interact with a knowledge base that was
+    previously trapped in paper form.
+  </p>
 
   <a href="https://hausarztpraxis-five.vercel.app/landingpage" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full text-white font-medium transition-all group mt-8">
     <span>View Live System</span>
@@ -113,76 +159,141 @@ import CaseStudyResults from "../../components/case-study/CaseStudyResults.astro
   </a>
 </TechnicalSection>
 
-{/* Creative Section: The Portfolio */}
+{/* Section 3: Visual Stories (Music Videos) */}
 
 <div className="bg-[#0a0a0a] border-t border-white/10 pb-32">
-  <div className="w-full max-w-7xl mx-auto px-4 md:px-6 pt-24 pb-12">
-    <div className="md:w-5/12 mb-12">
-      <h2 className="text-sm md:text-base font-mono uppercase tracking-wider text-white/50 mb-4">
-        The Portfolio
-      </h2>
-      <p className="text-xl md:text-2xl font-medium text-white/90">The Creative Ecosystem</p>
-    </div>
-
-    {/* Section 1: Design System */}
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-32">
-      <div className="md:col-span-5 prose prose-lg prose-invert max-w-none text-white/80 font-light leading-relaxed">
-        <h3 className="text-xl font-medium text-white mb-4">The Design-First Approach</h3>
-        <p>
-          AI didn't choose the colors or typography; a rigorous system was built in Figma first. The AI served as the execution engine, enabling me to build complex features that would usually require a team of developers.
+  <div className="w-full max-w-7xl mx-auto px-4 md:px-6 pt-24">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-24">
+       <div className="md:col-span-8">
+        <h2 className="text-sm md:text-base font-mono uppercase tracking-wider text-white/50 mb-4">
+          Chapter 03
+        </h2>
+        <p className="text-4xl md:text-5xl font-medium text-white mb-6">Visual Stories</p>
+        <p className="text-xl text-white/80 font-light leading-relaxed max-w-2xl">
+          The "Learning by Doing" Era. Before .ARK became a systematic studio, my work was fueled by the raw, chaotic energy of the Bern creative scene.
         </p>
-      </div>
-      <div className="md:col-span-7">
-         <DesignSystemGrid />
-      </div>
+       </div>
     </div>
 
-    {/* Section 2: Technical Leap */}
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-32 items-center">
-      <div className="md:col-span-7 order-2 md:order-1">
-        <FeatureWindow client:visible />
+    {/* The Story Grid */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 mb-24">
+      {/* Column 1: Chaos */}
+      <div className="space-y-8">
+        <h3 className="text-2xl font-medium text-white">The Intuition Phase</h3>
+        <div className="prose prose-lg prose-invert text-white/70 font-light">
+          <p>
+            This was a time of pure experimentation where the goal was simply to create something that felt alive, regardless of whether I knew the technical "rules" yet.
+          </p>
+          <p>
+            My first collaboration with yung glas was a baptism by fire. I found myself holding a Sony FX6—a high-end cinema camera—with absolutely no idea of the power or complexity I had in my hands.
+          </p>
+           <div className="pl-6 border-l-2 border-[#C7FF55] my-8">
+            <p className="italic text-white/90 text-lg">
+              "I was capturing cinematic visuals by pure instinct. It was the ultimate 'fake it 'til you make it' moment. Looking back, the mistakes were plenty—most notably a complete lack of colorspace management that nearly broke the final grades—but the energy we captured was irreplaceable."
+            </p>
+          </div>
+        </div>
       </div>
-      <div className="md:col-span-5 order-1 md:order-2 prose prose-lg prose-invert max-w-none text-white/80 font-light leading-relaxed">
-        <h3 className="text-xl font-medium text-white mb-4">The Technical Leap</h3>
-        <ul className="list-disc pl-5 space-y-2 mb-8 text-white/70">
-          <li><strong>Complex Interactions:</strong> How AI enabled the creation of the infinite scroll gallery in the 3D projects section—something that would typically require deep specialized JS knowledge.</li>
-          <li><strong>Animation Control:</strong> Using JSON-based animations (Lottie/Rive) to allow for programmatic manipulation within the Cursor environment.</li>
-        </ul>
-        <div className="p-6 bg-white/5 rounded-2xl border-l-4 border-white/20">
-          <p className="italic text-base text-white/90">
-            "My biggest challenge here was the architecture. What started as a school project for an agency evolved into a hybrid portfolio-agency ecosystem. Navigating this 'clusterfuck' of legacy code while maintaining a seamless user experience was a masterclass in iterative refactoring."
+
+      {/* Column 2: Transition */}
+      <div className="space-y-8">
+        <h3 className="text-2xl font-medium text-white">Chaotic Energy & Professional Pivot</h3>
+        <div className="prose prose-lg prose-invert text-white/70 font-light">
+          <p>
+            <strong>The Lunaria Festival:</strong> Filming the aftermovie was a masterclass in adapting to the moment. It was a steep learning curve navigated through the haze of a festival atmosphere—handling a gimbal in the middle of a crowd while leaning into that "chaotic Bern energy".
+          </p>
+          <p>
+            <strong>The Turning Point:</strong> Joining the Swisscom filmteam was where "Chaos" met "Structure." I finally learned the technical "why" behind the "how"—properly operating the equipment I had previously only used by instinct.
+          </p>
+          <p>
+             This experience bridged the gap between my raw passion projects and the precise, modular philosophy that now defines .ARK. I realized that you can only truly break the rules once you have mastered the system that governs them.
           </p>
         </div>
       </div>
     </div>
 
-    {/* Section 3: Agency Blueprint */}
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
-      <div className="md:col-span-5 prose prose-lg prose-invert max-w-none text-white/80 font-light leading-relaxed">
-        <h3 className="text-xl font-medium text-white mb-4">The Agency Blueprint</h3>
-        <p className="mb-6">
-          Scaling a studio requires more than just good code. It requires a business plan, a rigorous design language, and an efficient workflow.
-        </p>
-        <p>
-          I treat AI as my <strong>"Execution Engine"</strong>. It handles the boilerplate, the type definitions, and the complex math for 3D interactions. This allows me to remain the <strong>"Curator of Taste"</strong>, focusing entirely on the user experience and the visual polish that defines a premium brand.
-        </p>
-      </div>
-      <div className="md:col-span-7">
-        <AgencyWindow />
-        <div className="mt-8 flex justify-center">
-          <a href="/" className="group relative inline-flex items-center gap-4 px-10 py-5 bg-white text-black rounded-full text-lg font-medium overflow-hidden transition-all hover:pr-12">
-            <span className="relative z-10">Switch to Studio</span>
-            <div className="absolute inset-0 bg-neutral-200 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="relative z-10 transition-transform group-hover:translate-x-1">
-              <path d="M5 12h14" />
-              <path d="m12 5 7 7-7 7" />
-            </svg>
-          </a>
+    <div className="mb-24">
+      <MusicVideoGallery client:visible />
+    </div>
+
+    {/* Instagram CTA - Motion Archive Style */}
+    <div className="w-full bg-[#0a0a0a] py-40 border-t border-white/5 flex justify-center">
+      <div className="relative w-full max-w-4xl border border-white/5 bg-black/20 p-12 md:p-24 text-center overflow-hidden group">
+        
+        {/* Viewfinder Corners */}
+        <div className="absolute top-0 left-0 w-4 h-4 border-l border-t border-white/20"></div>
+        <div className="absolute top-0 right-0 w-4 h-4 border-r border-t border-white/20"></div>
+        <div className="absolute bottom-0 left-0 w-4 h-4 border-l border-b border-white/20"></div>
+        <div className="absolute bottom-0 right-0 w-4 h-4 border-r border-b border-white/20"></div>
+
+        {/* Metadata */}
+        <div className="mb-8">
+          <span className="text-[10px] font-mono text-white/30 tracking-widest uppercase">LOG_ENTRY // MOTION_DESIGN_REEL_V2.0</span>
+        </div>
+
+        {/* Heading */}
+        <h3 className="text-6xl md:text-8xl font-medium text-white mb-8 tracking-tighter uppercase font-display">
+          Motion<br/>Archive
+        </h3>
+
+        {/* Body Text */}
+        <div className="flex justify-center mb-12">
+          <p className="text-white/60 text-lg font-light leading-relaxed max-w-[600px]">
+            My latest reel marks a new chapter—swapping to DaVinci Resolve and embracing the steep learning curve. Follow my journey as I push my technical boundaries.
+          </p>
+        </div>
+
+        {/* System Button Group */}
+        <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+          {/* Private / Video Account */}
+          <div className="flex flex-col items-center gap-2">
+            <a 
+              href="https://instagram.com/shainzen" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="group relative inline-flex items-center gap-3 px-6 py-3 bg-white/5 backdrop-blur-xl border border-white/10 rounded-lg transition-all duration-300 hover:bg-[#111] hover:border-white/30 w-full justify-center"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[hsl(258,55%,63%)] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[hsl(258,55%,63%)]"></span>
+              </span>
+              <span className="text-sm font-mono text-white/90 uppercase tracking-wide group-hover:text-white">Video / Private</span>
+            </a>
+            <div className="flex items-center gap-1 text-white/30 hover:text-white/50 transition-colors">
+              <span className="text-xs font-mono">@shainzen</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M7 17l9.2-9.2M17 8v9" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Motion Design Account */}
+          <div className="flex flex-col items-center gap-2">
+            <a 
+              href="https://instagram.com/mondzhain" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="group relative inline-flex items-center gap-3 px-6 py-3 bg-white/5 backdrop-blur-xl border border-white/10 rounded-lg transition-all duration-300 hover:bg-[#111] hover:border-white/30 w-full justify-center"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C7FF55] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#C7FF55]"></span>
+              </span>
+              <span className="text-sm font-mono text-white/90 uppercase tracking-wide group-hover:text-white">Motion Design</span>
+            </a>
+            <div className="flex items-center gap-1 text-white/30 hover:text-white/50 transition-colors">
+              <span className="text-xs font-mono">@mondzhain</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M7 17l9.2-9.2M17 8v9" />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
-<CaseStudyResults currentSlug="ai-workflow" />
+<CaseStudyResults currentSlug="ai-workflow">
+  The journey from systemic design to technical logic and finally visual experimentation represents a complete ecosystem. What started as a school project evolved into a professional studio workflow, proving that structure and creativity are not opposing forces, but complementary engines.
+</CaseStudyResults>

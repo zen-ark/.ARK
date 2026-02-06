@@ -15,45 +15,46 @@ export interface MetricData {
   description: string;
 }
 
+const parseValue = (val: string) => {
+  const match = val.match(/^(\D*)(\d+(?:\.\d+)?)(\D*)$/);
+  if (!match) return { prefix: "", num: 0, suffix: val, original: val, isNumeric: false };
+  
+  let prefix = match[1];
+  const num = parseFloat(match[2]);
+  const suffix = match[3];
+  
+  // Check if original had leading zero and wasn't just "0"
+  const hasLeadingZero = match[2].length > 1 && match[2].startsWith('0');
+  
+  return { prefix, num, suffix, hasLeadingZero, isNumeric: true };
+};
+
 const CountUp = ({ value, className, delay = 0 }: { value: string, className?: string, delay?: number }) => {
   const ref = useRef<HTMLSpanElement>(null)
   const isInView = useInView(ref, { once: true, amount: 0.5 })
   const motionValue = useMotionValue(0)
   const springValue = useSpring(motionValue, { stiffness: 50, damping: 20 })
-  const [displayValue, setDisplayValue] = useState("0")
-
-  // Parse the value
-  // "25h" -> prefix: "", number: 25, suffix: "h"
-  // "05" -> prefix: "0", number: 5, suffix: "" (special case for leading zero)
-  // "100%" -> prefix: "", number: 100, suffix: "%"
   
-  const parseValue = (val: string) => {
-    const match = val.match(/^(\D*)(\d+(?:\.\d+)?)(\D*)$/);
-    if (!match) return { prefix: "", num: 0, suffix: val, original: val };
-    
-    let prefix = match[1];
-    const num = parseFloat(match[2]);
-    const suffix = match[3];
-    const original = val;
-    
-    // Check if original had leading zero and wasn't just "0"
-    const hasLeadingZero = match[2].length > 1 && match[2].startsWith('0');
-    
-    return { prefix, num, suffix, hasLeadingZero };
-  };
-
-  const { prefix, num, suffix, hasLeadingZero } = parseValue(value);
+  const { prefix, num, suffix, hasLeadingZero, isNumeric } = parseValue(value);
+  const [displayValue, setDisplayValue] = useState(isNumeric ? "0" : value)
 
   useEffect(() => {
+    if (!isNumeric) {
+      if (displayValue !== value) setDisplayValue(value);
+      return;
+    }
+
     if (isInView) {
       const timeoutId = setTimeout(() => {
         motionValue.set(num);
       }, delay * 1000);
       return () => clearTimeout(timeoutId);
     }
-  }, [isInView, num, motionValue, delay]);
+  }, [isInView, num, motionValue, delay, isNumeric, value, displayValue]);
 
   useEffect(() => {
+    if (!isNumeric) return;
+
     const unsubscribe = springValue.on("change", (latest) => {
       let formattedNum = Math.round(latest).toString();
       if (hasLeadingZero && Math.round(latest) < 10) {
@@ -62,7 +63,7 @@ const CountUp = ({ value, className, delay = 0 }: { value: string, className?: s
       setDisplayValue(`${prefix}${formattedNum}${suffix}`);
     });
     return unsubscribe;
-  }, [springValue, prefix, suffix, hasLeadingZero]);
+  }, [springValue, prefix, suffix, hasLeadingZero, isNumeric]);
 
   return <span ref={ref} className={className}>{displayValue}</span>
 }

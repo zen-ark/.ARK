@@ -3,7 +3,7 @@ import RevealOnScroll from '../RevealOnScroll';
 
 // Placeholder images - in production these would be real agency screenshots
 const images = [
-  "/portfolio projects/trauffer/trauffer.json", // Lottie placeholder
+  "/portfolio projects/trauffer/trauffer moive.mp4", // Lottie placeholder
   "/portfolio projects/3d/optimized/65d8dfad7a21d2f2778ec647_crazy_new3.webp",
   "/portfolio projects/3d/optimized/65d8dfad8e5c8e8a29ee6362_crazy_new_2.webp",
   "/portfolio projects/3d/optimized/65d8dfb9d8dad6a34e8ef825_crazy_new.webp"
