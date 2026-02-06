@@ -460,7 +460,15 @@ export default function Navigation({
               aria-label="Primary navigation"
             >
               {navLinks.map((link, index) => {
-                const isActive = link.href === activeHref;
+                let isActive = link.href === activeHref;
+
+                // Special handling for Work link in portfolio mode
+                // If active section is Work (#work), show Home (index 0) as active
+                if (activeHref === "#work") {
+                  if (link.href === "#work") isActive = false;
+                  if (index === 0) isActive = true;
+                }
+
                 const isHovered = !isActive && hoveredHref === link.href;
 
                 const clearHover = () => {

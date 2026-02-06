@@ -5,61 +5,151 @@ const title = "Impressum — .ARK";
 const description = "Legal Notice / Impressum for .ARK";
 ---
 
-<Base title={title} description={description}>
-  <main class="min-h-screen px-4 py-16 md:py-24">
-    <div class="w-full max-w-3xl mx-auto space-y-12">
-      <div class="space-y-4">
-        <h1 class="text-4xl md:text-5xl font-semibold tracking-tight">Impressum</h1>
-        <p class="text-lg text-text-subtle">Legal Notice</p>
+<Base 
+  title={title} 
+  description={description} 
+  headerMode="hiring" 
+  footerMode="reveal" 
+  wrapperClass="bg-[#111]"
+>
+  <main class="min-h-screen bg-[#0a0a0a] pt-32 pb-24 px-4 flex justify-center">
+    <div class="relative w-full max-w-4xl border border-white/5 bg-black/20 p-8 md:p-16">
+      
+      {/* Viewfinder Corners */}
+      <div class="absolute top-0 left-0 w-4 h-4 border-l border-t border-white/20"></div>
+      <div class="absolute top-0 right-0 w-4 h-4 border-r border-t border-white/20"></div>
+      <div class="absolute bottom-0 left-0 w-4 h-4 border-l border-b border-white/20"></div>
+      <div class="absolute bottom-0 right-0 w-4 h-4 border-r border-b border-white/20"></div>
+
+      {/* Metadata */}
+      <div class="mb-8 border-b border-white/5 pb-8">
+        <span class="text-[10px] font-mono text-white/30 tracking-widest uppercase block mb-2">LEGAL_NOTICE // IMPRESSUM</span>
+        <h1 class="text-4xl md:text-5xl font-medium text-white tracking-tight font-display">Impressum</h1>
       </div>
 
-      <div class="prose prose-invert max-w-none space-y-8 text-text-subtle">
-        <section class="space-y-4">
-          <h2 class="text-2xl font-medium text-text-primary">Company Information</h2>
-          <p>
-            <strong>.ARK</strong><br />
-            [Street Address]<br />
-            [City, Zip Code]<br />
-            Switzerland
-          </p>
-        </section>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24">
+        {/* Company Information */}
+        <div class="space-y-6">
+          <h2 class="text-xs font-mono text-[#C7FF55] uppercase tracking-wider">Company Information</h2>
+          <div class="text-white/80 font-light leading-relaxed">
+            <p class="font-medium text-white mb-2">.ARK</p>
+            <p>Bürglenstr. 10</p>
+            <p>3600 Thun</p>
+            <p>Switzerland</p>
+          </div>
+        </div>
 
-        <section class="space-y-4">
-          <h2 class="text-2xl font-medium text-text-primary">Contact</h2>
-          <p>
-            Email: <a href="mailto:hello@ark.studio.ch" class="text-text-primary hover:underline">hello@ark.studio.ch</a><br />
-            Phone: [Phone Number]
-          </p>
-        </section>
+        {/* Contact */}
+        <div class="space-y-6">
+          <h2 class="text-xs font-mono text-[#C7FF55] uppercase tracking-wider">Contact</h2>
+          <div class="space-y-2 text-white/80 font-light font-mono text-sm">
+            <div class="relative group cursor-help w-fit">
+              <a
+                href="#"
+                class="crypted-mail hover:text-white transition-colors block py-1"
+                data-name="Shain"
+                data-domain="ark-studio"
+                data-tld="ch"
+                onclick="return false;">[Email Protected]</a>
+              <div
+                class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-64 p-3 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl text-xs opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none z-50 transform origin-bottom scale-95 group-hover:scale-100 font-sans"
+              >
+                <p class="font-bold text-white mb-1">🚫🤖 *Sad robot noises*</p>
+                <p class="text-gray-400 leading-relaxed">
+                  This email is protected from spam bots! It uses client-side JavaScript to reassemble
+                  the address.
+                </p>
+                <div
+                  class="absolute top-full left-1/2 -translate-x-1/2 -mt-1.5 w-3 h-3 bg-[#1a1a1a] border-b border-r border-white/10 rotate-45"
+                >
+                </div>
+              </div>
+            </div>
 
-        <section class="space-y-4">
-          <h2 class="text-2xl font-medium text-text-primary">Represented by</h2>
-          <p>
-            [Name of Managing Director/Owner]
-          </p>
-        </section>
+            <div class="relative group cursor-help w-fit">
+              <span
+                class="crypted-phone hover:text-white transition-colors block py-1"
+                data-country="41"
+                data-prefix="79"
+                data-p1="780"
+                data-p2="79"
+                data-p3="16">[Phone Protected]</span>
+              <div
+                class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-64 p-3 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl text-xs opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none z-50 transform origin-bottom scale-95 group-hover:scale-100 font-sans"
+              >
+                <p class="font-bold text-white mb-1">🚫🤖 *Beep boop, access denied*</p>
+                <p class="text-gray-400 leading-relaxed">
+                  This number is hidden from spam callers! Reassembled by JavaScript on load.
+                </p>
+                <div
+                  class="absolute top-full left-1/2 -translate-x-1/2 -mt-1.5 w-3 h-3 bg-[#1a1a1a] border-b border-r border-white/10 rotate-45"
+                >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        <section class="space-y-4">
-          <h2 class="text-2xl font-medium text-text-primary">Commercial Register</h2>
-          <p>
-            Registered in the commercial register of [Canton]<br />
-            Company ID (UID): [CHE-XXX.XXX.XXX]
-          </p>
-        </section>
+        {/* Represented by */}
+        <div class="space-y-6">
+          <h2 class="text-xs font-mono text-[#C7FF55] uppercase tracking-wider">Represented by</h2>
+          <div class="text-white/80 font-light leading-relaxed">
+            <p>Shain Gerstner</p>
+          </div>
+        </div>
 
-        <section class="space-y-4">
-          <h2 class="text-2xl font-medium text-text-primary">Disclaimer</h2>
-          <p>
-            <strong>Content Liability:</strong> While we strive for accuracy, we cannot guarantee the correctness, completeness, or topicality of the content on our site.
-          </p>
-          <p>
-            <strong>External Links:</strong> This website contains links to external third-party websites. We have no influence on the contents of those websites and therefore cannot assume liability for them. The respective providers or operators are solely responsible.
-          </p>
-          <p>
-            <strong>Copyright:</strong> The content and works published on this website are governed by Swiss copyright laws. Any duplication, processing, distribution, or any form of utilization beyond the scope of copyright law shall require the prior written consent of the author or authors in question.
-          </p>
-        </section>
+        {/* Disclaimer */}
+        <div class="space-y-6 md:col-span-2 border-t border-white/5 pt-12 mt-4">
+           <h2 class="text-xs font-mono text-white/30 uppercase tracking-wider mb-8">Legal Disclaimer</h2>
+           
+           <div class="grid gap-8 text-sm text-white/60 font-light leading-relaxed">
+              <div>
+                <strong class="block text-white mb-2">Content Liability</strong>
+                <p>While we strive for accuracy, we cannot guarantee the correctness, completeness, or topicality of the content on our site.</p>
+              </div>
+              
+              <div>
+                <strong class="block text-white mb-2">External Links</strong>
+                <p>This website contains links to external third-party websites. We have no influence on the contents of those websites and therefore cannot assume liability for them. The respective providers or operators are solely responsible.</p>
+              </div>
+
+              <div>
+                <strong class="block text-white mb-2">Copyright</strong>
+                <p>The content and works published on this website are governed by Swiss copyright laws. Any duplication, processing, distribution, or any form of utilization beyond the scope of copyright law shall require the prior written consent of the author or authors in question.</p>
+              </div>
+           </div>
+        </div>
       </div>
     </div>
   </main>
+
+  <script>
+    // Email Protection
+    const mails = document.querySelectorAll(".crypted-mail");
+    mails.forEach((mail) => {
+      const el = mail as HTMLAnchorElement;
+      const name = el.dataset.name;
+      const domain = el.dataset.domain;
+      const tld = el.dataset.tld;
+      const email = `${name}@${domain}.${tld}`;
+
+      el.href = `mailto:${email}`;
+      el.innerHTML = email;
+      el.onclick = null;
+    });
+
+    // Phone Protection
+    const phones = document.querySelectorAll(".crypted-phone");
+    phones.forEach((phone) => {
+      const el = phone as HTMLElement;
+      const country = el.dataset.country;
+      const prefix = el.dataset.prefix;
+      const p1 = el.dataset.p1;
+      const p2 = el.dataset.p2;
+      const p3 = el.dataset.p3;
+      const number = `+${country} ${prefix} ${p1} ${p2} ${p3}`;
+
+      el.innerHTML = number;
+    });
+  </script>
 </Base>

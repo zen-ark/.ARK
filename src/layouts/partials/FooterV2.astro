@@ -167,15 +167,13 @@ const currentYear = new Date().getFullYear();
     padding: 16px;
     position: relative;
     box-sizing: border-box;
-    border-right: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+    border-right: 1px solid rgba(255, 255, 255, 0.35);
+    border-bottom: none;
   }
 
   @media (min-width: 768px) {
     .column-first {
       padding: 32px;
-      border-right: 1px solid rgba(255, 255, 255, 0.35);
-      border-bottom: none;
     }
   }
 
@@ -451,10 +449,6 @@ const currentYear = new Date().getFullYear();
 
   /* Responsive */
   @media (max-width: 768px) {
-    .row-first {
-      grid-template-columns: 1fr;
-    }
-
     .row-logo {
       padding: 24px 12px;
     }
@@ -468,6 +462,17 @@ const currentYear = new Date().getFullYear();
     .logo {
       width: 100%;
       max-width: 100%;
+    }
+  }
+
+  @media (max-width: 340px) {
+    .row-first {
+      grid-template-columns: 1fr;
+    }
+
+    .column-first {
+      border-right: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.35);
     }
   }
 </style>

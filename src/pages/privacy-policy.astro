@@ -3,57 +3,119 @@ import Base from "@/layouts/Base.astro";
 
 const title = "Privacy Policy — .ARK";
 const description = "Privacy Policy for .ARK";
+const lastUpdated = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 ---
 
-<Base title={title} description={description}>
-  <main class="min-h-screen px-4 py-16 md:py-24">
-    <div class="w-full max-w-3xl mx-auto space-y-12">
-      <div class="space-y-4">
-        <h1 class="text-4xl md:text-5xl font-semibold tracking-tight">Privacy Policy</h1>
-        <p class="text-lg text-text-subtle">
-          Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-        </p>
+<Base 
+  title={title} 
+  description={description}
+  headerMode="hiring" 
+  footerMode="reveal" 
+  wrapperClass="bg-[#111]"
+>
+  <main class="min-h-screen bg-[#0a0a0a] pt-32 pb-24 px-4 flex justify-center">
+    <div class="relative w-full max-w-4xl border border-white/5 bg-black/20 p-8 md:p-16">
+      
+      {/* Viewfinder Corners */}
+      <div class="absolute top-0 left-0 w-4 h-4 border-l border-t border-white/20"></div>
+      <div class="absolute top-0 right-0 w-4 h-4 border-r border-t border-white/20"></div>
+      <div class="absolute bottom-0 left-0 w-4 h-4 border-l border-b border-white/20"></div>
+      <div class="absolute bottom-0 right-0 w-4 h-4 border-r border-b border-white/20"></div>
+
+      {/* Metadata */}
+      <div class="mb-8 border-b border-white/5 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <span class="text-[10px] font-mono text-white/30 tracking-widest uppercase block mb-2">LEGAL // PRIVACY_POLICY</span>
+          <h1 class="text-4xl md:text-5xl font-medium text-white tracking-tight font-display">Privacy Policy</h1>
+        </div>
+        <div class="text-xs font-mono text-white/40">
+          LAST_UPDATED: {lastUpdated}
+        </div>
       </div>
 
-      <div class="prose prose-invert max-w-none space-y-8 text-text-subtle">
+      <div class="space-y-12 text-white/80 font-light leading-relaxed">
+        
         <section class="space-y-4">
-          <h2 class="text-2xl font-medium text-text-primary">1. Overview</h2>
-          <p>
+          <h2 class="text-lg font-medium text-white flex items-center gap-3">
+            <span class="text-xs font-mono text-[#C7FF55] border border-[#C7FF55]/20 px-2 py-1 rounded">01</span>
+            Overview
+          </h2>
+          <p class="pl-0 md:pl-12">
             At .ARK, we take your privacy seriously. This policy explains how we collect, use, and protect your personal information when you visit our website.
           </p>
         </section>
 
         <section class="space-y-4">
-          <h2 class="text-2xl font-medium text-text-primary">2. Data Collection</h2>
-          <p>
-            We adhere to the principle of data minimization. We only collect data that is technically necessary for the operation of this website or that you voluntarily provide to us (e.g., via contact forms).
-          </p>
-          <ul class="list-disc pl-4 space-y-2">
-            <li>
-              <strong>Server Log Files:</strong> Our host provider collects standard server logs (IP address, browser type, timestamp) for security and troubleshooting purposes.
-            </li>
-            <li>
-              <strong>Analytics:</strong> We may use privacy-focused analytics tools (like Plausible) that do not track personal data or use cookies.
-            </li>
-          </ul>
+          <h2 class="text-lg font-medium text-white flex items-center gap-3">
+            <span class="text-xs font-mono text-[#C7FF55] border border-[#C7FF55]/20 px-2 py-1 rounded">02</span>
+            Data Collection
+          </h2>
+          <div class="pl-0 md:pl-12 space-y-4">
+            <p>
+              We adhere to the principle of data minimization. We only collect data that is technically necessary for the operation of this website or that you voluntarily provide to us (e.g., via contact forms).
+            </p>
+            <ul class="list-none space-y-4 text-sm mt-4">
+              <li class="bg-white/5 p-4 rounded border border-white/5">
+                <strong class="block text-white mb-1">Server Log Files</strong> 
+                Our host provider collects standard server logs (IP address, browser type, timestamp) for security and troubleshooting purposes.
+              </li>
+              <li class="bg-white/5 p-4 rounded border border-white/5">
+                <strong class="block text-white mb-1">Analytics</strong> 
+                We may use privacy-focused analytics tools (like Plausible) that do not track personal data or use cookies.
+              </li>
+            </ul>
+          </div>
         </section>
 
         <section class="space-y-4">
-          <h2 class="text-2xl font-medium text-text-primary">3. Cookies</h2>
-          <p>
+          <h2 class="text-lg font-medium text-white flex items-center gap-3">
+            <span class="text-xs font-mono text-[#C7FF55] border border-[#C7FF55]/20 px-2 py-1 rounded">03</span>
+            Cookies
+          </h2>
+          <p class="pl-0 md:pl-12">
             We minimize the use of cookies. Any cookies used are essential for the technical functioning of the website or user preferences (like theme selection).
           </p>
         </section>
 
-        <section class="space-y-4">
-          <h2 class="text-2xl font-medium text-text-primary">4. Contact Information</h2>
-          <p>
-            If you have any questions about this privacy policy, please contact us at:
-            <br />
-            <a href="mailto:hello@ark.studio.ch" class="text-text-primary hover:underline">hello@ark.studio.ch</a>
-          </p>
+        <section class="space-y-4 border-t border-white/5 pt-8">
+          <h2 class="text-lg font-medium text-white flex items-center gap-3">
+            <span class="text-xs font-mono text-[#C7FF55] border border-[#C7FF55]/20 px-2 py-1 rounded">04</span>
+            Contact Information
+          </h2>
+          <div class="pl-0 md:pl-12">
+            <p class="mb-4">
+              If you have any questions about this privacy policy, please contact us at:
+            </p>
+             <a
+                href="#"
+                class="crypted-mail inline-flex items-center gap-2 text-[#C7FF55] hover:text-white transition-colors font-mono text-sm"
+                data-name="hello"
+                data-domain="ark.studio"
+                data-tld="ch"
+                onclick="return false;">
+                <span>[Email Protected]</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l9.2-9.2M17 8v9"></path></svg>
+             </a>
+          </div>
         </section>
+
       </div>
     </div>
   </main>
+
+  <script>
+    // Email Protection
+    const mails = document.querySelectorAll(".crypted-mail");
+    mails.forEach((mail) => {
+      const el = mail as HTMLAnchorElement;
+      const name = el.dataset.name;
+      const domain = el.dataset.domain;
+      const tld = el.dataset.tld;
+      const email = `${name}@${domain}.${tld}`;
+
+      el.href = `mailto:${email}`;
+      el.innerHTML = email;
+      el.onclick = null;
+    });
+  </script>
 </Base>
