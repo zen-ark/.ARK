@@ -246,6 +246,10 @@ export default function ProjectsV6() {
                 <img 
                   src={project.src} 
                   alt={project.title} 
+                  width="1920"
+                  height="1080"
+                  loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover pointer-events-none"
                 />
                 <div className="absolute inset-0 bg-black/20 pointer-events-none" />

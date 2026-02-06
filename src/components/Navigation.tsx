@@ -371,11 +371,13 @@ export default function Navigation({
 
   return (
     <>
-      <header ref={headerRef} className={`${styles.header} ${open ? styles.headerOpen : ""}`}>
+      <header ref={headerRef} className={`${styles.header} ${open ? styles.headerOpen : ""} ${mode === 'hiring' ? styles.hiringMode : ""}`}>
         <div className={styles.headerInner}>
-          <a ref={logoRef} className={styles.logo} href={logoHref} aria-label="Go to home page">
-            <img src="/logo-transparent.svg" alt="Ark Studio" style={{ height: '2.5rem', width: 'auto' }} />
-          </a>
+          {mode !== 'hiring' && (
+            <a ref={logoRef} className={styles.logo} href={logoHref} aria-label="Go to home page">
+              <img src="/logo-transparent.svg" alt="Ark Studio" style={{ height: '2.5rem', width: 'auto' }} />
+            </a>
+          )}
 
           <div className={styles.headerCenter} aria-hidden="true" />
 
@@ -470,10 +472,24 @@ export default function Navigation({
                   if (link.href.startsWith("#")) {
                     e.preventDefault();
                     const pathname = window.location.pathname;
-                    const isHomePage = pathname === "/" || pathname === "/de" || pathname === "/de/";
+                    const isGerman = pathname.startsWith("/de");
+                    
+                    // Determine if we are on the "home" page for the current mode
+                    let isOnCorrectPage = false;
+                    let targetBasePath = isGerman ? "/de/" : "/";
+                    
+                    if (mode === 'hiring') {
+                      isOnCorrectPage = pathname === "/portfolio" || pathname === "/portfolio/" || 
+                                       pathname === "/de/portfolio" || pathname === "/de/portfolio/";
+                      targetBasePath = isGerman ? "/de/portfolio" : "/portfolio";
+                    } else {
+                      isOnCorrectPage = pathname === "/" || pathname === "/de" || pathname === "/de/";
+                      // targetBasePath already set correctly for agency
+                    }
+
                     const hash = link.href;
                     
-                    if (isHomePage) {
+                    if (isOnCorrectPage) {
                       // Already on home page, just scroll
                       const targetSection = document.querySelector(hash);
                       if (targetSection) {
@@ -482,7 +498,7 @@ export default function Navigation({
                         const viewportHeight = window.innerHeight;
                         
                         // Special case: Projects section should scroll to top
-                        if (hash === "#projects") {
+                        if (hash === "#projects" || hash === "#work") {
                           const targetScroll = targetRect.top + window.pageYOffset - headerHeight - 20;
                           window.scrollTo({
                             top: targetScroll,
@@ -503,9 +519,9 @@ export default function Navigation({
                       }
                     } else {
                       // Navigate to home page with hash, browser will handle scroll
-                      const homePath = pathname.startsWith("/de") ? "/de/" : "/";
                       handleClose();
-                      window.location.href = `${homePath}${hash}`;
+                      const finalUrl = `${targetBasePath}${hash}`.replace(/\/\/+/g, "/");
+                      window.location.href = finalUrl;
                     }
                     return;
                   }

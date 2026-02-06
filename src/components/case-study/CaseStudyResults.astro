@@ -17,20 +17,28 @@ let nextProject = propNextProject;
 
 if (!nextProject && currentSlug) {
   // Use loadProjects with mode: 'portfolio' to match the landing page logic
-  const projects = await loadProjects({ mode: "portfolio" });
+  const projects = (await loadProjects({ mode: "portfolio" })).filter(
+    (p) => p.slug !== "dropin-costa-rica"
+  );
   const index = projects.findIndex((p) => p.slug === currentSlug);
 
-  if (index !== -1 && index < projects.length - 1) {
-    const next = projects[index + 1];
-    nextProject = {
-      slug: next.slug,
-      title: next.title,
-      cover: next.cover,
-    };
+  if (index !== -1 && projects.length > 0) {
+    const nextIndex = (index + 1) % projects.length;
+    const next = projects[nextIndex];
+
+    // Ensure we don't link to the current project if it's the only one
+    if (next.slug !== currentSlug) {
+      nextProject = {
+        slug: next.slug,
+        title: next.title,
+        cover: next.cover,
+      };
+    }
   }
 }
 
 const isLottie = nextProject?.cover?.endsWith(".json");
+const isVideo = nextProject?.cover?.endsWith(".mp4") || nextProject?.cover?.endsWith(".webm");
 const needsDarkBg = nextProject?.slug === "trauffer" || nextProject?.slug === "movieworld-spiez";
 ---
 
@@ -64,6 +72,15 @@ const needsDarkBg = nextProject?.slug === "trauffer" || nextProject?.slug === "m
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   loop={true}
                   backgroundColor={needsDarkBg ? "#111111" : undefined}
+                />
+              ) : isVideo ? (
+                <video
+                  src={nextProject.cover}
+                  class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 opacity-80 group-hover:opacity-100"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
                 />
               ) : (
                 <img

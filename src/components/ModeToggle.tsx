@@ -70,10 +70,29 @@ function ArrowRight({ className }: { className?: string }) {
   );
 }
 
+function StraightArrow({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 200 40"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <line x1="0" y1="20" x2="190" y2="20" />
+      <path d="M184 14 L 190 20 L 184 26" />
+    </svg>
+  );
+}
+
 export default function ModeToggle({ currentPath, isGerman }: ModeToggleProps) {
   const currentMode = getMode(currentPath);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   // Determine target mode and related info
   // If current is agency (Studio), target is hiring (Portfolio)
@@ -81,9 +100,34 @@ export default function ModeToggle({ currentPath, isGerman }: ModeToggleProps) {
   const targetMode: Mode = currentMode === "agency" ? "hiring" : "agency";
   const isTargetPortfolio = targetMode === "hiring";
 
+    // Check for onboarding condition
+    useEffect(() => {
+      // Only show on Studio (agency) mode
+      if (currentMode !== 'agency') return;
+
+      // Check if we came from Portfolio
+      // We look for 'portfolio' in the referrer
+      const referrer = document.referrer;
+      const cameFromPortfolio = referrer && referrer.includes('portfolio');
+
+      // Check if user has seen this before
+      // Using a consistent key for production
+      const storageKey = 'ark_studio_onboarding_seen';
+      const hasSeen = localStorage.getItem(storageKey);
+
+      if (cameFromPortfolio && !hasSeen) {
+        // Small delay for better UX
+        const timer = setTimeout(() => {
+          setShowOnboarding(true);
+          localStorage.setItem(storageKey, 'true');
+        }, 1000);
+        return () => clearTimeout(timer);
+      }
+    }, [currentMode]);
+
   // Prevent scrolling when modal is open
   useEffect(() => {
-    if (isModalOpen) {
+    if (isModalOpen || showOnboarding) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -91,11 +135,16 @@ export default function ModeToggle({ currentPath, isGerman }: ModeToggleProps) {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isModalOpen]);
+  }, [isModalOpen, showOnboarding]);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
     setIsClosing(false);
+    setShowOnboarding(false); // Close onboarding if they click the button
+  };
+
+  const handleCloseOnboarding = () => {
+    setShowOnboarding(false);
   };
 
   const handleCloseModal = () => {
@@ -142,6 +191,7 @@ export default function ModeToggle({ currentPath, isGerman }: ModeToggleProps) {
       <button 
         type="button"
         className={styles.toggleButton}
+        style={{ zIndex: showOnboarding ? 2005 : undefined }}
         onClick={handleOpenModal}
         aria-label={isGerman 
           ? `Wechsle zu ${isTargetPortfolio ? "Portfolio" : "Studio"}` 
@@ -154,6 +204,56 @@ export default function ModeToggle({ currentPath, isGerman }: ModeToggleProps) {
           <BuildingIcon className={styles.toggleIcon} />
         )}
       </button>
+
+      {/* Onboarding Modal */}
+      {showOnboarding && !isModalOpen && (
+        <div 
+          className={styles.onboardingOverlay}
+          onClick={handleCloseOnboarding}
+        >
+          <div className={styles.onboardingModal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <div className={styles.modalIconWrapper}>
+                <UserIcon className={styles.modalIcon} />
+              </div>
+              <div className={styles.modalTitleGroup}>
+                <h2 className={styles.modalTitle}>
+                  {isGerman ? "Portfolio" : "Portfolio"}
+                </h2>
+                <span className={styles.modalSubtitle}>
+                  {isGerman ? "Design & Engineering" : "Design & Engineering"}
+                </span>
+              </div>
+            </div>
+
+            <p className={styles.modalText}>
+              {isGerman 
+                ? "Hier kannst du jederzeit zum Portfolio zurückwechseln" 
+                : "Here you can switch back to the portfolio anytime"
+              }
+            </p>
+            
+            <div className={styles.onboardingActions}>
+              <button 
+                type="button"
+                className={`${styles.button} ${styles.buttonSecondary}`}
+                onClick={handleCloseOnboarding}
+              >
+                {isGerman ? "Verstanden" : "Got it"}
+              </button>
+              <button 
+                type="button"
+                className={`${styles.button} ${styles.buttonPrimary}`}
+                onClick={handleConfirm}
+              >
+                {isGerman ? "Zum Portfolio" : "To Portfolio"}
+              </button>
+            </div>
+
+            <StraightArrow className={styles.onboardingArrow} />
+          </div>
+        </div>
+      )}
 
       {isModalOpen && (
         <div 

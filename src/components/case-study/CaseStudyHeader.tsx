@@ -26,6 +26,7 @@ export default function CaseStudyHeader({
   className,
 }: CaseStudyHeaderProps) {
   const isLottie = imageSrc?.endsWith('.json');
+  const isVideo = imageSrc?.match(/\.(mp4|webm|mov)$/i);
 
   return (
     <div className={`w-full relative bg-[#111] overflow-hidden ${className ? className : "h-[80vh] min-h-[600px] mb-16"}`}>
@@ -37,6 +38,15 @@ export default function CaseStudyHeader({
               <div className="w-full h-full opacity-60">
                  <LottiePlayer src={imageSrc} autoplay={true} />
               </div>
+            ) : isVideo ? (
+              <video
+                src={imageSrc}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover opacity-60"
+              />
             ) : (
               <img
                 src={imageSrc}

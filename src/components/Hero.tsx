@@ -49,31 +49,6 @@ export default function Hero({ videoSource, secondaryVideoSource, title, subtitl
     return 'video/mp4';
   };
 
-  // Inject keyframe animation for editorial fade-in
-  useEffect(() => {
-    const styleId = 'hero-text-animation';
-    if (document.getElementById(styleId)) return;
-
-    const style = document.createElement('style');
-    style.id = styleId;
-    style.textContent = `
-      @keyframes heroTextFadeIn {
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-    `;
-    document.head.appendChild(style);
-
-    return () => {
-      const existingStyle = document.getElementById(styleId);
-      if (existingStyle) {
-        existingStyle.remove();
-      }
-    };
-  }, []);
-
   useEffect(() => {
     const section = sectionRef.current;
     const heroCard = heroCardRef.current;

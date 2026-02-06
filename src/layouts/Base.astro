@@ -17,6 +17,7 @@ interface Props {
   showFooter?: boolean;
   theme?: "light" | "dark";
   footerMode?: "default" | "reveal";
+  headerMode?: "agency" | "hiring";
   wrapperClass?: string;
 }
 
@@ -30,6 +31,7 @@ const {
   showFooter = true,
   theme = "light",
   footerMode = "default",
+  headerMode,
   wrapperClass = "",
 } = Astro.props;
 
@@ -60,6 +62,10 @@ const websiteSchema = buildWebSiteSchema({
 <html lang={lang} data-theme={theme}>
   <head>
     <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; object-src 'none'; base-uri 'self'; connect-src 'self' https://plausible.io; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -98,7 +104,12 @@ const websiteSchema = buildWebSiteSchema({
       isProd && (
         <>
           <link rel="preconnect" href="https://plausible.io" />
-          <script is:inline defer data-domain={plausibleDomain} src="https://plausible.io/js/script.js" />
+          <script
+            is:inline
+            defer
+            data-domain={plausibleDomain}
+            src="https://plausible.io/js/script.js"
+          />
         </>
       )
     }
@@ -107,8 +118,10 @@ const websiteSchema = buildWebSiteSchema({
     {
       footerMode === "reveal" ? (
         <>
-          <div class={`relative z-10 bg-[#111] ${wrapperClass} min-h-screen mb-0 md:mb-[calc(var(--footer-height)-1px)]`}>
-            <Header />
+          <div
+            class={`relative z-10 bg-[#111] ${wrapperClass} min-h-screen mb-0 md:mb-[calc(var(--footer-height)-1px)]`}
+          >
+            <Header mode={headerMode} />
             <slot />
           </div>
 
@@ -124,7 +137,7 @@ const websiteSchema = buildWebSiteSchema({
         </>
       ) : (
         <>
-          <Header />
+          <Header mode={headerMode} />
           <slot />
 
           {isHomepageRoute(currentPath) && (

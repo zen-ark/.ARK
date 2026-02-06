@@ -29,6 +29,10 @@
   --menu-dot-close-ease: cubic-bezier(0.45, 0, 0.55, 1);
 }
 
+.hiringMode {
+  --nav-padding-y: var(--nav-padding-x);
+}
+
 .header {
   position: fixed;
   inset: 0 0 auto;

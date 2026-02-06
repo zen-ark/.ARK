@@ -1,1 +1,65 @@
+---
+import Base from "@/layouts/Base.astro";
 
+const title = "Impressum — .ARK";
+const description = "Impressum für .ARK";
+---
+
+<Base title={title} description={description} lang="de">
+  <main class="min-h-screen px-4 py-16 md:py-24">
+    <div class="w-full max-w-3xl mx-auto space-y-12">
+      <div class="space-y-4">
+        <h1 class="text-4xl md:text-5xl font-semibold tracking-tight">Impressum</h1>
+        <p class="text-lg text-text-subtle">Rechtliche Hinweise</p>
+      </div>
+
+      <div class="prose prose-invert max-w-none space-y-8 text-text-subtle">
+        <section class="space-y-4">
+          <h2 class="text-2xl font-medium text-text-primary">Unternehmensangaben</h2>
+          <p>
+            <strong>.ARK</strong><br />
+            [Strasse, Nr.]<br />
+            [PLZ, Ort]<br />
+            Schweiz
+          </p>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-2xl font-medium text-text-primary">Kontakt</h2>
+          <p>
+            E-Mail: <a href="mailto:hello@ark.studio.ch" class="text-text-primary hover:underline">hello@ark.studio.ch</a><br />
+            Telefon: [Telefonnummer]
+          </p>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-2xl font-medium text-text-primary">Vertreten durch</h2>
+          <p>
+            [Name des Geschäftsführers/Inhabers]
+          </p>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-2xl font-medium text-text-primary">Handelsregister</h2>
+          <p>
+            Eingetragen im Handelsregister des Kantons [Kanton]<br />
+            Unternehmens-Identifikationsnummer (UID): [CHE-XXX.XXX.XXX]
+          </p>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-2xl font-medium text-text-primary">Haftungsausschluss</h2>
+          <p>
+            <strong>Haftung für Inhalte:</strong> Obwohl wir uns um Genauigkeit bemühen, können wir keine Garantie für die Richtigkeit, Vollständigkeit oder Aktualität der Inhalte auf unserer Website übernehmen.
+          </p>
+          <p>
+            <strong>Externe Links:</strong> Diese Website enthält Links zu externen Websites Dritter. Wir haben keinen Einfluss auf die Inhalte dieser Websites und können daher keine Gewähr dafür übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.
+          </p>
+          <p>
+            <strong>Urheberrecht:</strong> Die auf dieser Website veröffentlichten Inhalte und Werke unterliegen dem schweizerischen Urheberrecht. Jede Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechts bedarf der vorherigen schriftlichen Zustimmung des jeweiligen Autors oder Urhebers.
+          </p>
+        </section>
+      </div>
+    </div>
+  </main>
+</Base>

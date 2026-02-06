@@ -65,6 +65,10 @@ export default function ProjectCard({
       <img
         src={imageSrc}
         alt={imageAlt || title}
+        width="1600"
+        height="900"
+        loading="lazy"
+        decoding="async"
         className="w-full h-full object-cover rounded-[24px]"
       />
 

@@ -1,1 +1,59 @@
+---
+import Base from "@/layouts/Base.astro";
 
+const title = "Datenschutz — .ARK";
+const description = "Datenschutzerklärung für .ARK";
+---
+
+<Base title={title} description={description} lang="de">
+  <main class="min-h-screen px-4 py-16 md:py-24">
+    <div class="w-full max-w-3xl mx-auto space-y-12">
+      <div class="space-y-4">
+        <h1 class="text-4xl md:text-5xl font-semibold tracking-tight">Datenschutz</h1>
+        <p class="text-lg text-text-subtle">
+          Zuletzt aktualisiert: {new Date().toLocaleDateString('de-CH', { day: 'numeric', month: 'long', year: 'numeric' })}
+        </p>
+      </div>
+
+      <div class="prose prose-invert max-w-none space-y-8 text-text-subtle">
+        <section class="space-y-4">
+          <h2 class="text-2xl font-medium text-text-primary">1. Übersicht</h2>
+          <p>
+            Wir bei .ARK nehmen Ihren Datenschutz ernst. Diese Erklärung erläutert, wie wir Ihre persönlichen Daten sammeln, verwenden und schützen, wenn Sie unsere Website besuchen.
+          </p>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-2xl font-medium text-text-primary">2. Datenerfassung</h2>
+          <p>
+            Wir halten uns an das Prinzip der Datenminimierung. Wir erfassen nur Daten, die technisch für den Betrieb dieser Website notwendig sind oder die Sie uns freiwillig (z.B. über Kontaktformulare) zur Verfügung stellen.
+          </p>
+          <ul class="list-disc pl-4 space-y-2">
+            <li>
+              <strong>Server-Log-Dateien:</strong> Unser Hosting-Provider sammelt Standard-Serverprotokolle (IP-Adresse, Browsertyp, Zeitstempel) zu Sicherheits- und Fehlerbehebungszwecken.
+            </li>
+            <li>
+              <strong>Analytik:</strong> Wir verwenden möglicherweise datenschutzfreundliche Analysetools (wie Plausible), die keine persönlichen Daten verfolgen oder Cookies verwenden.
+            </li>
+          </ul>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-2xl font-medium text-text-primary">3. Cookies</h2>
+          <p>
+            Wir minimieren die Verwendung von Cookies. Alle verwendeten Cookies sind für das technische Funktionieren der Website oder für Benutzereinstellungen (wie die Themenwahl) unerlässlich.
+          </p>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-2xl font-medium text-text-primary">4. Kontaktinformationen</h2>
+          <p>
+            Wenn Sie Fragen zu dieser Datenschutzerklärung haben, kontaktieren Sie uns bitte unter:
+            <br />
+            <a href="mailto:hello@ark.studio.ch" class="text-text-primary hover:underline">hello@ark.studio.ch</a>
+          </p>
+        </section>
+      </div>
+    </div>
+  </main>
+</Base>

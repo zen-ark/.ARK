@@ -1,0 +1,188 @@
+---
+title: "The AI-Driven Workflow"
+date: "2026-02-05"
+year: 2026
+client: "Internal / R&D"
+summary: "Bridging the gap between design systems and complex engineering."
+services: ["AI Strategy", "Fullstack", "UI/UX"]
+tags: ["AI Strategy", "Fullstack", "UI/UX"]
+cover: "/portfolio projects/ai-workflow/hero.mp4"
+roles: ["Product Designer", "Fullstack Engineer"]
+tech: ["Astro", "React", "AI Agents", "Cursor"]
+status: "live"
+featured: true
+showInPortfolio: true
+orderHiring: 1
+isCaseStudy: true
+---
+
+import CaseStudyHeader from "../../components/case-study/CaseStudyHeader";
+import MetricsGrid from "../../components/case-study/MetricsGrid";
+import TwoColumnNarrative from "../../components/case-study/TwoColumnNarrative.astro";
+import StickyScrollSection from "../../components/case-study/StickyScrollSection.astro";
+import FeatureWindow from "../../components/case-study/FeatureWindow";
+import TechnicalSection from "../../components/case-study/TechnicalSection";
+import CodeFlowDiagram from "../../components/case-study/CodeFlowDiagram";
+import DesignSystemGrid from "../../components/case-study/DesignSystemGrid";
+import AgencyWindow from "../../components/case-study/AgencyWindow";
+import CaseStudyResults from "../../components/case-study/CaseStudyResults.astro";
+
+<CaseStudyHeader
+  client:load
+  label="Executive Summary"
+  title="The AI-Driven Workflow"
+  subtitle="Bridging the gap between design systems and complex engineering."
+  imageSrc="/portfolio projects/ai-workflow/hero.mp4"
+  clientName="Internal / R&D"
+  services={["AI Strategy", "Fullstack", "UI/UX"]}
+  tech={["Astro", "React", "AI Agents", "Cursor"]}
+  className="h-[85vh] min-h-[600px] mb-4 mt-0"
+/>
+
+<MetricsGrid
+  client:visible
+  className="py-8 md:py-12"
+  items={[
+    {
+      value: "100%",
+      label: "AI Augmented",
+      description:
+        "Leveraging LLMs for data parsing, logic generation, and complex 3D implementations.",
+    },
+    {
+      value: "2",
+      label: "Unified Worlds",
+      description:
+        "Seamlessly bridging the 'Recruiter' view and the 'Agency' view in a single hybrid codebase.",
+    },
+    {
+      value: "0",
+      label: "Legacy Code",
+      description:
+        "Iterative refactoring of the existing 'clusterfuck' into a modern modular architecture.",
+    },
+  ]}
+/>
+
+{/* Technical Section: Logic Engine */}
+
+<TechnicalSection title="Hausarztpraxis Five" subtitle="The Logic Engine">
+  <h3 className="text-xl font-medium text-white mb-4">The Challenge</h3>
+  <p className="mb-8">
+    Transforming a "clusterfuck" of physical PDF documentation into a structured, interactive digital assistant. The goal was to modernize the practice's knowledge base without disrupting their existing workflows.
+  </p>
+
+<h3 className="text-xl font-medium text-white mb-4">AI Implementation & Security</h3>
+<p className="mb-6">
+  The core of this system is a secure bridge between unstructured data and a conversational
+  interface. We utilize AI not just for text generation, but for <strong>structural parsing</strong>
+  .
+</p>
+<ul className="list-disc pl-5 space-y-2 mb-8 text-white/70">
+  <li>
+    <strong>Vector Data Parsing:</strong> PDFs are ingested and chunked into vector embeddings,
+    allowing for semantic search rather than just keyword matching.
+  </li>
+  <li>
+    <strong>Secure Backend Bridge:</strong> A Node.js middleware layer sits between the client and
+    the LLM provider, managing API keys and enforcing rate limits. This ensures that sensitive
+    medical data structure is handled compliantly.
+  </li>
+  <li>
+    <strong>Persona Engineering:</strong> The "medical persona" isn't a prompt trick; it's a
+    fine-tuned system instruction set that forces the model to cite its sources from the uploaded
+    PDF knowledge base.
+  </li>
+</ul>
+
+<CodeFlowDiagram client:visible />
+
+<h3 className="text-xl font-medium text-white mb-4 mt-8">Outcome</h3>
+<p className="mb-8">
+  A functional frontend where patients or staff can interact with a knowledge base that was
+  previously trapped in paper form.
+</p>
+
+  <a href="https://hausarztpraxis-five.vercel.app/landingpage" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full text-white font-medium transition-all group mt-8">
+    <span>View Live System</span>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-0.5 transition-transform">
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+      <polyline points="15 3 21 3 21 9" />
+      <line x1="10" y1="14" x2="21" y2="3" />
+    </svg>
+  </a>
+</TechnicalSection>
+
+{/* Creative Section: The Portfolio */}
+
+<div className="bg-[#0a0a0a] border-t border-white/10 pb-32">
+  <div className="w-full max-w-7xl mx-auto px-4 md:px-6 pt-24 pb-12">
+    <div className="md:w-5/12 mb-12">
+      <h2 className="text-sm md:text-base font-mono uppercase tracking-wider text-white/50 mb-4">
+        The Portfolio
+      </h2>
+      <p className="text-xl md:text-2xl font-medium text-white/90">The Creative Ecosystem</p>
+    </div>
+
+    {/* Section 1: Design System */}
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-32">
+      <div className="md:col-span-5 prose prose-lg prose-invert max-w-none text-white/80 font-light leading-relaxed">
+        <h3 className="text-xl font-medium text-white mb-4">The Design-First Approach</h3>
+        <p>
+          AI didn't choose the colors or typography; a rigorous system was built in Figma first. The AI served as the execution engine, enabling me to build complex features that would usually require a team of developers.
+        </p>
+      </div>
+      <div className="md:col-span-7">
+         <DesignSystemGrid />
+      </div>
+    </div>
+
+    {/* Section 2: Technical Leap */}
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-32 items-center">
+      <div className="md:col-span-7 order-2 md:order-1">
+        <FeatureWindow client:visible />
+      </div>
+      <div className="md:col-span-5 order-1 md:order-2 prose prose-lg prose-invert max-w-none text-white/80 font-light leading-relaxed">
+        <h3 className="text-xl font-medium text-white mb-4">The Technical Leap</h3>
+        <ul className="list-disc pl-5 space-y-2 mb-8 text-white/70">
+          <li><strong>Complex Interactions:</strong> How AI enabled the creation of the infinite scroll gallery in the 3D projects section—something that would typically require deep specialized JS knowledge.</li>
+          <li><strong>Animation Control:</strong> Using JSON-based animations (Lottie/Rive) to allow for programmatic manipulation within the Cursor environment.</li>
+        </ul>
+        <div className="p-6 bg-white/5 rounded-2xl border-l-4 border-white/20">
+          <p className="italic text-base text-white/90">
+            "My biggest challenge here was the architecture. What started as a school project for an agency evolved into a hybrid portfolio-agency ecosystem. Navigating this 'clusterfuck' of legacy code while maintaining a seamless user experience was a masterclass in iterative refactoring."
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {/* Section 3: Agency Blueprint */}
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+      <div className="md:col-span-5 prose prose-lg prose-invert max-w-none text-white/80 font-light leading-relaxed">
+        <h3 className="text-xl font-medium text-white mb-4">The Agency Blueprint</h3>
+        <p className="mb-6">
+          Scaling a studio requires more than just good code. It requires a business plan, a rigorous design language, and an efficient workflow.
+        </p>
+        <p>
+          I treat AI as my <strong>"Execution Engine"</strong>. It handles the boilerplate, the type definitions, and the complex math for 3D interactions. This allows me to remain the <strong>"Curator of Taste"</strong>, focusing entirely on the user experience and the visual polish that defines a premium brand.
+        </p>
+      </div>
+      <div className="md:col-span-7">
+        <AgencyWindow />
+        <div className="mt-8 flex justify-center">
+          <a href="/" className="group relative inline-flex items-center gap-4 px-10 py-5 bg-white text-black rounded-full text-lg font-medium overflow-hidden transition-all hover:pr-12">
+            <span className="relative z-10">Switch to Studio</span>
+            <div className="absolute inset-0 bg-neutral-200 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="relative z-10 transition-transform group-hover:translate-x-1">
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<CaseStudyResults currentSlug="ai-workflow" />

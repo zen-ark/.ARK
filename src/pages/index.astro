@@ -22,19 +22,19 @@ import FooterV2 from "@/layouts/partials/FooterV2.astro";
     />
 
     <!-- WHAT .ARK DOES Section -->
-    <WhatArkDoes client:load />
+    <WhatArkDoes client:visible />
 
     <!-- Network Registry / Validation Log -->
-    <NetworkRegistry client:load />
+    <NetworkRegistry client:visible />
 
     <!-- Projects V6 Liquid Folder -->
-    <ProjectsV6 client:load />
+    <ProjectsV6 client:visible />
 
     <!-- SYSTEM STATE CONTROLLER (The .ARK Model) -->
-    <SystemStateController client:only="react" />
+    <SystemStateController client:visible />
 
     <!-- OPEN A NEW FILE Section -->
-    <OpenNewFile client:load />
+    <OpenNewFile client:visible />
   </main>
 
   <!-- FooterV2 - Preview of inversa.com footer style -->

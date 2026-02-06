@@ -55,7 +55,8 @@ export default function PortfolioAnimation({ children }: PortfolioAnimationProps
       // Note: grid container itself is not hidden, but its children (projects) will be
       gsap.set(intro, { opacity: 0, y: 30 });
       
-      const projectItems = Array.from(document.querySelectorAll(".project-item"));
+      // Scope to container
+      const projectItems = Array.from(containerRef.current?.querySelectorAll(".project-item") || []);
       const firstTwo = projectItems.slice(0, 2);
       const remaining = projectItems.slice(2);
 
@@ -130,7 +131,7 @@ export default function PortfolioAnimation({ children }: PortfolioAnimationProps
             trigger: document.body,
             start: "top top",
             end: "bottom bottom",
-            scrub: 0, // Instant scrub for direct mapping
+            scrub: 0.5, // Soften the scrubbing for better performance
             invalidateOnRefresh: true
           }
         });

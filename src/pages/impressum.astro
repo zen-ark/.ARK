@@ -1,1 +1,65 @@
+---
+import Base from "@/layouts/Base.astro";
 
+const title = "Impressum — .ARK";
+const description = "Legal Notice / Impressum for .ARK";
+---
+
+<Base title={title} description={description}>
+  <main class="min-h-screen px-4 py-16 md:py-24">
+    <div class="w-full max-w-3xl mx-auto space-y-12">
+      <div class="space-y-4">
+        <h1 class="text-4xl md:text-5xl font-semibold tracking-tight">Impressum</h1>
+        <p class="text-lg text-text-subtle">Legal Notice</p>
+      </div>
+
+      <div class="prose prose-invert max-w-none space-y-8 text-text-subtle">
+        <section class="space-y-4">
+          <h2 class="text-2xl font-medium text-text-primary">Company Information</h2>
+          <p>
+            <strong>.ARK</strong><br />
+            [Street Address]<br />
+            [City, Zip Code]<br />
+            Switzerland
+          </p>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-2xl font-medium text-text-primary">Contact</h2>
+          <p>
+            Email: <a href="mailto:hello@ark.studio.ch" class="text-text-primary hover:underline">hello@ark.studio.ch</a><br />
+            Phone: [Phone Number]
+          </p>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-2xl font-medium text-text-primary">Represented by</h2>
+          <p>
+            [Name of Managing Director/Owner]
+          </p>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-2xl font-medium text-text-primary">Commercial Register</h2>
+          <p>
+            Registered in the commercial register of [Canton]<br />
+            Company ID (UID): [CHE-XXX.XXX.XXX]
+          </p>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-2xl font-medium text-text-primary">Disclaimer</h2>
+          <p>
+            <strong>Content Liability:</strong> While we strive for accuracy, we cannot guarantee the correctness, completeness, or topicality of the content on our site.
+          </p>
+          <p>
+            <strong>External Links:</strong> This website contains links to external third-party websites. We have no influence on the contents of those websites and therefore cannot assume liability for them. The respective providers or operators are solely responsible.
+          </p>
+          <p>
+            <strong>Copyright:</strong> The content and works published on this website are governed by Swiss copyright laws. Any duplication, processing, distribution, or any form of utilization beyond the scope of copyright law shall require the prior written consent of the author or authors in question.
+          </p>
+        </section>
+      </div>
+    </div>
+  </main>
+</Base>

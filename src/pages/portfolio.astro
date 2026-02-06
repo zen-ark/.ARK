@@ -36,7 +36,7 @@ const projects = await loadProjects({ mode: "hiring" });
             </div>
           </div>
 
-          <div class="projects-grid projects-grid-content">
+          <div id="work" class="projects-grid projects-grid-content">
             {
               projects.map((project, index) => {
                 // Uniform 50/50 Layout
@@ -45,6 +45,7 @@ const projects = await loadProjects({ mode: "hiring" });
 
                 const isPriority = index < 3;
                 const isLottie = project.cover.endsWith(".json");
+                const isVideo = project.cover.match(/\.(mp4|webm|mov)$/i);
                 // Identifying projects that need background color patching
                 // Note: user asked to change background color for Trauffer and Movieworld
                 const needsDarkBg =
@@ -57,15 +58,24 @@ const projects = await loadProjects({ mode: "hiring" });
                       {isWIP && <div class="wip-banner">Work in Progress</div>}
                       {isLottie ? (
                         <LottiePlayer
-                          src={project.cover}
+                          src={project.cover.replace(/ /g, "%20")}
                           className="project-image"
                           loop={true}
                           client:visible
                           backgroundColor={needsDarkBg ? "#111111" : undefined}
                         />
+                      ) : isVideo ? (
+                        <video
+                          src={project.cover.replace(/ /g, "%20")}
+                          class={`project-image ${isWIP ? "opacity-50" : ""}`}
+                          muted
+                          loop
+                          playsinline
+                          preload={isPriority ? "auto" : "metadata"}
+                        />
                       ) : (
                         <img
-                          src={project.cover}
+                          src={project.cover.replace(/ /g, "%20")}
                           alt={project.coverAlt}
                           class={`project-image ${isWIP ? "opacity-50" : ""}`}
                           loading={isPriority ? "eager" : "lazy"}
@@ -361,11 +371,7 @@ const projects = await loadProjects({ mode: "hiring" });
     .image-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(
-        0deg,
-        rgba(255, 255, 255, 0.2) 0%,
-        rgba(255, 255, 255, 0.05) 100%
-      );
+      background: linear-gradient(0deg, rgba(17, 17, 17, 0.2) 0%, rgba(17, 17, 17, 0.05) 100%);
       opacity: 1;
       transition: opacity 0.3s ease;
       pointer-events: none;
@@ -395,4 +401,39 @@ const projects = await loadProjects({ mode: "hiring" });
       opacity: 0.7;
     }
   </style>
+
+  <script is:inline>
+    function setupVideoHover() {
+      const containers = document.querySelectorAll(".project-image-container");
+
+      containers.forEach((container) => {
+        const video = container.querySelector("video");
+        if (video) {
+          // Check if already attached to avoid duplicates
+          if (container.dataset.hasHoverListener) return;
+          container.dataset.hasHoverListener = "true";
+
+          // Ensure video is paused initially
+          video.pause();
+
+          container.addEventListener("mouseenter", () => {
+            video.muted = true; // Ensure muted for autoplay policy
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+              playPromise.catch((e) => console.debug("Video play interrupted", e));
+            }
+          });
+
+          container.addEventListener("mouseleave", () => {
+            video.pause();
+          });
+        }
+      });
+    }
+
+    // Run on initial load
+    document.addEventListener("DOMContentLoaded", setupVideoHover);
+    // Run on view transitions navigation
+    document.addEventListener("astro:page-load", setupVideoHover);
+  </script>
 </Base>

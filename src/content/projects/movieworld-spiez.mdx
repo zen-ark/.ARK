@@ -21,7 +21,7 @@ isCaseStudy: true
 import CaseStudyHeader from "@/components/case-study/CaseStudyHeader";
 import CaseStudyResults from "@/components/case-study/CaseStudyResults.astro";
 
-<div className="bg-[#000] text-white min-h-screen font-sans selection:bg-[#00FF00] selection:text-black">
+<div className="bg-[#111] text-white min-h-screen font-sans selection:bg-[#00FF00] selection:text-black">
 
 <CaseStudyHeader
   client:load
@@ -36,39 +36,49 @@ import CaseStudyResults from "@/components/case-study/CaseStudyResults.astro";
 />
 
 {/* Strategic Pivot */}
+
 <section className="max-w-7xl mx-auto px-4 md:px-6 py-24">
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
     <div>
       <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">The Strategic Pivot</h2>
       <div className="space-y-6 text-lg text-white/80 leading-relaxed">
         <p>
-          The existing digital presence for Movieworld Spiez was held back by a reliance on rigid, third-party iFrame integrations. While the backend accounting system was robust, the "Front-of-House" user experience was disjointed, especially on mobile devices where iFrames struggled to scale.
+          The existing digital presence for Movieworld Spiez was held back by a reliance on rigid,
+          third-party iFrame integrations. While the backend accounting system was robust, the
+          "Front-of-House" user experience was disjointed, especially on mobile devices where
+          iFrames struggled to scale.
         </p>
         <p>
-          We needed a solution that preserved the operational integrity of the legacy backend while delivering a modern, high-performance interface. The strategy was a complete "Headless" decouple: using the legacy system purely as a data source and building a bespoke React frontend to handle the presentation.
+          We needed a solution that preserved the operational integrity of the legacy backend while
+          delivering a modern, high-performance interface. The strategy was a complete "Headless"
+          decouple: using the legacy system purely as a data source and building a bespoke React
+          frontend to handle the presentation.
         </p>
       </div>
     </div>
-    
+
     <div className="relative w-full rounded-xl overflow-hidden border border-white/10 bg-[#0a0a0a] shadow-2xl group">
       <div className="w-full relative">
-         <video 
-           src="/portfolio projects/movieworld spiez/Desktop video.mov"
-           autoPlay 
-           loop 
-           muted 
-           playsInline
-           className="w-full h-auto object-contain"
-         />
+        <video
+          src="/portfolio projects/movieworld spiez/Desktop video.mov"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-auto object-contain"
+        />
       </div>
       <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <span className="text-[#00FF00] font-mono text-sm uppercase tracking-wider">Desktop Experience • React Frontend</span>
+        <span className="text-[#00FF00] font-mono text-sm uppercase tracking-wider">
+          Desktop Experience • React Frontend
+        </span>
       </div>
     </div>
   </div>
 </section>
 
 {/* Engineering the Filter */}
+
 <section className="w-full bg-[#0a0a0a] border-y border-white/5 py-24">
   <div className="max-w-4xl mx-auto px-4 md:px-6 text-center">
     <div className="inline-block px-3 py-1 mb-6 rounded-full border border-[#00FF00]/20 bg-[#00FF00]/10 text-[#00FF00] text-sm font-mono uppercase tracking-wider">
@@ -76,29 +86,38 @@ import CaseStudyResults from "@/components/case-study/CaseStudyResults.astro";
     </div>
     <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">Engineering the Filter</h2>
     <p className="text-xl text-white/80 leading-relaxed mb-12">
-      One of the core technical challenges was dealing with "mushed" API responses where dates, times, and movie categories were returned as combined strings. I engineered a custom string-splitting logic to parse this raw data into structured objects.
+      One of the core technical challenges was dealing with "mushed" API responses where dates,
+      times, and movie categories were returned as combined strings. I engineered a custom
+      string-splitting logic to parse this raw data into structured objects.
     </p>
-    
+
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left max-w-3xl mx-auto">
-        <div className="p-6 rounded-xl bg-black/50 border border-white/10">
-            <h3 className="text-white font-bold mb-2 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#00FF00]"></span>
-                Data Parsing
-            </h3>
-            <p className="text-white/60 text-sm">Transforming chaos into order. We strip strict types from the legacy feed to create a clean, queryable internal API.</p>
-        </div>
-        <div className="p-6 rounded-xl bg-black/50 border border-white/10">
-            <h3 className="text-white font-bold mb-2 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#00FF00]"></span>
-                Exclusive Navigation
-            </h3>
-            <p className="text-white/60 text-sm">To prevent "No Results" states, filters are mutually exclusive: users browse by <strong>Date</strong> OR <strong>Category</strong>, never both simultaneously.</p>
-        </div>
+      <div className="p-6 rounded-xl bg-black/50 border border-white/10">
+        <h3 className="text-white font-bold mb-2 flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-[#00FF00]"></span>
+          Data Parsing
+        </h3>
+        <p className="text-white/60 text-sm">
+          Transforming chaos into order. We strip strict types from the legacy feed to create a
+          clean, queryable internal API.
+        </p>
+      </div>
+      <div className="p-6 rounded-xl bg-black/50 border border-white/10">
+        <h3 className="text-white font-bold mb-2 flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-[#00FF00]"></span>
+          Exclusive Navigation
+        </h3>
+        <p className="text-white/60 text-sm">
+          To prevent "No Results" states, filters are mutually exclusive: users browse by{" "}
+          <strong>Date</strong> OR <strong>Category</strong>, never both simultaneously.
+        </p>
+      </div>
     </div>
   </div>
 </section>
 
 {/* Mobile Interaction */}
+
 <section className="max-w-7xl mx-auto px-4 md:px-6 py-24">
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
     
@@ -113,15 +132,13 @@ import CaseStudyResults from "@/components/case-study/CaseStudyResults.astro";
                playsInline
                className="w-full h-auto object-contain"
              />
-             {/* Notch overlay simulation */}
-             <div className="absolute top-0 left-1/2 -translate-x-1/2 h-6 w-32 bg-[#1a1a1a] rounded-b-xl z-10"></div>
         </div>
     </div>
 
     {/* Content - Right on Desktop */}
     <div className="order-1 lg:order-2">
       <h2 className="text-3xl md:text-4xl font-bold text-white mb-12">Mobile Interaction</h2>
-      
+
       <div className="space-y-12">
         <div className="group">
           <h3 className="text-xl font-bold text-white mb-3 flex items-center gap-3 group-hover:text-[#00FF00] transition-colors">

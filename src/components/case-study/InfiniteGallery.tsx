@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, MotionValue } from 'framer-motion';
 
 interface GalleryItem {
   id: number;
@@ -265,145 +265,194 @@ const baseItems: GalleryItem[] = [
   }
 ];
 
-// Layout Configuration
-const COL_WIDTH = 380;
+// Utility: Wrap value within a range
+const wrap = (min: number, max: number, v: number) => {
+  const rangeSize = max - min;
+  return ((((v - min) % rangeSize) + rangeSize) % rangeSize) + min;
+};
+
+interface LayoutItem {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    item: GalleryItem;
+    instanceId: string;
+}
+
+// ------------------------------------------------------------------
+// CONFIG
+// ------------------------------------------------------------------
+const BASE_COL_WIDTH = 380;
 const GAP = 24;
-const COL_COUNT = 4;
+// We'll create enough columns to cover a wide area (e.g., 3x typical viewport)
+// 30 items. If we duplicate them 3 times, we have 90 items.
+// 90 items into 8 columns => ~11 rows.
+const COL_COUNT = 8; 
 
-// Pre-calculate layout
-const calculatedLayout = (() => {
-  const layout: { x: number; y: number; width: number; height: number; item: GalleryItem }[] = [];
-  const colHeights = new Array(COL_COUNT).fill(0);
+// Generate a large layout with duplicated items to ensure coverage
+const generatedLayout = (() => {
+    const layout: LayoutItem[] = [];
+    const colHeights = new Array(COL_COUNT).fill(0);
+    
+    // Duplicate the dataset to ensure we have enough items for a large grid
+    // 3 copies of the base items should be enough to fill a large viewport width
+    const itemsToLayout = [
+        ...baseItems.map(i => ({ ...i, instanceSuffix: 'a' })),
+        ...baseItems.map(i => ({ ...i, instanceSuffix: 'b' })),
+        ...baseItems.map(i => ({ ...i, instanceSuffix: 'c' }))
+    ];
 
-  const getShortestColumn = () => {
-    let min = Infinity;
-    let idx = 0;
-    for (let i = 0; i < COL_COUNT; i++) {
-      if (colHeights[i] < min) {
-        min = colHeights[i];
-        idx = i;
-      }
-    }
-    return idx;
-  };
+    const getShortestColumn = () => {
+        let min = Infinity;
+        let idx = 0;
+        for (let i = 0; i < COL_COUNT; i++) {
+            if (colHeights[i] < min) {
+                min = colHeights[i];
+                idx = i;
+            }
+        }
+        return idx;
+    };
 
-  baseItems.forEach(item => {
-    const targetCol = getShortestColumn();
-    const width = COL_WIDTH;
-    const height = width / (item.width / item.height);
-    const x = targetCol * (COL_WIDTH + GAP);
-    const y = colHeights[targetCol];
+    itemsToLayout.forEach((item, index) => {
+        const aspectRatio = item.width / item.height;
+        const isWide = aspectRatio > 1.4; // Threshold for wide items
+        const isUltraWide = aspectRatio > 2.2; // Threshold for ultra wide items (like banners)
+        
+        // Strategy for Wide Items:
+        // Instead of picking the absolute shortest column and hoping the neighbor is fine,
+        // we scan all adjacent column pairs to find the "best fit" (lowest combined height).
+        if (isWide) {
+            let bestPairIndex = -1;
+            let minPairHeight = Infinity;
+            
+            // Scan pairs
+            for (let i = 0; i < COL_COUNT - 1; i++) {
+                const h1 = colHeights[i];
+                const h2 = colHeights[i+1];
+                const pairMaxY = Math.max(h1, h2);
+                const heightDiff = Math.abs(h1 - h2);
+                
+                // We prefer pairs that are somewhat level, but for ultra-wide we are more lenient
+                const tolerance = isUltraWide ? 600 : 300;
+                
+                if (heightDiff < tolerance) {
+                    if (pairMaxY < minPairHeight) {
+                        minPairHeight = pairMaxY;
+                        bestPairIndex = i;
+                    }
+                }
+            }
+            
+            // If we found a valid pair, place it there
+            if (bestPairIndex !== -1) {
+                 const targetCol = bestPairIndex;
+                 const width = BASE_COL_WIDTH * 2 + GAP;
+                 const height = width / aspectRatio;
+                 
+                 const y = minPairHeight;
+                 const bottomY = y + height + GAP;
+                 
+                 layout.push({ 
+                    x: targetCol * (BASE_COL_WIDTH + GAP), 
+                    y: y, 
+                    width, 
+                    height, 
+                    item: item, 
+                    instanceId: `copy-${item.instanceSuffix}-${index}`
+                });
 
-    layout.push({ x, y, width, height, item });
-    colHeights[targetCol] += height + GAP;
-  });
+                colHeights[targetCol] = bottomY;
+                colHeights[targetCol + 1] = bottomY;
+                return; // Done with this item
+            }
+        }
 
-  return {
-    items: layout,
-    width: COL_COUNT * (COL_WIDTH + GAP),
-    height: Math.max(...colHeights)
-  };
+        // Fallback (or if not wide): Normal placement in shortest column
+        const targetCol = getShortestColumn();
+        const width = BASE_COL_WIDTH;
+        const height = width / aspectRatio;
+        const x = targetCol * (BASE_COL_WIDTH + GAP);
+        const y = colHeights[targetCol];
+
+        layout.push({ 
+            x, 
+            y, 
+            width, 
+            height, 
+            item: item, 
+            instanceId: `copy-${item.instanceSuffix}-${index}`
+        });
+
+        colHeights[targetCol] += height + GAP;
+    });
+
+    const gridWidth = COL_COUNT * (BASE_COL_WIDTH + GAP);
+    const gridHeight = Math.max(...colHeights);
+
+    return {
+        items: layout,
+        width: gridWidth,
+        height: gridHeight
+    };
 })();
 
-export const InfiniteGallery = () => {
+export const InfiniteGallery = ({ className = "fixed inset-0", enableClick = true }: { className?: string, enableClick?: boolean }) => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selectedLayoutId, setSelectedLayoutId] = useState<string | null>(null);
+  
   const selectedItem = useMemo(() => baseItems.find(i => i.id === selectedId), [selectedId]);
   
-  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
-  const [isMounted, setIsMounted] = useState(false);
-
-  // Motion values for grid drag
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+  
+  // Motion values for drag
   const x = useMotionValue(0);
   const y = useMotionValue(0);
+  
+  // Smooth spring physics for drag
   const springConfig = { damping: 50, stiffness: 400, mass: 1 };
   const smoothX = useSpring(x, springConfig);
   const smoothY = useSpring(y, springConfig);
 
   const isDragging = useRef(false);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
+  // Resize handling
   useEffect(() => {
-    setIsMounted(true);
-    setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-    const timer = setTimeout(() => setIsInitialLoad(false), 1000);
-    const handleResize = () => setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-    window.addEventListener('resize', handleResize);
+    if (!containerRef.current) return;
+    const updateSize = () => {
+      if (containerRef.current) {
+        setContainerSize({
+          width: containerRef.current.offsetWidth,
+          height: containerRef.current.offsetHeight
+        });
+      }
+    };
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    const resizeObserver = new ResizeObserver(updateSize);
+    resizeObserver.observe(containerRef.current);
     return () => {
-        window.removeEventListener('resize', handleResize);
-        clearTimeout(timer);
+      window.removeEventListener('resize', updateSize);
+      resizeObserver.disconnect();
     };
   }, []);
 
+  // Center initial position
   useEffect(() => {
-      if (windowSize.width > 0 && x.get() === 0) {
-           x.set(-calculatedLayout.width / 2 + windowSize.width / 2);
-           y.set(-calculatedLayout.height / 2 + windowSize.height / 2);
-      }
-  }, [windowSize.width]);
-
-  // Force render on motion change
-  const [_, setRenderTick] = useState(0);
-  useEffect(() => {
-    const unsubscribeX = smoothX.on("change", () => setRenderTick(prev => prev + 1));
-    const unsubscribeY = smoothY.on("change", () => setRenderTick(prev => prev + 1));
-    return () => { unsubscribeX(); unsubscribeY(); };
-  }, [smoothX, smoothY]);
-
-  if (!isMounted) return <div className="fixed inset-0 bg-[#050505]" />;
-
-  const currentX = smoothX.get();
-  const currentY = smoothY.get();
-
-  // Tiling Logic
-  const blockW = calculatedLayout.width;
-  const blockH = calculatedLayout.height;
-
-  const minBlockX = Math.floor((-currentX) / blockW) - 1;
-  const maxBlockX = Math.floor((-currentX + windowSize.width) / blockW) + 1;
-  const minBlockY = Math.floor((-currentY) / blockH) - 1;
-  const maxBlockY = Math.floor((-currentY + windowSize.height) / blockH) + 1;
-
-  const visibleInstances: {
-    key: string;
-    item: GalleryItem;
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-  }[] = [];
-
-  for (let bx = minBlockX; bx <= maxBlockX; bx++) {
-    for (let by = minBlockY; by <= maxBlockY; by++) {
-      calculatedLayout.items.forEach((layoutItem, index) => {
-         const itemX = bx * blockW + layoutItem.x + currentX;
-         const itemY = by * blockH + layoutItem.y + currentY;
-         
-         if (
-           itemX + layoutItem.width > -100 &&
-           itemX < windowSize.width + 100 &&
-           itemY + layoutItem.height > -100 &&
-           itemY < windowSize.height + 100
-         ) {
-           visibleInstances.push({
-             key: `${bx}-${by}-${index}`,
-             item: layoutItem.item,
-             x: itemX,
-             y: itemY,
-             w: layoutItem.width,
-             h: layoutItem.height
-           });
-         }
-      });
+    if (containerSize.width > 0 && x.get() === 0) {
+       x.set(-generatedLayout.width / 2 + containerSize.width / 2);
+       y.set(-generatedLayout.height / 2 + containerSize.height / 2);
     }
-  }
+  }, [containerSize.width, containerSize.height]);
 
   return (
-    <div className="fixed inset-0 bg-[#050505] overflow-hidden text-white font-sans">
-      {/* Grid Container */}
+    <div ref={containerRef} className={`${className} bg-[#050505] overflow-hidden text-white font-sans select-none`}>
       <motion.div 
-        className="absolute inset-0 cursor-grab active:cursor-grabbing"
+        className="absolute inset-0 cursor-grab active:cursor-grabbing touch-none"
         onPan={(e, info) => {
-             if (selectedId) return; // Disable drag when focused
+             if (selectedId) return;
              x.set(x.get() + info.delta.x);
              y.set(y.get() + info.delta.y);
              isDragging.current = true;
@@ -411,37 +460,41 @@ export const InfiniteGallery = () => {
         onPanEnd={() => {
             setTimeout(() => { isDragging.current = false }, 50);
         }}
-        style={{ touchAction: "none", pointerEvents: selectedId ? "none" : "auto" }}
-        animate={{ opacity: selectedId ? 0.3 : 1, scale: selectedId ? 0.9 : 1 }}
+        style={{ touchAction: "none" }}
+        animate={{ opacity: selectedId ? 0 : 1 }}
         transition={{ duration: 0.5 }}
       >
-        {visibleInstances.map((instance) => (
-            <GalleryItemCard
-              key={instance.key}
-              item={instance.item}
-              x={instance.x}
-              y={instance.y}
-              width={instance.w}
-              height={instance.h}
-              isInitialLoad={isInitialLoad}
-              isSelected={selectedId === instance.item.id}
-              onClick={() => {
-                  if (!isDragging.current && !selectedId) {
-                      setSelectedId(instance.item.id);
-                  }
-              }}
+        {generatedLayout.items.map((layoutItem) => (
+            <WrappedGalleryItem
+                key={layoutItem.instanceId}
+                layoutItem={layoutItem}
+                smoothX={smoothX}
+                smoothY={smoothY}
+                gridWidth={generatedLayout.width}
+                gridHeight={generatedLayout.height}
+                enableClick={enableClick}
+                isDraggingRef={isDragging}
+                onSelect={(id, layoutId) => {
+                    if (selectedId) return;
+                    setSelectedId(id);
+                    setSelectedLayoutId(layoutId);
+                }}
             />
         ))}
       </motion.div>
 
-      {/* Focus View Overlay */}
+      {/* Focus View */}
       <AnimatePresence>
         {selectedId && selectedItem && (
           <FocusView 
             item={selectedItem} 
             items={baseItems}
-            onClose={() => setSelectedId(null)}
-            onSelect={(id) => setSelectedId(id)}
+            layoutId={selectedLayoutId}
+            onClose={() => { setSelectedId(null); setSelectedLayoutId(null); }}
+            onSelect={(id) => { 
+                setSelectedId(id); 
+                setSelectedLayoutId(null); 
+            }}
           />
         )}
       </AnimatePresence>
@@ -449,67 +502,152 @@ export const InfiniteGallery = () => {
   );
 };
 
-const GalleryItemCard = ({ item, x, y, width, height, isInitialLoad, isSelected, onClick }: any) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
-  const hasAnimated = useRef(false);
+// ------------------------------------------------------------------
+// COMPONENT: Wrapped Gallery Item
+// ------------------------------------------------------------------
+const WrappedGalleryItem = ({ 
+    layoutItem, 
+    smoothX, 
+    smoothY, 
+    gridWidth, 
+    gridHeight, 
+    enableClick,
+    isDraggingRef,
+    onSelect
+}: {
+    layoutItem: LayoutItem,
+    smoothX: MotionValue<number>,
+    smoothY: MotionValue<number>,
+    gridWidth: number,
+    gridHeight: number,
+    enableClick: boolean,
+    isDraggingRef: React.MutableRefObject<boolean>,
+    onSelect: (id: number, layoutId: string) => void
+}) => {
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const [isHovered, setIsHovered] = useState(false);
 
-  useEffect(() => {
-    if (item.video && videoRef.current && !isSelected) {
-      if (isHovered) {
+    // WRAPPING LOGIC:
+    // Calculates the position of the item based on the drag value.
+    // If the item moves out of the bounds [ -buffer, gridWidth - buffer ], it wraps around.
+    // We assume the grid is large enough (via duplication) that we don't see the wrap seam on screen.
+    const x = useTransform(smoothX, v => {
+        // Shift coordinate system so 0 is center-ish or just wrap
+        const pos = layoutItem.x + v;
+        return wrap(-gridWidth/2, gridWidth/2, pos - gridWidth/2) + gridWidth/2 - layoutItem.width/2; 
+        // Simply: wrap(0, gridWidth, pos) might work, but usually we want to center the wrap range
+        // Let's try simpler:
+        // return wrap(-layoutItem.width, gridWidth - layoutItem.width, pos);
+    });
+    
+    // We'll use a slightly safer wrap function that handles the full grid
+    const wrappedX = useTransform(smoothX, v => {
+        return wrap(-gridWidth/2, gridWidth/2, layoutItem.x + v);
+    });
+
+    const wrappedY = useTransform(smoothY, v => {
+        return wrap(-gridHeight/2, gridHeight/2, layoutItem.y + v);
+    });
+
+    // Handle video playback on hover with volume fade
+    useEffect(() => {
         const video = videoRef.current;
-        video.currentTime = 0;
-        video.play().catch(() => {});
-      } else {
-        videoRef.current.pause();
-      }
-    }
-  }, [isHovered, item.video, isSelected]);
+        if (!layoutItem.item.video || !video) return;
 
-  const shouldAnimate = isInitialLoad && !hasAnimated.current;
-  if (shouldAnimate) hasAnimated.current = true;
-  
-  if (isSelected) return null; // Hide from grid when selected (FocusView handles it)
+        let fadeInterval: number;
 
-  return (
-    <motion.div
-      layoutId={`item-${item.id}`}
-      initial={shouldAnimate ? { y: y + 100, opacity: 0 } : false}
-      animate={{ x, y, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 200, damping: 25, mass: 0.8 }}
-      className="absolute bg-white/5 overflow-hidden group pointer-events-auto"
-      style={{ width, height }}
-      onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {item.video && (
-        <video
-          ref={videoRef}
-          src={item.video}
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        />
-      )}
-      <img
-        src={item.image}
-        alt={item.title}
-        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-0"
-        draggable={false}
-      />
-    </motion.div>
-  );
-};
+        if (isHovered) {
+            // Unmute and start playing (volume 0 initially)
+            video.muted = false;
+            video.volume = 0;
+            video.play().catch(() => {
+                // If autoplay blocked, try muted
+                video.muted = true;
+                video.play().catch(() => {});
+            });
 
-const FocusView = ({ item, items, onClose, onSelect }: { item: GalleryItem, items: GalleryItem[], onClose: () => void, onSelect: (id: number) => void }) => {
+            // Fade in
+            const fadeIn = () => {
+                if (video.volume < 0.6) {
+                    video.volume = Math.min(0.6, video.volume + 0.05);
+                    fadeInterval = window.setTimeout(fadeIn, 100);
+                }
+            };
+            fadeIn();
+        } else {
+            // Fade out
+            const fadeOut = () => {
+                if (video.volume > 0.05) {
+                    video.volume = Math.max(0, video.volume - 0.05);
+                    fadeInterval = window.setTimeout(fadeOut, 50);
+                } else {
+                    video.pause();
+                    video.currentTime = 0;
+                    video.volume = 0;
+                }
+            };
+            fadeOut();
+        }
+
+        return () => window.clearTimeout(fadeInterval);
+    }, [isHovered, layoutItem.item.video]);
+
+    return (
+        <motion.div
+            style={{ 
+                x: wrappedX, 
+                y: wrappedY, 
+                width: layoutItem.width, 
+                height: layoutItem.height,
+                position: 'absolute',
+                top: 0,
+                left: 0
+            }}
+            className="group"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onClick={() => {
+                if (enableClick && !isDraggingRef.current) {
+                    onSelect(layoutItem.item.id, `item-${layoutItem.item.id}-${layoutItem.instanceId}`);
+                }
+            }}
+        >
+            <motion.div
+                layoutId={`item-${layoutItem.item.id}-${layoutItem.instanceId}`}
+                className={`w-full h-full relative overflow-hidden bg-white/5 ${enableClick ? 'cursor-pointer' : ''}`}
+            >
+                 {layoutItem.item.video ? (
+                    <video
+                        ref={videoRef}
+                        src={`${layoutItem.item.video}#t=0.001`}
+                        loop
+                        playsInline
+                        preload="metadata"
+                        className="absolute inset-0 w-full h-full object-cover"
+                    />
+                ) : (
+                    <img
+                        src={layoutItem.item.image}
+                        alt={layoutItem.item.title}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        draggable={false}
+                    />
+                )}
+            </motion.div>
+        </motion.div>
+    )
+}
+
+// ------------------------------------------------------------------
+// COMPONENT: Focus View (Identical to before, mostly)
+// ------------------------------------------------------------------
+const FocusView = ({ item, items, onClose, onSelect, layoutId }: { item: GalleryItem, items: GalleryItem[], onClose: () => void, onSelect: (id: number) => void, layoutId: string | null }) => {
   return (
     <motion.div
       className="fixed inset-0 z-50 flex"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      exit={{ opacity: 0, pointerEvents: "none" }}
     >
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/95 backdrop-blur-xl" onClick={onClose} />
@@ -518,9 +656,9 @@ const FocusView = ({ item, items, onClose, onSelect }: { item: GalleryItem, item
       <motion.div 
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
-        exit={{ x: -100, opacity: 0 }}
+        exit={{ x: -100, opacity: 0, pointerEvents: "none" }}
         transition={{ type: "spring", damping: 30 }}
-        className="relative z-10 w-24 md:w-32 h-full border-r border-white/10 bg-black/50 overflow-y-auto flex flex-col gap-4 p-4 no-scrollbar"
+        className="relative z-10 w-[15vw] min-w-[100px] h-full border-r border-white/10 bg-black/50 overflow-y-auto flex flex-col gap-4 p-4 no-scrollbar"
         onClick={(e) => e.stopPropagation()}
       >
         {items.map((i) => (
@@ -529,7 +667,18 @@ const FocusView = ({ item, items, onClose, onSelect }: { item: GalleryItem, item
             onClick={() => onSelect(i.id)}
             className={`w-full aspect-square rounded-lg overflow-hidden cursor-pointer transition-all ${item.id === i.id ? 'ring-2 ring-white scale-105' : 'opacity-50 hover:opacity-100'}`}
           >
-            <img src={i.image} className="w-full h-full object-cover" />
+            {i.video ? (
+              <video 
+                src={i.video} 
+                className="w-full h-full object-cover" 
+                muted 
+                loop 
+                playsInline 
+                autoPlay 
+              />
+            ) : (
+              <img src={i.image} className="w-full h-full object-cover" />
+            )}
           </div>
         ))}
       </motion.div>
@@ -537,7 +686,7 @@ const FocusView = ({ item, items, onClose, onSelect }: { item: GalleryItem, item
       {/* Main Stage */}
       <div className="flex-1 relative flex items-center justify-center p-4 md:p-12 pointer-events-none">
         <motion.div
-          layoutId={`item-${item.id}`}
+          layoutId={layoutId || undefined}
           className="relative w-full max-w-5xl aspect-video bg-black rounded-sm overflow-hidden shadow-2xl pointer-events-auto"
           onClick={(e) => e.stopPropagation()}
         >
@@ -574,7 +723,7 @@ const FocusView = ({ item, items, onClose, onSelect }: { item: GalleryItem, item
         {/* Close Button */}
         <button 
             onClick={onClose}
-            className="absolute top-8 right-8 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors pointer-events-auto z-50"
+            className="absolute right-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors pointer-events-auto z-50"
         >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M18 6L6 18M6 6l12 12" />

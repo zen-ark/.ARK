@@ -1,5 +1,11 @@
 ---
 import NavigationWrapper from "../../components/NavigationWrapper.astro";
+
+interface Props {
+  mode?: "agency" | "hiring";
+}
+
+const { mode } = Astro.props;
 ---
 
-<NavigationWrapper />
+<NavigationWrapper mode={mode} />

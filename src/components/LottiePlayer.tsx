@@ -52,7 +52,7 @@ export default function LottiePlayer({
       }
 
       try {
-        const response = await fetch(encodeURI(src));
+        const response = await fetch(encodeURI(src).replace(/%2520/g, "%20"));
         if (!response.ok) {
           throw new Error(`Failed to fetch Lottie JSON: ${response.status} ${response.statusText}`);
         }
@@ -88,7 +88,7 @@ export default function LottiePlayer({
              if (lottieCache.has(src)) {
                  data = JSON.parse(JSON.stringify(lottieCache.get(src)));
              } else {
-                 const response = await fetch(encodeURI(src));
+                 const response = await fetch(encodeURI(src).replace(/%2520/g, "%20"));
                  if (!response.ok) throw new Error("Failed to fetch");
                  const jsonData = await response.json();
                  lottieCache.set(src, jsonData);
@@ -160,6 +160,7 @@ export default function LottiePlayer({
           style={{ width: "100%", height: "100%" }}
           rendererSettings={{
             preserveAspectRatio: "xMidYMid slice",
+            renderer: "canvas",
           }}
         />
     </div>

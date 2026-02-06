@@ -1,8 +1,10 @@
 ---
 import Base from "@/layouts/Base.astro";
 import { InfiniteGallery } from "@/components/case-study/InfiniteGallery";
+import GalleryButton from "@/components/case-study/GalleryButton.astro";
 ---
 
-<Base title="Explorations — .ARK" footerMode="reveal" wrapperClass="bg-[#111]">
+<Base title="Explorations — .ARK" footerMode="reveal" wrapperClass="bg-[#111]" headerMode="hiring">
   <InfiniteGallery client:only="react" />
+  <GalleryButton href="/portfolio/projects/3d-explorations" text="Close Gallery" />
 </Base>

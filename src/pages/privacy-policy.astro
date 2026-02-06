@@ -1,0 +1,59 @@
+---
+import Base from "@/layouts/Base.astro";
+
+const title = "Privacy Policy — .ARK";
+const description = "Privacy Policy for .ARK";
+---
+
+<Base title={title} description={description}>
+  <main class="min-h-screen px-4 py-16 md:py-24">
+    <div class="w-full max-w-3xl mx-auto space-y-12">
+      <div class="space-y-4">
+        <h1 class="text-4xl md:text-5xl font-semibold tracking-tight">Privacy Policy</h1>
+        <p class="text-lg text-text-subtle">
+          Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+        </p>
+      </div>
+
+      <div class="prose prose-invert max-w-none space-y-8 text-text-subtle">
+        <section class="space-y-4">
+          <h2 class="text-2xl font-medium text-text-primary">1. Overview</h2>
+          <p>
+            At .ARK, we take your privacy seriously. This policy explains how we collect, use, and protect your personal information when you visit our website.
+          </p>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-2xl font-medium text-text-primary">2. Data Collection</h2>
+          <p>
+            We adhere to the principle of data minimization. We only collect data that is technically necessary for the operation of this website or that you voluntarily provide to us (e.g., via contact forms).
+          </p>
+          <ul class="list-disc pl-4 space-y-2">
+            <li>
+              <strong>Server Log Files:</strong> Our host provider collects standard server logs (IP address, browser type, timestamp) for security and troubleshooting purposes.
+            </li>
+            <li>
+              <strong>Analytics:</strong> We may use privacy-focused analytics tools (like Plausible) that do not track personal data or use cookies.
+            </li>
+          </ul>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-2xl font-medium text-text-primary">3. Cookies</h2>
+          <p>
+            We minimize the use of cookies. Any cookies used are essential for the technical functioning of the website or user preferences (like theme selection).
+          </p>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-2xl font-medium text-text-primary">4. Contact Information</h2>
+          <p>
+            If you have any questions about this privacy policy, please contact us at:
+            <br />
+            <a href="mailto:hello@ark.studio.ch" class="text-text-primary hover:underline">hello@ark.studio.ch</a>
+          </p>
+        </section>
+      </div>
+    </div>
+  </main>
+</Base>

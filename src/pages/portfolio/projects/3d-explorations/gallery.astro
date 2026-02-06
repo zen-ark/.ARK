@@ -1,6 +1,7 @@
 ---
 import Base from "@/layouts/Base.astro";
 import { InfiniteGallery } from "@/components/case-study/InfiniteGallery";
+import GalleryButton from "@/components/case-study/GalleryButton.astro";
 
 // Metadata
 const title = "3D Explorations Gallery — .ARK";
@@ -12,6 +13,7 @@ const description = "Interactive archive of 3D motion studies and experiments.";
   description={description}
   showFooter={false}
   theme="dark"
+  headerMode="hiring"
   wrapperClass="bg-black"
 >
   <main class="relative w-full h-screen overflow-hidden bg-black">
@@ -19,11 +21,6 @@ const description = "Interactive archive of 3D motion studies and experiments.";
     <InfiniteGallery client:load />
 
     <!-- Back Button -->
-    <a
-      href="/portfolio/projects/3d-explorations"
-      class="fixed bottom-[40px] left-1/2 -translate-x-1/2 z-[60] px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white text-sm font-bold transition-all duration-300 border border-white/10 hover:scale-105 shadow-lg"
-    >
-      Exit Gallery
-    </a>
+    <GalleryButton href="/portfolio/projects/3d-explorations" text="Close Gallery" />
   </main>
 </Base>

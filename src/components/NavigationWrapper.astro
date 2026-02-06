@@ -3,13 +3,19 @@ import Navigation from "./Navigation";
 import { getCollection } from "astro:content";
 import { getMode } from "@/lib/mode";
 
+interface Props {
+  mode?: "agency" | "hiring";
+}
+
 const { url } = Astro;
+const { mode: overrideMode } = Astro.props;
 const currentPath = url.pathname;
 const isGerman = currentPath.startsWith("/de");
 const prefix = isGerman ? "/de" : "";
 
 // Detect mode
-const mode = getMode(currentPath);
+const detectedMode = getMode(currentPath);
+const mode = overrideMode || detectedMode;
 
 const toHref = (path: string) => {
   if (path === "/") return prefix || "/";
@@ -27,9 +33,8 @@ const agencyLinks = [
 
 const portfolioLinks = [
   { href: toHref("/portfolio"), label: "Home" },
-  { href: toHref("/portfolio/about"), label: "About" },
+  { href: "#work", label: "Work" },
   { href: "/portfolio/resume", label: "CV" },
-  { href: toHref("/portfolio/contact"), label: "Contact" },
   { href: toHref("/"), label: "{ Studio }" },
 ];
 
