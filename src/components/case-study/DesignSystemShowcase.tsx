@@ -22,7 +22,7 @@ export default function DesignSystemShowcase() {
         </div>
 
         {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8">
           {/* Typography Column */}
           <div className="space-y-6">
             <span className="text-xs font-mono text-white/40 uppercase tracking-widest block border-b border-white/5 pb-2">Typography</span>

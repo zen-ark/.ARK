@@ -6,7 +6,7 @@ import vercel from "@astrojs/vercel/static";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  site: "https://ark.studio.ch",
+  site: "https://ark-studio.ch",
   integrations: [
     react(),
     mdx(),
