@@ -5,7 +5,7 @@ import Footer from "./partials/FooterV2.astro";
 import FooterPortfolio from "./partials/FooterPortfolio.astro";
 import { buildOrganizationSchema, buildWebSiteSchema, formatJsonLd } from "@/lib/seo";
 import ModeToggle from "@/components/ModeToggle";
-import { isHomepageRoute } from "@/lib/mode";
+import { getMode, isHomepageRoute } from "@/lib/mode";
 
 interface Props {
   title?: string;
@@ -37,6 +37,8 @@ const {
 
 const currentPath = Astro.url.pathname;
 const isGerman = currentPath.startsWith("/de");
+const detectedMode = getMode(currentPath);
+const headerModeValue = headerMode || detectedMode;
 
 const plausibleDomain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN || "ark.studio.ch";
 const isProd = import.meta.env.PROD;
@@ -121,7 +123,7 @@ const websiteSchema = buildWebSiteSchema({
           <div
             class={`relative z-10 bg-[#111] ${wrapperClass} min-h-screen mb-0 md:mb-[calc(var(--footer-height)-1px)]`}
           >
-            <Header mode={headerMode} />
+            <Header mode={headerModeValue} />
             <slot />
           </div>
 
@@ -137,7 +139,7 @@ const websiteSchema = buildWebSiteSchema({
         </>
       ) : (
         <>
-          <Header mode={headerMode} />
+          <Header mode={headerModeValue} />
           <slot />
 
           {isHomepageRoute(currentPath) && (
