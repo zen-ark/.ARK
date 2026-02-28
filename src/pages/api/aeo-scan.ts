@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+export const prerender = false;
 import { 
   analyzeSchemaDensity, 
   analyzeSignalToNoise, 
@@ -11,9 +12,6 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json().catch(() => ({}));
     const { url } = body;
-
-    // Log the request body for debugging
-    console.log("AEO Scan Request Body:", body);
 
     if (!url || typeof url !== "string") {
       return new Response(JSON.stringify({ error: "Missing or invalid URL" }), {

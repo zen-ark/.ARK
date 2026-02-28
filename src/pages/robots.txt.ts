@@ -5,7 +5,7 @@ export const GET: APIRoute = () => {
 User-agent: *
 Allow: /
 
-Sitemap: ${new URL("sitemap.xml", import.meta.env.SITE || "https://ark.studio.ch").href}
+Sitemap: ${new URL("sitemap-index.xml", import.meta.env.SITE || "https://ark-studio.ch").href}
 `.trim();
 
   return new Response(robotsTxt, {

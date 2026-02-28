@@ -13,10 +13,8 @@ const TOGGLE_CLOSE_LABEL_MS = 300;
 
 const DEFAULT_LINKS = [
   { href: "/", label: "Home" },
-  { href: "#what-the-ark", label: "WHATS ARK" },
   { href: "/projects", label: "Projects" },
-  { href: "#how-ark", label: "HOW ARK" },
-  { href: "#behind-ark", label: "BEHIND ARK" },
+  { href: "/ai-readiness", label: "AI Readiness" },
   { href: "/contact", label: "Contact" },
 ];
 
