@@ -17,7 +17,7 @@ export default function OperatorArk() {
 
             {/* Headline */}
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-black leading-tight mb-6">
-              A studio front powered by a single operator responsible for design, direction, and execution.
+              A studio front powered by Shain Gerstner, the operator responsible for design, direction, and execution.
             </h2>
 
             {/* Body Copy */}

@@ -11,6 +11,7 @@ interface RegistryItem {
   // Node specific
   logo?: string;
   sector?: string;
+  altText?: string;
   protocol?: string;
   hexId?: string;
   // Log specific
@@ -28,6 +29,7 @@ const ITEMS: RegistryItem[] = [
     type: "node",
     logo: "/logos/react.svg",
     sector: "FRONTEND_OPS",
+    altText: "Frontend Operations - React",
     protocol: "P-772",
     hexId: "0x44_RCT",
     colSpan: 1,
@@ -44,6 +46,7 @@ const ITEMS: RegistryItem[] = [
     type: "node",
     logo: "/logos/astro.svg",
     sector: "STATIC_GEN",
+    altText: "Static Site Generation - Astro",
     protocol: "P-891",
     hexId: "0x9A_STR",
     colSpan: 1,
@@ -53,6 +56,7 @@ const ITEMS: RegistryItem[] = [
     type: "node",
     logo: "/logos/tailwind.svg",
     sector: "STYLE_SYS",
+    altText: "Styling System - Tailwind CSS",
     protocol: "P-112",
     hexId: "0xB2_TLW",
     colSpan: 1,
@@ -62,6 +66,7 @@ const ITEMS: RegistryItem[] = [
     type: "node",
     logo: "/logos/blender.svg",
     sector: "3D_ASSET",
+    altText: "3D Asset Creation Tool - Blender",
     protocol: "P-445",
     hexId: "0x1C_BLD",
     colSpan: 1,
@@ -78,6 +83,7 @@ const ITEMS: RegistryItem[] = [
     type: "node",
     logo: "/logos/after-effects.svg",
     sector: "MOTION_GFX",
+    altText: "Motion Graphics - After Effects",
     protocol: "P-339",
     hexId: "0x7F_AFX",
     colSpan: 1,
@@ -87,6 +93,7 @@ const ITEMS: RegistryItem[] = [
     type: "node",
     logo: "/logos/react.svg", 
     sector: "NEURAL_NET",
+    altText: "Neural Network - React AI",
     protocol: "P-991",
     hexId: "0xE5_NRL",
     colSpan: 1,
@@ -143,7 +150,7 @@ const GridNode = ({ item, index }: { item: RegistryItem; index: number }) => {
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <motion.img 
                     src={item.logo} 
-                    alt={item.sector}
+                    alt={item.altText || item.sector}
                     className="w-12 h-12 md:w-16 md:h-16 max-h-16 grayscale opacity-60"
                     animate={{  
                         opacity: isHovered ? 1 : 0.6,

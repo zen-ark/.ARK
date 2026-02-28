@@ -45,16 +45,122 @@ interface OrganizationSchema {
   url: string;
   logo?: string;
   sameAs?: string[];
+  address?: {
+    streetAddress: string;
+    addressLocality: string;
+    postalCode: string;
+    addressCountry: string;
+  };
+  contactPoint?: {
+    telephone?: string;
+    contactType: string;
+    email?: string;
+  };
 }
 
 export function buildOrganizationSchema(org: OrganizationSchema) {
-  return {
+  const schema: any = {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: org.name,
     url: org.url,
     logo: org.logo,
     sameAs: org.sameAs || [],
+  };
+
+  if (org.address) {
+    schema.address = {
+      "@type": "PostalAddress",
+      ...org.address,
+    };
+  }
+
+  if (org.contactPoint) {
+    schema.contactPoint = {
+      "@type": "ContactPoint",
+      ...org.contactPoint,
+    };
+  }
+
+  return schema;
+}
+
+interface ServiceSchema {
+  name: string;
+  description: string;
+  provider: {
+    name: string;
+    url: string;
+  };
+  serviceType: string;
+  areaServed?: string;
+}
+
+export function buildServiceSchema(service: ServiceSchema) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: service.name,
+    description: service.description,
+    provider: {
+      "@type": "Organization",
+      name: service.provider.name,
+      url: service.provider.url,
+    },
+    serviceType: service.serviceType,
+    areaServed: service.areaServed || "Global",
+  };
+}
+
+interface PersonSchema {
+  name: string;
+  jobTitle: string;
+  url?: string;
+  sameAs?: string[];
+  worksFor?: {
+    name: string;
+    url: string;
+  };
+}
+
+export function buildPersonSchema(person: PersonSchema) {
+  const schema: any = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: person.name,
+    jobTitle: person.jobTitle,
+    url: person.url,
+    sameAs: person.sameAs || [],
+  };
+
+  if (person.worksFor) {
+    schema.worksFor = {
+      "@type": "Organization",
+      name: person.worksFor.name,
+      url: person.worksFor.url,
+    };
+  }
+
+  return schema;
+}
+
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+export function buildFAQPageSchema(faqs: FAQItem[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
   };
 }
 

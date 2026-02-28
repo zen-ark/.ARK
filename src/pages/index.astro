@@ -2,15 +2,61 @@
 import Base from "@/layouts/Base.astro";
 import Hero from "@/components/Hero";
 import WhatArkDoes from "@/components/WhatArkDoes";
-import NetworkRegistry from "@/components/NetworkRegistry";
 import ProjectsV6 from "@/components/ProjectsV6";
 import OpenNewFile from "@/components/OpenNewFile";
 import SystemStateController from "@/components/SystemStateController";
 import Marquee from "@/components/Marquee";
 import FooterV2 from "@/layouts/partials/FooterV2.astro";
+import FAQ, { faqData } from "@/components/FAQ";
+import DirectAnswer from "@/components/DirectAnswer.astro";
+import { buildPersonSchema, buildServiceSchema, buildFAQPageSchema } from "@/lib/seo";
+
+const personSchema = buildPersonSchema({
+  name: "Shain Gerstner",
+  jobTitle: "Founder & Operator",
+  url: "https://ark.studio.ch",
+  sameAs: ["https://www.linkedin.com/in/shain-gerstner/", "https://www.instagram.com/mondzhain/"],
+  worksFor: {
+    name: ".ARK",
+    url: "https://ark.studio.ch"
+  }
+});
+
+const serviceSchema1 = buildServiceSchema({
+  name: "Interface Design",
+  description: "Crafting clear, usable, and aesthetic user interfaces for web and mobile applications.",
+  provider: { name: ".ARK", url: "https://ark.studio.ch" },
+  serviceType: "Design",
+  areaServed: "Global"
+});
+
+const serviceSchema2 = buildServiceSchema({
+  name: "Design Systems",
+  description: "Building scalable and consistent design systems to streamline development and ensure brand coherence.",
+  provider: { name: ".ARK", url: "https://ark.studio.ch" },
+  serviceType: "Design",
+  areaServed: "Global"
+});
+
+const serviceSchema3 = buildServiceSchema({
+  name: "AI Readiness Audit",
+  description: "Optimizing digital presence for AI search engines and integrating AI workflows for Swiss KMUs.",
+  provider: { name: ".ARK", url: "https://ark.studio.ch" },
+  serviceType: "Consulting",
+  areaServed: "Switzerland, Thun, Bern"
+});
+
+const faqSchema = buildFAQPageSchema(faqData);
+
+const schemas = [personSchema, serviceSchema1, serviceSchema2, serviceSchema3, faqSchema];
 ---
 
-<Base title=".ARK — Creative Studio" showFooter={false}>
+<Base 
+  title=".ARK | AI-Ready Design & UX Studio Thun, Switzerland" 
+  description="Boutique digital studio in Thun, Switzerland. We specialize in AI-readiness, UX/UI design, and high-end technical integration for Swiss KMUs."
+  showFooter={false}
+  schemas={schemas}
+>
   <main>
     <!-- Hero Section -->
     <Hero
@@ -24,14 +70,19 @@ import FooterV2 from "@/layouts/partials/FooterV2.astro";
     <!-- WHAT .ARK DOES Section -->
     <WhatArkDoes client:visible />
 
-    <!-- Network Registry / Validation Log -->
-    <NetworkRegistry client:visible />
+    <!-- Network Registry / Validation Log (hidden for now) -->
 
     <!-- Projects V6 Liquid Folder -->
     <ProjectsV6 client:visible />
 
     <!-- SYSTEM STATE CONTROLLER (The .ARK Model) -->
     <SystemStateController client:visible />
+
+    <!-- FAQ Section -->
+    <FAQ client:visible />
+
+    <!-- Direct Answer Section -->
+    <DirectAnswer />
 
     <!-- OPEN A NEW FILE Section -->
     <OpenNewFile client:visible />

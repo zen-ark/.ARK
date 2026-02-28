@@ -19,6 +19,7 @@ interface Props {
   footerMode?: "default" | "reveal";
   headerMode?: "agency" | "hiring";
   wrapperClass?: string;
+  schemas?: any[];
 }
 
 const {
@@ -33,6 +34,7 @@ const {
   footerMode = "default",
   headerMode,
   wrapperClass = "",
+  schemas = [],
 } = Astro.props;
 
 const currentPath = Astro.url.pathname;
@@ -51,7 +53,16 @@ const organizationSchema = buildOrganizationSchema({
   name: ".ARK",
   url: siteUrl,
   logo: `${siteUrl}/og.jpg`,
-  sameAs: [],
+  sameAs: [
+    "https://www.linkedin.com/company/ark-leathers/",
+    "https://www.instagram.com/mondzhain/",
+  ],
+  address: {
+    streetAddress: "Thun",
+    addressLocality: "Thun",
+    postalCode: "3600",
+    addressCountry: "CH",
+  },
 });
 
 const websiteSchema = buildWebSiteSchema({
@@ -100,6 +111,11 @@ const websiteSchema = buildWebSiteSchema({
     <!-- Schema.org JSON-LD -->
     <script type="application/ld+json" set:html={formatJsonLd(organizationSchema)} />
     <script type="application/ld+json" set:html={formatJsonLd(websiteSchema)} />
+    {
+      schemas.map((schema) => (
+        <script type="application/ld+json" set:html={formatJsonLd(schema)} />
+      ))
+    }
 
     <!-- Plausible Analytics (Production Only) -->
     {

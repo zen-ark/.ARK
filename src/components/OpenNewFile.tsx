@@ -9,7 +9,7 @@ export default function OpenNewFile() {
 
         {/* Explanation */}
         <p className="text-lg md:text-xl text-black/80 max-w-2xl mb-10 leading-relaxed">
-          Describe what you're building. .ARK will structure and design it.
+          Describe what you're building. Based in Thun, Switzerland, .ARK will structure and design it.
         </p>
 
         {/* CTAs */}
@@ -50,6 +50,13 @@ export default function OpenNewFile() {
           >
             Just say hi
           </a>
+        </div>
+
+        {/* SEO Internal Link */}
+        <div className="mt-12 pt-8 border-t border-black/10">
+            <a href="/aeo-audit-thun" className="text-xs font-mono text-black/40 hover:text-black/80 transition-colors uppercase tracking-widest">
+                [ READ: AI-READY DESIGN IN THUN ]
+            </a>
         </div>
       </div>
     </section>

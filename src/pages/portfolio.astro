@@ -156,6 +156,13 @@ const projects = await loadProjects({ mode: "hiring" });
       margin-top: 4rem;
     }
 
+    /* Prevent initial flash before GSAP takes over */
+    .portfolio-anim-wrapper .portfolio-intro-content,
+    .portfolio-anim-wrapper .projects-grid-content .project-item {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
     .portfolio-intro {
       display: grid;
       grid-template-columns: 1fr;

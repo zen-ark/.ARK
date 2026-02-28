@@ -29,7 +29,7 @@ export default function ArkModel() {
   const tiles = [
     {
       title: "DIRECT LINK",
-      description: "Work directly with the operator. No account managers, no middle layers—just clear communication and fast decisions.",
+      description: "Work directly with Shain Gerstner, the operator of .ARK. No account managers, no middle layers—just clear communication and fast decisions.",
     },
     {
       title: "ULTRA-FOCUSED",

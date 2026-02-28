@@ -2,7 +2,6 @@
 import Base from "@/layouts/Base.astro";
 import Hero from "@/components/Hero";
 import WhatArkDoes from "@/components/WhatArkDoes";
-import NetworkRegistry from "@/components/NetworkRegistry";
 import ProjectsV6 from "@/components/ProjectsV6";
 import OpenNewFile from "@/components/OpenNewFile";
 import SystemStateController from "@/components/SystemStateController";
@@ -11,7 +10,12 @@ import FooterV2 from "@/layouts/partials/FooterV2.astro";
 
 ---
 
-<Base title=".ARK — Kreatives Studio" lang="de" showFooter={false}>
+<Base 
+  title=".ARK | AI-Ready Design & UX Studio Thun, Schweiz" 
+  description="Boutique Digitalstudio in Thun, Schweiz. Wir spezialisieren uns auf AI-Readiness, UX/UI Design und High-End technische Integration für Schweizer KMUs."
+  lang="de" 
+  showFooter={false}
+>
   <main>
     <!-- Hero Section -->
     <Hero
@@ -25,8 +29,7 @@ import FooterV2 from "@/layouts/partials/FooterV2.astro";
     <!-- WHAT .ARK DOES Section -->
     <WhatArkDoes client:load />
 
-    <!-- Network Registry / Validation Log -->
-    <NetworkRegistry client:load />
+    <!-- Network Registry / Validation Log (hidden for now) -->
 
     <!-- Projects V6 Liquid Folder -->
     <ProjectsV6 client:load />

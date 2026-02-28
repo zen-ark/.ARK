@@ -15,7 +15,7 @@ const VALUES_CONTENT = [
   {
     title: "DIRECT LINK",
     description: [
-        "Work directly with the operator.",
+        "Work directly with Shain Gerstner, the operator of .ARK.",
         "No account managers, no middle layers.",
         "Just clear communication and fast decisions."
     ],
@@ -178,7 +178,7 @@ const CornerUI = () => {
         <div className="absolute inset-0 pointer-events-none z-50 mix-blend-difference">
             <div className="absolute bottom-4 left-4 md:bottom-8 md:left-24">
                 <h3 id="hud-title" className="font-mono text-[10px] md:text-xs font-bold tracking-widest mb-1 md:mb-2 text-white">THE .ARK MODEL</h3>
-                <div id="hud-coords" className="font-mono text-[10px] md:text-xs tracking-widest opacity-60 text-white">47.3769° N, 8.5417° E</div>
+                <div id="hud-coords" className="font-mono text-[10px] md:text-xs tracking-widest opacity-60 text-white">46.75° N, 7.62° E</div>
             </div>
 
             <div id="hud-right" className="absolute bottom-4 right-4 md:bottom-8 md:right-24 flex flex-col items-end gap-2 md:gap-3 text-white">
