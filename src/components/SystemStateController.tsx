@@ -43,10 +43,10 @@ const VALUES_CONTENT = [
 
 const MODULES_CONTENT = [
   { title: "INTERFACE DESIGN", status: "VERIFIED" },
-  { title: "CREATIVE DIRECTION", status: "INSTALLING" },
   { title: "DESIGN SYSTEMS", status: "QUEUED" },
   { title: "MOTION & INTERACTIVE", status: "QUEUED" },
-  { title: "TECHNICAL INTEGRATION", status: "QUEUED" },
+  { title: "AI READINESS AUDIT", status: "QUEUED" },
+  { title: "WORKFLOW AUTOMATION", status: "QUEUED" },
 ];
 
 // --- Helper Components ---
@@ -170,24 +170,24 @@ const UnifiedGrid = () => (
 );
 
 const CornerUI = () => {
-    // Expose control to GSAP via refs and class names if needed, or just let parent animate
-    // For now, we use a simple ref-based update or just pass props. 
-    // Since we are moving to "One Timeline", we can animate these DOM nodes directly by ID or Class.
-
     return (
         <div className="absolute inset-0 pointer-events-none z-50 mix-blend-difference">
-            <div className="absolute bottom-4 left-4 md:bottom-8 md:left-24">
-                <h3 id="hud-title" className="font-mono text-[10px] md:text-xs font-bold tracking-widest mb-1 md:mb-2 text-white">THE .ARK MODEL</h3>
-                <div id="hud-coords" className="font-mono text-[10px] md:text-xs tracking-widest opacity-60 text-white">46.75° N, 7.62° E</div>
-            </div>
+            <div className="absolute bottom-0 left-0 right-0 pb-4 md:pb-8">
+                <div className="w-full max-w-5xl mx-auto px-6 flex items-end justify-between">
+                    <div>
+                        <h3 id="hud-title" className="font-mono text-[10px] md:text-xs font-bold tracking-widest mb-1 md:mb-2 text-white">THE .ARK MODEL</h3>
+                        <div id="hud-coords" className="font-mono text-[10px] md:text-xs tracking-widest opacity-60 text-white">46.75° N, 7.62° E</div>
+                    </div>
 
-            <div id="hud-right" className="absolute bottom-4 right-4 md:bottom-8 md:right-24 flex flex-col items-end gap-2 md:gap-3 text-white">
-                <div className="flex items-center gap-2 md:gap-3">
-                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span id="hud-status" className="font-mono text-[10px] md:text-xs tracking-widest opacity-80">V.2.04 [STABLE]</span>
-                </div>
-                <div className="w-16 md:w-24 h-0.5 bg-white/10 rounded-full overflow-hidden mt-1">
-                    <div id="hud-progress" className="h-full bg-emerald-500 w-0" />
+                    <div id="hud-right" className="flex flex-col items-end gap-2 md:gap-3 text-white">
+                        <div className="flex items-center gap-2 md:gap-3">
+                            <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            <span id="hud-status" className="font-mono text-[10px] md:text-xs tracking-widest opacity-80">V.2.04 [STABLE]</span>
+                        </div>
+                        <div className="w-16 md:w-24 h-0.5 bg-white/10 rounded-full overflow-hidden mt-1">
+                            <div id="hud-progress" className="h-full bg-emerald-500 w-0" />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -209,14 +209,23 @@ export default function SystemStateController() {
   const [contentVisible, setContentVisible] = useState(false);
   const [lastItemVerified, setLastItemVerified] = useState(false);
 
+  // Refs to avoid stale closures inside GSAP onUpdate
+  const activePhaseRef = useRef(activePhase);
+  const phase2IndexRef = useRef(phase2Index);
+  const contentVisibleRef = useRef(contentVisible);
+  useEffect(() => { activePhaseRef.current = activePhase; }, [activePhase]);
+  useEffect(() => { phase2IndexRef.current = phase2Index; }, [phase2Index]);
+  useEffect(() => { contentVisibleRef.current = contentVisible; }, [contentVisible]);
+
   // Auto-verify last item logic
   useEffect(() => {
-    if (phase2Index === 4 && activePhase === 2) {
+    const lastIndex = MODULES_CONTENT.length - 1;
+    if (phase2Index === lastIndex && activePhase === 2) {
         const timer = setTimeout(() => {
             setLastItemVerified(true);
         }, 2000); 
         return () => clearTimeout(timer);
-    } else if (phase2Index < 4) {
+    } else if (phase2Index < lastIndex) {
         setLastItemVerified(false);
     }
   }, [phase2Index, activePhase]);
@@ -225,180 +234,139 @@ export default function SystemStateController() {
   useGSAP(() => {
     if (!containerRef.current) return;
 
-    // Timeline Configuration
-    // Total Durations:
-    // Start: 0.5
-    // Zoom: 2.0
-    // Phase 1: 3.0
-    // Wipe: 1.5
-    // Dwell: 1.0 (New: Pins 'INTERFACE DESIGN')
-    // Phase 2 Scroll: 4.0
-    // TOTAL: 12.0
-    const TOTAL_DURATION = 12.0;
+    const LOCK_DURATION = 0.5;
+    const ZOOM_DURATION = 2.0;
+    const PHASE1_DURATION = 3.0;
+    const WIPE_DURATION = 1.5;
+    const DWELL_DURATION = 0.5;
+    const PER_MODULE_DURATION = 0.8;
+    const MODULE_COUNT = MODULES_CONTENT.length;
+    const PHASE2_DURATION = Math.max(1, MODULE_COUNT) * PER_MODULE_DURATION;
+    const TOTAL_DURATION = LOCK_DURATION + ZOOM_DURATION + PHASE1_DURATION + WIPE_DURATION + DWELL_DURATION + PHASE2_DURATION;
+
+    const tZoomEnd = LOCK_DURATION + ZOOM_DURATION;
+    const tPhase1Start = tZoomEnd;
+    const tPhase1End = tPhase1Start + PHASE1_DURATION;
+    const tWipeStart = tPhase1End;
+    const tWipeEnd = tWipeStart + WIPE_DURATION;
+    const tPhase2Start = tWipeEnd + DWELL_DURATION;
 
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: containerRef.current,
         start: "top top",
-        end: "+=6000", // Increased slightly for the extra dwell time
+        end: () => `+=${6000 + Math.max(0, MODULE_COUNT - 5) * 800}`,
         pin: true,
-        scrub: 1, // Smooth scrub
+        scrub: 1,
         snap: {
-            // Functional snap logic to auto-complete the transition
             snapTo: (value) => {
-                const wipeStart = 5.4 / TOTAL_DURATION; // Trigger slightly before actual wipe start (90% of last item)
-                const wipeEnd = 7.0 / TOTAL_DURATION;
-                
-                // If user is inside the wipe/transition zone, snap to the end of it (Start of Phase 2 Dwell)
-                // This handles forward scroll: user hits transition -> auto scroll to end
-                if (value > wipeStart && value < wipeEnd) {
-                    return wipeEnd;
-                }
-                // Handle reverse scroll: if user is scrolling up from Phase 2 into wipe, snap back to Phase 1 end?
-                // Or just standard snapping?
-                // The request says "same in reverse".
-                // If value is decreasing and enters the wipe zone from below...
-                // This logic is simple: if in zone, snap to end. 
-                // To support bidirectional snapping, we check proximity.
-                
-                // Bidirectional Snap Logic:
-                const midPoint = (wipeStart + wipeEnd) / 2;
-                if (value > wipeStart && value < wipeEnd) {
-                    if (value > midPoint) return wipeEnd; // Closer to end -> finish wipe
-                    return wipeStart; // Closer to start -> go back to black
-                }
+                const wipeNorm0 = (tWipeStart - 0.1) / TOTAL_DURATION;
+                const wipeNorm1 = tWipeEnd / TOTAL_DURATION;
+                const midPoint = (wipeNorm0 + wipeNorm1) / 2;
 
-                return value; // Otherwise, standard scroll
+                if (value > wipeNorm0 && value < wipeNorm1) {
+                    return value > midPoint ? wipeNorm1 : wipeNorm0;
+                }
+                return value;
             },
-            duration: { min: 0.8, max: 1.2 }, // Controlled snap duration
-            delay: 0, // Instant trigger
+            duration: { min: 0.6, max: 1.0 },
+            delay: 0,
             ease: "power2.inOut"
         },
         onUpdate: (self) => {
-             // Map progress 0-1 to timeline time
-             // Total duration: 0.5 (start) + 2 (zoom) + 3 (p1) + 1.5 (wipe) + 4 (p2) = 11.0
-             const p = self.progress * 11.0;
+             const p = self.progress * TOTAL_DURATION;
 
-             // Phase Switch Logic
-             // Phase 1 ends when Wipe starts (5.5)
-             if (p < 2.45) { // Zooming
-                 if (activePhase !== 0) setActivePhase(0);
-                 if (contentVisible) setContentVisible(false);
-             } 
-             else if (p >= 2.45 && p < 5.5) { // Phase 1 Active
-                 if (activePhase !== 1) setActivePhase(1);
-                 
-                 // FIX: Ensure content remains visible if we are in this phase
-                 if (!contentVisible) setContentVisible(true);
-                 
-                 // Phase 1 Index Logic
-                 // Duration 3 units (2.5 -> 5.5)
-                 const p1Prog = (p - 2.5) / 3;
+             if (p < tPhase1Start) {
+                 if (activePhaseRef.current !== 0) setActivePhase(0);
+                 if (contentVisibleRef.current) setContentVisible(false);
+             }
+             else if (p >= tPhase1Start && p < tPhase1End) {
+                 if (activePhaseRef.current !== 1) setActivePhase(1);
+                 if (!contentVisibleRef.current) setContentVisible(true);
+
+                 const p1Prog = (p - tPhase1Start) / PHASE1_DURATION;
                  if (p1Prog < 0.33) setPhase1Index(0);
                  else if (p1Prog < 0.66) setPhase1Index(1);
                  else setPhase1Index(2);
-             } 
-             else if (p >= 5.5) { // Phase 2 Active (Starts at Wipe)
-                 if (activePhase !== 2) setActivePhase(2);
-                 
-                 // FIX: Keep content visible
-                 if (!contentVisible) setContentVisible(true);
-                 
-                 // Phase 2 Index Logic
-                 // Scroll interaction starts after Wipe (7.0) and lasts 4 units (7.0 -> 11.0)
-                 // During Wipe (5.5 -> 7.0), index stays at 0
-                 const p2Prog = Math.max(0, (p - 7.0) / 4);
-                 const idx = Math.floor(p2Prog * 5);
-                 const newIndex = Math.min(4, idx);
-                 if (newIndex !== phase2Index) {
+             }
+             else if (p >= tWipeStart) {
+                 if (activePhaseRef.current !== 2) setActivePhase(2);
+                 if (!contentVisibleRef.current) setContentVisible(true);
+
+                 const p2Prog = Math.max(0, Math.min(1, (p - tPhase2Start) / PHASE2_DURATION));
+                 const idx = Math.floor(p2Prog * MODULE_COUNT);
+                 const newIndex = Math.min(MODULE_COUNT - 1, idx);
+                 if (newIndex !== phase2IndexRef.current) {
                    setPhase2Index(newIndex);
                  }
-                 
-                 // HUD Progress
+
                  gsap.set("#hud-progress", { width: `${Math.min(100, p2Prog * 100)}%` });
              }
         }
       }
     });
 
-    // --- TIMELINE STEPS ---
-    
-    // 1. Pause / Lock (0.5s equivalent)
     tl.addLabel("start")
-      .to({}, { duration: 0.5 }); 
+      .to({}, { duration: LOCK_DURATION });
 
-    // 2. Zoom Sequence (2s)
     tl.addLabel("zoomStart")
-      .to("#ark-model-svg", { 
-          scale: 150, 
-          transformOrigin: "27.72% 90.55%", 
-          ease: "power2.inOut", 
-          duration: 2 
+      .to("#ark-model-svg", {
+          scale: 150,
+          transformOrigin: "27.72% 90.55%",
+          ease: "power2.inOut",
+          duration: ZOOM_DURATION
       }, "zoomStart")
       .to("#ark-model-svg path:not(#ark-dot)", { opacity: 0, duration: 0.5 }, "zoomStart+=0.5")
-      
-      // Fix: Target the FULL SCREEN overlay, not the one inside the max-w container
       .to("#full-screen-zoom-overlay", { opacity: 1, duration: 0.2 }, "zoomStart+=1.8")
-      
-      // 3. Immediate Reveal Trigger (Synced perfectly with zoom end)
       .to(zoomLayerRef.current, { opacity: 0, duration: 0.1 }, "zoomStart+=1.95")
-      .call(() => { setContentVisible(true); setActivePhase(1); }, [], "zoomStart+=1.95"); 
-      // Note: React state update might be slightly delayed, but opacity fade of zoom layer reveals the content behind.
-      // Content is effectively "there" waiting.
+      .call(() => { setContentVisible(true); setActivePhase(1); }, [], "zoomStart+=1.95");
 
-    // 4. Phase 1 Scroll (Just waiting for scroll scrubbing to drive state changes)
     tl.addLabel("phase1Start", "zoomStart+=2");
-    tl.to({}, { duration: 3 }); // Dwell time for 3 items (1s each approx)
+    tl.to({}, { duration: PHASE1_DURATION });
 
-    // 5. Phase 2 Wipe & Granular Exit (1.5s)
     tl.addLabel("wipeStart");
-    
-    // Wipe: White background moves up
-    tl.to(phase2ContainerRef.current, { 
-        clipPath: "inset(0% 0 0 0)", 
-        duration: 1.5, 
-        ease: "power2.inOut" 
+
+    tl.to(phase2ContainerRef.current, {
+        clipPath: "inset(0% 0 0 0)",
+        duration: WIPE_DURATION,
+        ease: "power2.inOut"
     }, "wipeStart");
 
-    // HUD Color Transition
-    // Removed #hud-title and #hud-coords from color flip so they use mix-blend-difference to invert naturally
     tl.to(["#hud-status"], { color: "#000000", duration: 0.5 }, "wipeStart+=0.2");
-    tl.to("#hud-right", { opacity: 0, duration: 0.5 }, "wipeStart"); // Hide status? Or flip color? User said "Remove purple stuff" so hiding works, or color flip. 
-    // Re-reading: "Flip their color to black... Bottom-Right: SYSTEM STATUS..." 
-    // User logic in previous code was opacity -> 0 for right side. Keeping that.
+    tl.to("#hud-right", { opacity: 0, duration: 0.5 }, "wipeStart");
 
-    // GRANULAR EXIT of Phase 1 Last Item ("CRAFT-LEVEL EXECUTION")
-    // Target specific IDs we will assign in render
     tl.to("#p1-exit-tags", { y: -50, opacity: 0, duration: 0.8, ease: "power2.in" }, "wipeStart")
       .to("#p1-exit-body", { y: -100, opacity: 0, duration: 0.8, ease: "power2.in" }, "wipeStart+=0.1")
       .to("#p1-exit-header", { y: -150, opacity: 0, duration: 0.8, ease: "power2.in" }, "wipeStart+=0.2");
 
+    tl.to({}, { duration: DWELL_DURATION });
 
-    // 6. Dwell Period (1.0s) - Locks on INTERFACE DESIGN
-    tl.to({}, { duration: 1.0 });
-
-    // 7. Phase 2 Scroll
     tl.addLabel("phase2Start");
-    tl.to({}, { duration: 4 }); // Dwell time for modules
+    tl.to({}, { duration: PHASE2_DURATION });
 
   }, { scope: containerRef });
 
 
   return (
     <section 
+      id="services"
       ref={containerRef} 
       data-theme={activePhase === 2 ? "light" : "dark"}
-      className="relative w-full h-screen bg-[#0A0A0A] overflow-hidden" 
+      className="relative w-full h-screen bg-[#0A0A0A] overflow-hidden"
+      style={{ scrollMarginTop: "120px" }}
     >
         {/* --- LAYERS (Stacked Absolute) --- */}
+
+        {/* 0. Phase 1 Background */}
+        <div className="absolute inset-0 z-0 bg-[#0A0A0A]" />
 
         {/* 1. Unified Grid */}
         <UnifiedGrid />
 
-        {/* 2. Phase 1 Layer (Black BG + Values Content) */}
+        {/* 2. Phase 1 Layer (Values Content) */}
         <div 
             ref={phase1ContainerRef}
-            className="absolute inset-0 z-10 bg-[#0A0A0A] flex items-center justify-center pointer-events-none"
+            className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none"
         >
              {/* Particles (Static/Simple) */}
              <div className="absolute inset-0 opacity-20">
@@ -431,7 +399,7 @@ export default function SystemStateController() {
                                     {/* Header */}
                                     <div id={isLastItem ? "p1-exit-header" : undefined} className="mb-6 md:mb-8 relative">
                                         <RevealLine>
-                                            <h2 className="font-sans font-bold text-3xl md:text-5xl lg:text-7xl tracking-tight text-white mix-blend-normal uppercase leading-[0.9]">
+                                            <h2 className="font-sans font-bold text-2xl md:text-4xl lg:text-5xl xl:text-6xl tracking-tight text-white mix-blend-normal uppercase leading-[0.9]">
                                                 {item.title}
                                             </h2>
                                         </RevealLine>
@@ -441,7 +409,7 @@ export default function SystemStateController() {
                                     <div id={isLastItem ? "p1-exit-body" : undefined} className="mb-8 md:mb-12 space-y-1">
                                         {item.description.map((line, i) => (
                                             <RevealLine key={i}>
-                                                <p className="font-sans text-base md:text-xl text-neutral-400 max-w-xl leading-relaxed">
+                                                <p className="font-sans text-sm md:text-lg text-neutral-400 max-w-xl leading-relaxed">
                                                     {line}
                                                 </p>
                                             </RevealLine>
@@ -481,18 +449,21 @@ export default function SystemStateController() {
              <div className="relative z-10 w-full max-w-5xl mx-auto px-6 flex flex-col justify-center h-full">
                 <div className="space-y-8">
                     {MODULES_CONTENT.map((module, i) => {
-                        const isLast = i === 4;
+                        const lastIndex = MODULES_CONTENT.length - 1;
+                        const isLast = i === lastIndex;
                         const isCurrent = (i === phase2Index && activePhase === 2) && !(isLast && lastItemVerified);
-                        const isFirstItem = i === 0;
-                        const shouldShowFirst = activePhase === 2; // Simple trigger for first item
+                        const isFirst = i === 0;
+                        // Fix for scroll back: First item now re-engages naturally but we use a distinct active state
+                        // to avoid the "Installing" loop feeling like a glitch. It should feel like "System Ready".
+                        const numberLabel = String(i + 1).padStart(2, "0");
 
                         return (
                             <div 
                                 key={i}
-                                className="flex items-center justify-between pb-4 transition-all duration-800 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                                className="flex flex-col md:flex-row md:items-center justify-between pb-4 transition-all duration-800 ease-[cubic-bezier(0.16,1,0.3,1)] gap-2 md:gap-0"
                             >
-                                <div className="flex items-center gap-6">
-                                    <span className={`font-mono text-xs w-8 transition-colors duration-800 ${isCurrent ? 'text-black' : 'text-[#E5E5E5]'}`}>0{i + 1}</span>
+                                <div className="flex items-center gap-4 md:gap-6">
+                                    <span className={`font-mono text-[10px] md:text-xs w-6 md:w-8 transition-colors duration-800 ${isCurrent ? 'text-black' : 'text-[#E5E5E5]'}`}>{numberLabel}</span>
                                     <div className="flex items-center gap-4 relative">
                                         <AnimatePresence>
                                             {isCurrent && (
@@ -501,37 +472,27 @@ export default function SystemStateController() {
                                                         initial={{ opacity: 0, x: 10 }}
                                                         animate={{ opacity: 1, x: -16 }}
                                                         exit={{ opacity: 0, x: 10 }}
-                                                        className="absolute -left-2 top-0 bottom-0 w-[2px] bg-black"
+                                                        className="absolute -left-2 top-0 bottom-0 w-[2px] bg-black hidden md:block"
                                                     />
                                                     <motion.div 
                                                         initial={{ opacity: 0, x: -10 }}
                                                         animate={{ opacity: 1, x: 16 }}
                                                         exit={{ opacity: 0, x: -10 }}
-                                                        className="absolute -right-2 top-0 bottom-0 w-[2px] bg-black"
+                                                        className="absolute -right-2 top-0 bottom-0 w-[2px] bg-black hidden md:block"
                                                     />
                                                 </>
                                             )}
                                         </AnimatePresence>
 
-                                        {isFirstItem ? (
-                                            <GSAPMaskedReveal isActive={shouldShowFirst}>
-                                                <RevealLine>
-                                                    <h3 className={`font-sans font-bold text-2xl md:text-5xl tracking-tight uppercase transition-colors duration-800 ease-[cubic-bezier(0.16,1,0.3,1)] ${isCurrent ? 'text-black' : 'text-[#E5E5E5]'}`}>
-                                                        {module.title}
-                                                    </h3>
-                                                </RevealLine>
-                                            </GSAPMaskedReveal>
-                                        ) : (
-                                            <h3 className={`font-sans font-bold text-2xl md:text-5xl tracking-tight uppercase transition-colors duration-800 ease-[cubic-bezier(0.16,1,0.3,1)] ${isCurrent ? 'text-black' : 'text-[#E5E5E5]'}`}>
-                                                {module.title}
-                                            </h3>
-                                        )}
+                                        <h3 className={`font-sans font-bold text-lg md:text-3xl lg:text-4xl xl:text-5xl tracking-tight uppercase transition-colors duration-800 ease-[cubic-bezier(0.16,1,0.3,1)] ${isCurrent ? 'text-black' : 'text-[#E5E5E5]'}`}>
+                                            {module.title}
+                                        </h3>
                                     </div>
                                 </div>
-                                <div className={`font-mono text-xs tracking-widest min-w-[140px] text-right transition-colors duration-800 ${isCurrent ? 'text-black' : (i < phase2Index || (isLast && lastItemVerified) ? 'text-[#3BD58B]' : 'text-[#E5E5E5]')}`}>
+                                <div className={`font-mono text-[10px] md:text-xs tracking-widest min-w-[100px] md:min-w-[140px] text-left md:text-right transition-colors duration-800 pl-10 md:pl-0 ${isCurrent ? 'text-black' : (i < phase2Index || (isLast && lastItemVerified) || (isFirst && isCurrent) ? 'text-[#3BD58B]' : 'text-[#E5E5E5]')}`}>
                                     {isCurrent ? 
-                                        <span>[ <ScrambleText text="INSTALLING..." isActive={true} /> ]</span> : 
-                                        (i < phase2Index || (isLast && lastItemVerified)) ? `[ VERIFIED ]` : `[ QUEUED ]`
+                                        <span>[ <ScrambleText text={isFirst ? "SYSTEM ACTIVE" : "INSTALLING..."} isActive={true} /> ]</span> : 
+                                        (i < phase2Index || (isLast && lastItemVerified) || (isFirst && isCurrent)) ? `[ VERIFIED ]` : `[ QUEUED ]`
                                     }
                                 </div>
                             </div>

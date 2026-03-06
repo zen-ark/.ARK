@@ -92,6 +92,10 @@ const clamp = (value: number, min: number, max: number) =>
 const lerp = (start: number, end: number, t: number) =>
   start + (end - start) * t;
 
+function getScrollY(): number {
+  return document.documentElement.scrollTop || window.pageYOffset || 0
+}
+
 function useBreakpoint() {
   const [breakpoint, setBreakpoint] = useState<"mobile" | "tablet" | "desktop">("desktop");
   useEffect(() => {
@@ -129,58 +133,68 @@ function usePrefersReducedMotion() {
 // ----------------------------------------------------------------------
 
 function useImageSequence(frameCount: number) {
-  const [isReady, setIsReady] = useState(false); // Ready to show (first batch loaded)
-  const [isFullyLoaded, setIsFullyLoaded] = useState(false); // All frames loaded
-  const blobsRef = useRef<string[]>([]); // ObjectURLs
-  const imagesRef = useRef<Map<number, HTMLImageElement>>(new Map()); // Cache
+  const [isReady, setIsReady] = useState(false);
+  const [isFullyLoaded, setIsFullyLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const blobsRef = useRef<string[]>([]);
+  const imagesRef = useRef<Map<number, HTMLImageElement>>(new Map());
   const loadProgressRef = useRef(0);
+  const failCountRef = useRef(0);
 
   useEffect(() => {
     let active = true;
-    // Load in batches to prevent network/main thread saturation
-    const BATCH_SIZE = 20; 
-    
+    const BATCH_SIZE = 20;
+    failCountRef.current = 0;
+
     const loadBatch = async (startIndex: number) => {
       if (!active) return;
-      
+
       const endIndex = Math.min(startIndex + BATCH_SIZE, frameCount);
       const promises = [];
 
       for (let i = startIndex; i < endIndex; i++) {
-        // Skip if already loaded (safety check)
         if (blobsRef.current[i]) continue;
 
         const id = (i + 1).toString().padStart(4, "0");
         const url = `/no bg webp sequence/no bg${id}.webp`;
-        
+
         const p = fetch(url)
-          .then(res => res.blob())
-          .then(blob => {
-             if (!active) return;
-             blobsRef.current[i] = URL.createObjectURL(blob);
+          .then((res) => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.blob();
           })
-          .catch(e => console.error(`Failed to load frame ${i}`, e));
-          
+          .then((blob) => {
+            if (!active) return;
+            blobsRef.current[i] = URL.createObjectURL(blob);
+          })
+          .catch(() => {
+            failCountRef.current++;
+          });
+
         promises.push(p);
       }
 
       await Promise.all(promises);
-
       if (!active) return;
 
       loadProgressRef.current = endIndex / frameCount;
 
-      // If this was the first batch, mark as ready
       if (startIndex === 0) {
-        setIsReady(true);
+        const batchLoaded = endIndex - failCountRef.current;
+        if (batchLoaded > 0) {
+          setIsReady(true);
+        } else {
+          setHasError(true);
+          return;
+        }
       }
 
-      // Check if we need to load more
       if (endIndex < frameCount) {
-        // Schedule next batch with a small delay to yield to main thread
-        // This is crucial for keeping the UI responsive during load
         setTimeout(() => loadBatch(endIndex), 50);
       } else {
+        if (failCountRef.current >= frameCount) {
+          setHasError(true);
+        }
         setIsFullyLoaded(true);
       }
     };
@@ -189,7 +203,6 @@ function useImageSequence(frameCount: number) {
 
     return () => {
       active = false;
-      // Cleanup ObjectURLs
       blobsRef.current.forEach((url) => {
         if (url) URL.revokeObjectURL(url);
       });
@@ -199,21 +212,13 @@ function useImageSequence(frameCount: number) {
   const getFrame = (index: number) => {
     if (!blobsRef.current[index]) return null;
 
-    // Simple cache strategy for now:
-    // If we have an image object, return it.
-    // Otherwise create one.
-    // In a real LRU we would limit size, but browser cache handles blobs well.
-    // We mainly need the Image object to draw to canvas.
-    
     let img = imagesRef.current.get(index);
     if (!img) {
       img = new Image();
       img.src = blobsRef.current[index];
       imagesRef.current.set(index, img);
-      
-      // Basic cleanup if map gets too big (simple LRU approximation)
-      if (imagesRef.current.size > 100) { // Increased cache size slightly
-        // Delete the oldest entry (first key)
+
+      if (imagesRef.current.size > 100) {
         const firstKey = imagesRef.current.keys().next().value;
         if (firstKey !== undefined) imagesRef.current.delete(firstKey);
       }
@@ -221,7 +226,7 @@ function useImageSequence(frameCount: number) {
     return img;
   };
 
-  return { isReady, isFullyLoaded, getFrame, progress: loadProgressRef.current };
+  return { isReady, isFullyLoaded, hasError, getFrame, progress: loadProgressRef.current };
 }
 
 export default function WhatArkDoes() {
@@ -230,7 +235,7 @@ export default function WhatArkDoes() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const progressListenersRef = useRef(new Set<(value: number) => void>());
   
-  const { isReady, isFullyLoaded, getFrame } = useImageSequence(FRAME_COUNT);
+  const { isReady, isFullyLoaded, hasError, getFrame } = useImageSequence(FRAME_COUNT);
 
   // Calculate header height for padding
   useEffect(() => {
@@ -379,11 +384,10 @@ export default function WhatArkDoes() {
 
     const updateTargetFromScroll = () => {
       const { start, end } = boundsRef;
-      // Safety check
       if (end <= start) {
         targetProgressRef.current = 0;
       } else {
-        const raw = (window.scrollY - start) / (end - start);
+        const raw = (getScrollY() - start) / (end - start);
         targetProgressRef.current = Math.max(0, Math.min(1, raw));
       }
 
@@ -398,9 +402,8 @@ export default function WhatArkDoes() {
     const updateBounds = () => {
       if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
-      // Calculate absolute position
-      const start = window.scrollY + rect.top;
-      // Scroll distance is container height minus viewport height
+      const scrollY = getScrollY();
+      const start = scrollY + rect.top;
       const end = start + rect.height - window.innerHeight;
       boundsRef.start = start;
       boundsRef.end = end;
@@ -408,10 +411,15 @@ export default function WhatArkDoes() {
     };
 
     updateBounds();
+    // Deferred recompute to catch layout shifts after hydration
+    const deferredId = requestAnimationFrame(() => {
+      setTimeout(updateBounds, 200);
+    });
     window.addEventListener("resize", updateBounds);
     window.addEventListener("scroll", updateTargetFromScroll, { passive: true });
 
     return () => {
+      cancelAnimationFrame(deferredId);
       window.removeEventListener("resize", updateBounds);
       window.removeEventListener("scroll", updateTargetFromScroll);
       if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
@@ -477,9 +485,14 @@ export default function WhatArkDoes() {
               style={{ display: 'block' }}
             />
             
-            {!isReady && (
+            {!isReady && !hasError && (
                <div className="absolute inset-0 flex items-center justify-center bg-white z-10">
                   <span className="text-sm font-mono opacity-50">LOADING ASSETS...</span>
+               </div>
+            )}
+            {hasError && (
+               <div className="absolute inset-0 flex items-center justify-center bg-white z-10">
+                  <span className="text-sm font-mono opacity-40">SEQUENCE UNAVAILABLE</span>
                </div>
             )}
 
@@ -672,10 +685,10 @@ function OptimizedMetadataNode({
         }}
       >
         <div
-          className="rounded-lg overflow-hidden p-2 sm:p-3 w-36 sm:w-48 md:w-56 bg-white/85 backdrop-blur-sm"
+          className="rounded-lg overflow-hidden p-1.5 sm:p-2 md:p-3 w-28 sm:w-36 md:w-48 lg:w-56 bg-white/85 backdrop-blur-sm"
           style={{ border: `1px solid ${lineColor}` }}
         >
-          <div className="relative h-20 sm:h-24 w-full rounded-md overflow-hidden mb-3 bg-gray-100 border border-black/5">
+          <div className="relative h-14 sm:h-[4.5rem] md:h-24 w-full rounded-md overflow-hidden mb-1.5 sm:mb-2 md:mb-3 bg-gray-100 border border-black/5">
             <img
               src={data.imageSrc}
               alt=""
@@ -686,8 +699,8 @@ function OptimizedMetadataNode({
             <div className="absolute inset-0 bg-black/5 pointer-events-none" />
           </div>
 
-          <div className="font-mono text-[10px] md:text-xs leading-tight text-black space-y-1">
-            <div className="font-medium opacity-100 mb-2 tracking-wide">{data.label}</div>
+          <div className="font-mono text-[9px] sm:text-[10px] md:text-xs leading-tight text-black space-y-0.5 sm:space-y-1">
+            <div className="font-medium opacity-100 mb-1 sm:mb-2 tracking-wide">{data.label}</div>
             <div className="flex justify-between opacity-60">
               <span>MODE</span>
               <span>{data.mode.split(": ")[1] || "N/A"}</span>

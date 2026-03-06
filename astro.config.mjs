@@ -7,6 +7,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   site: "https://ark-studio.ch",
+  trailingSlash: "never",
   integrations: [
     react(),
     mdx(),
@@ -18,6 +19,7 @@ export default defineConfig({
           de: "de",
         },
       },
+      filter: (page) => !page.includes("/placeholder-"),
     }),
   ],
   vite: {

@@ -2,6 +2,7 @@
 import Base from "@/layouts/Base.astro";
 import Hero from "@/components/Hero";
 import WhatArkDoes from "@/components/WhatArkDoes";
+import ProjectIndex from "@/components/ProjectIndex";
 import ProjectsV6 from "@/components/ProjectsV6";
 import OpenNewFile from "@/components/OpenNewFile";
 import SystemStateController from "@/components/SystemStateController";
@@ -71,6 +72,9 @@ const schemas = [personSchema, serviceSchema1, serviceSchema2, serviceSchema3, f
     <WhatArkDoes client:visible />
 
     <!-- Network Registry / Validation Log (hidden for now) -->
+
+    <!-- Project Index -->
+    <ProjectIndex client:visible />
 
     <!-- Projects V6 Liquid Folder -->
     <ProjectsV6 client:visible />

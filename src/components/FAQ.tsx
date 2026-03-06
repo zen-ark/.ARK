@@ -24,11 +24,14 @@ export default function FAQ() {
 
   return (
     <section className="w-full py-24 px-6 bg-black text-[#f4f3e8] border-t border-[#404040]">
-      <div className="max-w-4xl mx-auto">
-        <h2 className="text-3xl md:text-5xl font-bold mb-16 uppercase tracking-tight font-['NB_International_Pro']">
+      {/* Title section - Full width to match WhatArkDoes layout */}
+      <div className="w-full mb-16 md:mb-24">
+        <h1 className="text-5xl md:text-7xl lg:text-[7vw] leading-[0.9] font-bold uppercase tracking-tight font-['NB_International_Pro'] w-full">
           Frequently Asked <br /> Questions
-        </h2>
+        </h1>
+      </div>
 
+      <div className="max-w-4xl mx-auto">
         <div className="space-y-0 border-t border-[#404040]">
           {faqData.map((item, index) => (
             <div key={index} className="border-b border-[#404040]">

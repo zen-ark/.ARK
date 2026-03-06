@@ -14,6 +14,7 @@ const TOGGLE_CLOSE_LABEL_MS = 300;
 const DEFAULT_LINKS = [
   { href: "/", label: "Home" },
   { href: "/projects", label: "Projects" },
+  { href: "#services", label: "Services" },
   { href: "/ai-readiness", label: "AI Readiness" },
   { href: "/contact", label: "Contact" },
 ];

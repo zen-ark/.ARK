@@ -42,11 +42,70 @@ const isGerman = currentPath.startsWith("/de");
 const detectedMode = getMode(currentPath);
 const headerModeValue = headerMode || detectedMode;
 
-const plausibleDomain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN || "ark.studio.ch";
+const plausibleDomain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN || "ark-studio.ch";
 const isProd = import.meta.env.PROD;
 
-const siteUrl = import.meta.env.SITE || "https://ark.studio.ch";
+const siteUrl = import.meta.env.SITE || "https://ark-studio.ch";
 const fullUrl = canonical || new URL(currentPath, siteUrl).toString();
+
+const localizedRouteMap: Record<string, string> = {
+  "/": "/de",
+  "/about": "/de/about",
+  "/contact": "/de/contact",
+  "/portfolio": "/de/portfolio",
+  "/impressum": "/de/impressum",
+  "/privacy-policy": "/de/datenschutz",
+};
+
+function normalizePathname(pathname: string): string {
+  if (pathname === "/") return pathname;
+  return pathname.replace(/\/+$/, "");
+}
+
+function getLocaleAlternates(pathname: string): { en: string; de: string } | null {
+  const normalizedPath = normalizePathname(pathname);
+  const mappedGermanPath = localizedRouteMap[normalizedPath];
+  if (mappedGermanPath) {
+    return { en: normalizedPath, de: mappedGermanPath };
+  }
+
+  const mappedEnglishPath = Object.entries(localizedRouteMap).find(
+    ([, germanPath]) => germanPath === normalizedPath,
+  )?.[0];
+  if (mappedEnglishPath) {
+    return { en: mappedEnglishPath, de: normalizedPath };
+  }
+
+  if (normalizedPath.startsWith("/projects/")) {
+    return { en: normalizedPath, de: `/de${normalizedPath}` };
+  }
+  if (normalizedPath.startsWith("/de/projects/")) {
+    return {
+      en: normalizedPath.replace(/^\/de/, ""),
+      de: normalizedPath,
+    };
+  }
+
+  if (normalizedPath.startsWith("/portfolio/projects/")) {
+    return { en: normalizedPath, de: `/de${normalizedPath}` };
+  }
+  if (normalizedPath.startsWith("/de/portfolio/projects/")) {
+    return {
+      en: normalizedPath.replace(/^\/de/, ""),
+      de: normalizedPath,
+    };
+  }
+
+  return null;
+}
+
+const localeAlternates = getLocaleAlternates(currentPath);
+const englishAlternate = localeAlternates
+  ? new URL(localeAlternates.en, siteUrl).toString()
+  : null;
+const germanAlternate = localeAlternates
+  ? new URL(localeAlternates.de, siteUrl).toString()
+  : null;
 
 // Schema.org structured data
 const organizationSchema = buildOrganizationSchema({
@@ -85,6 +144,9 @@ const websiteSchema = buildWebSiteSchema({
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" href="/favicon.ico" />
     <link rel="canonical" href={fullUrl} />
+    {englishAlternate && <link rel="alternate" hreflang="en" href={englishAlternate} />}
+    {germanAlternate && <link rel="alternate" hreflang="de" href={germanAlternate} />}
+    {englishAlternate && <link rel="alternate" hreflang="x-default" href={englishAlternate} />}
 
     <!-- Geist Variable Font for smooth weight animation -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
