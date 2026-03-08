@@ -196,11 +196,20 @@ const projects = allProjects
       margin-top: 4rem;
     }
 
-    /* Prevent initial flash before GSAP takes over */
-    .portfolio-anim-wrapper .portfolio-intro-content,
-    .portfolio-anim-wrapper .projects-grid-content .project-item {
+    /*
+     * Pre-hide animated targets at first paint (no React wrapper dependency).
+     * Uses visibility + opacity so GSAP autoAlpha reveals them atomically.
+     */
+    .portfolio-intro-content,
+    .projects-grid-content .project-item {
+      visibility: hidden;
       opacity: 0;
       transform: translateY(30px);
+    }
+
+    .shain-logo-wrapper :global(.shain-logo .letter) {
+      visibility: hidden;
+      opacity: 0;
     }
 
     .portfolio-intro {
