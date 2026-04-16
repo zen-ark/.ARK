@@ -8,7 +8,7 @@ export type WorkItem = {
   coverAlt?: string;
   services: string[];
   client?: string;
-  year?: number;
+  year?: number | string;
   featured?: boolean;
 };
 
@@ -32,8 +32,8 @@ export async function loadWork(limit = 6): Promise<WorkItem[]> {
 
   items.sort((a, b) => {
     if ((b.featured ? 1 : 0) !== (a.featured ? 1 : 0)) return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
-    const ay = a.year ?? 0;
-    const by = b.year ?? 0;
+    const ay = typeof a.year === "number" ? a.year : parseInt(String(a.year ?? "0"), 10) || 0;
+    const by = typeof b.year === "number" ? b.year : parseInt(String(b.year ?? "0"), 10) || 0;
     return by - ay;
   });
 
