@@ -5,7 +5,6 @@ import PortfolioAnimation from "@/components/PortfolioAnimation";
 import ShainLogo from "@/components/ShainLogo";
 import SmoothScroll from "@/components/SmoothScroll";
 import LottiePlayer from "@/components/LottiePlayer";
-import RecruiterStatusStrip from "@/components/RecruiterStatusStrip.astro";
 import PreviousExperienceStrip from "@/components/PreviousExperienceStrip.astro";
 
 const allProjects = await loadProjects({ mode: "hiring" });
@@ -89,7 +88,6 @@ const sections: Array<{
           </div>
 
           <div class="portfolio-strips">
-            <RecruiterStatusStrip locale="de" />
             <PreviousExperienceStrip locale="de" />
           </div>
 
