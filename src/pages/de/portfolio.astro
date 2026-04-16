@@ -5,6 +5,8 @@ import PortfolioAnimation from "@/components/PortfolioAnimation";
 import ShainLogo from "@/components/ShainLogo";
 import SmoothScroll from "@/components/SmoothScroll";
 import LottiePlayer from "@/components/LottiePlayer";
+import RecruiterStatusStrip from "@/components/RecruiterStatusStrip.astro";
+import PreviousExperienceStrip from "@/components/PreviousExperienceStrip.astro";
 
 const allProjects = await loadProjects({ mode: "hiring" });
 // Keep DE URLs pointing at the German route tree without touching the
@@ -84,6 +86,11 @@ const sections: Array<{
                 >
               </h1>
             </div>
+          </div>
+
+          <div class="portfolio-strips">
+            <RecruiterStatusStrip locale="de" />
+            <PreviousExperienceStrip locale="de" />
           </div>
 
           <div class="projects-sections projects-grid-content">
@@ -265,6 +272,23 @@ const sections: Array<{
       z-index: 10;
       background-color: #111;
       margin-top: 4rem;
+    }
+
+    .portfolio-strips {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding: 0 16px 1.5rem 16px;
+      background-color: #111;
+      position: relative;
+      z-index: 10;
+    }
+
+    @media (min-width: 768px) {
+      .portfolio-strips {
+        padding: 0 16px 2rem 16px;
+        gap: 1rem;
+      }
     }
 
     /*

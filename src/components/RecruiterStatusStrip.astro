@@ -1,0 +1,156 @@
+---
+interface Props {
+  locale?: "en" | "de";
+}
+
+const { locale = "en" } = Astro.props;
+
+const copy = {
+  en: {
+    location: "Thun / Bern, CH",
+    availability: "Open to full-time · freelance",
+    languages: "DE · EN · ES",
+    cv: "Download CV",
+    cvAria: "Download Shain's CV as PDF",
+  },
+  de: {
+    location: "Thun / Bern, CH",
+    availability: "Offen für Festanstellung · Freelance",
+    languages: "DE · EN · ES",
+    cv: "CV herunterladen",
+    cvAria: "CV von Shain als PDF herunterladen",
+  },
+}[locale];
+---
+
+<aside class="recruiter-status" aria-label={locale === "de" ? "Status" : "Status"}>
+  <ul class="recruiter-status-list">
+    <li class="recruiter-status-item">
+      <span class="recruiter-status-dot" aria-hidden="true"></span>
+      <span>{copy.location}</span>
+    </li>
+    <li class="recruiter-status-item">
+      <span>{copy.availability}</span>
+    </li>
+    <li class="recruiter-status-item">
+      <span>{copy.languages}</span>
+    </li>
+  </ul>
+
+  <a
+    class="recruiter-status-cv"
+    href="/cv.pdf"
+    download="Shain_Gerstner_CV.pdf"
+    aria-label={copy.cvAria}
+  >
+    <span>{copy.cv}</span>
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+      <polyline points="7 10 12 15 17 10"></polyline>
+      <line x1="12" x2="12" y1="15" y2="3"></line>
+    </svg>
+  </a>
+</aside>
+
+<style>
+  .recruiter-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.02);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.8125rem;
+    font-family: "JetBrains Mono", monospace;
+    letter-spacing: 0.02em;
+  }
+
+  .recruiter-status-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .recruiter-status-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+  }
+
+  .recruiter-status-dot {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background: #c7ff55;
+    box-shadow: 0 0 0 4px rgba(199, 255, 85, 0.12);
+    flex-shrink: 0;
+  }
+
+  .recruiter-status-cv {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition:
+      background 180ms ease,
+      border-color 180ms ease,
+      transform 180ms ease;
+  }
+
+  .recruiter-status-cv:hover,
+  .recruiter-status-cv:focus-visible {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.32);
+  }
+
+  .recruiter-status-cv:focus-visible {
+    outline: 2px solid #c7ff55;
+    outline-offset: 3px;
+  }
+
+  .recruiter-status-cv svg {
+    flex-shrink: 0;
+    transition: transform 200ms ease;
+  }
+
+  .recruiter-status-cv:hover svg {
+    transform: translateY(1px);
+  }
+
+  @media (max-width: 600px) {
+    .recruiter-status {
+      border-radius: 1.25rem;
+      padding: 0.8rem 1rem;
+      gap: 0.75rem;
+    }
+
+    .recruiter-status-cv {
+      margin-left: auto;
+    }
+  }
+</style>

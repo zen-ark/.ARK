@@ -1,0 +1,82 @@
+---
+interface Props {
+  locale?: "en" | "de";
+}
+
+const { locale = "en" } = Astro.props;
+
+const label = locale === "de" ? "Zuvor bei" : "Previously at";
+const employers = ["Swisscom", "Cleverclip", "Comvation", "Maxomedia"];
+---
+
+<aside class="previously-strip" aria-label={label}>
+  <span class="previously-strip-label">{label}</span>
+  <ul class="previously-strip-list">
+    {
+      employers.map((name) => (
+        <li class="previously-strip-item">{name}</li>
+      ))
+    }
+  </ul>
+</aside>
+
+<style>
+  .previously-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    padding: 0.9rem 1rem;
+    color: rgba(255, 255, 255, 0.55);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .previously-strip-label {
+    color: rgba(255, 255, 255, 0.45);
+    white-space: nowrap;
+  }
+
+  .previously-strip-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .previously-strip-item {
+    color: rgba(255, 255, 255, 0.78);
+    letter-spacing: 0.04em;
+    text-transform: none;
+    font-size: 0.8125rem;
+  }
+
+  .previously-strip-item + .previously-strip-item {
+    position: relative;
+    padding-left: 1.25rem;
+  }
+
+  .previously-strip-item + .previously-strip-item::before {
+    content: "·";
+    position: absolute;
+    left: 0;
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  @media (max-width: 600px) {
+    .previously-strip {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .previously-strip-item + .previously-strip-item {
+      padding-left: 1.25rem;
+    }
+  }
+</style>
