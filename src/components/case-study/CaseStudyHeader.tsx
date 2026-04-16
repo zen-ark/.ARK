@@ -45,6 +45,7 @@ export default function CaseStudyHeader({
                 loop
                 muted
                 playsInline
+                preload="metadata"
                 className="w-full h-full object-cover opacity-60"
               />
             ) : (
