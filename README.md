@@ -354,7 +354,7 @@ pnpm build
 
 For questions or issues:
 
-- Email: hello@ark.studio.ch
+- Email: hello@ark-studio.ch
 - Check Astro docs: https://docs.astro.build
 - Check React docs: https://react.dev
 - Check Tailwind docs: https://tailwindcss.com

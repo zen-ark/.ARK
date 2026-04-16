@@ -19,7 +19,7 @@ const DEFAULT_LINKS = [
   { href: "/contact", label: "Contact" },
 ];
 
-const DEFAULT_TALK_HREF = "mailto:hello@ark.studio.ch";
+const DEFAULT_TALK_HREF = "mailto:hello@ark-studio.ch";
 const DEFAULT_LOGO_LINES = ["ark", "studio", "ch"];
 
 interface Link {
