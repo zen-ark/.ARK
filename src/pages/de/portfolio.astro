@@ -1,44 +1,56 @@
 ---
 import Base from "@/layouts/Base.astro";
-import { getCollection } from "astro:content";
+import { loadProjects, type ProjectListItem } from "@/lib/projects";
 import PortfolioAnimation from "@/components/PortfolioAnimation";
 import ShainLogo from "@/components/ShainLogo";
 import SmoothScroll from "@/components/SmoothScroll";
 import LottiePlayer from "@/components/LottiePlayer";
-import RevealOnScroll from "@/components/RevealOnScroll";
 
-const allProjects = await getCollection("projects");
-const projects = allProjects
-  .filter((p) => p.data.showInPortfolio === true)
-  .map((p) => ({
-    slug: p.slug,
-    url: `/de/projects/${p.slug}`,
-    title: p.data.title,
-    cover: p.data.cover,
-    coverAlt: p.data.coverAlt ?? p.data.title,
-    year: p.data.year,
-    featured: p.data.featured,
-    orderHiring: p.data.orderHiring,
-    workInProgress: p.data.workInProgress,
-  }))
-  .sort((a, b) => {
-    // Sort by orderHiring if available (ascending: 1, 2, 3...)
-    if (a.orderHiring !== undefined && b.orderHiring !== undefined) {
-      return a.orderHiring - b.orderHiring;
-    }
-    // If one has order and other doesn't, put the one with order first
-    if (a.orderHiring !== undefined) return -1;
-    if (b.orderHiring !== undefined) return 1;
+const allProjects = await loadProjects({ mode: "hiring" });
+// Keep DE URLs pointing at the German route tree without touching the
+// slugs or breaking inbound links.
+const projects: ProjectListItem[] = allProjects.map((p) => ({
+  ...p,
+  url: `/de/projects/${p.slug}`,
+}));
 
-    // Fallback to default sort
-    const yearA = a.year ?? 0;
-    const yearB = b.year ?? 0;
-    if (yearA !== yearB) return yearB - yearA;
-    const featuredA = a.featured ? 1 : 0;
-    const featuredB = b.featured ? 1 : 0;
-    if (featuredA !== featuredB) return featuredB - featuredA;
-    return 0;
-  });
+const selectedWork: ProjectListItem[] = projects.filter((p) => p.category === "selected");
+const explorations: ProjectListItem[] = projects.filter((p) => p.category === "explorations");
+const workInProgress: ProjectListItem[] = projects.filter(
+  (p) => p.category === "wip" || p.workInProgress
+);
+
+const sections: Array<{
+  id: string;
+  eyebrow: string;
+  heading: string;
+  description?: string;
+  items: ProjectListItem[];
+}> = [
+  {
+    id: "work",
+    eyebrow: "01 — Kundenarbeit",
+    heading: "Ausgewählte Arbeiten",
+    description:
+      "Mandate, in denen UX-Strategie, visuelle Führung und Dev-Übergabe termingerecht in Produktion gegangen sind.",
+    items: selectedWork,
+  },
+  {
+    id: "explorations",
+    eyebrow: "02 — Studio & R&D",
+    heading: "Explorationen",
+    description:
+      "Eigenständige Arbeiten: das .ARK Studio-System und ein 8-jähriges 3D-Archiv. Hier werden neue Ideen erprobt, bevor sie in Kundenprojekte einfliessen.",
+    items: explorations,
+  },
+  {
+    id: "wip",
+    eyebrow: "03 — In Arbeit",
+    heading: "Work in Progress",
+    description: "Aktuell im Aufbau — bald mehr zu sehen.",
+    items: workInProgress,
+  },
+].filter((section) => section.items.length > 0);
 ---
 
 <Base
@@ -74,75 +86,117 @@ const projects = allProjects
             </div>
           </div>
 
-          <div id="work" class="projects-grid projects-grid-content">
+          <div class="projects-sections projects-grid-content">
             {
-              projects.map((project, index) => {
-                // Uniform 50/50 Layout
-                // All items take up half the grid (6/12 columns)
-                let gridClass = "span-6";
+              sections.map((section, sectionIndex) => (
+                <section
+                  id={section.id}
+                  class={`projects-section projects-section--${section.id}`}
+                  aria-labelledby={`section-${section.id}-heading`}
+                >
+                  <header class="projects-section-header">
+                    <span class="projects-section-eyebrow">{section.eyebrow}</span>
+                    <h2 id={`section-${section.id}-heading`} class="projects-section-heading">
+                      {section.heading}
+                    </h2>
+                    {section.description && (
+                      <p class="projects-section-description">{section.description}</p>
+                    )}
+                  </header>
 
-                const isPriority = index < 3;
-                const isLottie = project.cover.endsWith(".json");
-                const isVideo = project.cover.match(/\.(mp4|webm|mov)$/i);
-                // Identifying projects that need background color patching
-                const needsDarkBg =
-                  project.slug === "trauffer" || project.slug === "movieworld-spiez";
-                const isWIP = project.workInProgress;
+                  <div class="projects-grid">
+                    {section.items.map((project, itemIndex) => {
+                      const globalIndex = sectionIndex * 10 + itemIndex;
+                      const gridClass = "span-6";
+                      const isPriority = sectionIndex === 0 && itemIndex < 2;
+                      const isLottie = project.cover.endsWith(".json");
+                      const isVideo = project.cover.match(/\.(mp4|webm|mov)$/i);
+                      const needsDarkBg =
+                        project.slug === "trauffer" || project.slug === "movieworld-spiez";
+                      const isWIP = project.workInProgress || project.category === "wip";
 
-                const content = (
-                  <>
-                    <div class="project-image-container relative">
-                      {isWIP && <div class="wip-banner">Work in Progress</div>}
-                      {isLottie ? (
-                        <LottiePlayer
-                          src={project.cover.replace(/ /g, "%20")}
-                          className="project-image"
-                          loop={true}
-                          client:visible
-                          backgroundColor={needsDarkBg ? "#111111" : undefined}
-                          isFirst={index === 0}
-                        />
-                      ) : isVideo ? (
-                        <video
-                          src={project.cover.replace(/ /g, "%20")}
-                          class={`project-image ${isWIP ? "opacity-50" : ""}`}
-                          muted
-                          loop
-                          playsinline
-                          preload={isPriority ? "auto" : "metadata"}
-                        />
-                      ) : (
-                        <img
-                          src={project.cover.replace(/ /g, "%20")}
-                          alt={project.coverAlt}
-                          class={`project-image ${isWIP ? "opacity-50" : ""}`}
-                          loading={isPriority ? "eager" : "lazy"}
-                          fetchpriority={isPriority ? "high" : "auto"}
-                        />
-                      )}
-                      {!isWIP && <div class="image-overlay" />}
-                    </div>
-                    <div class="project-info">
-                      <span class="project-title">{project.title}</span>
-                      <span class="project-date">{project.year}</span>
-                    </div>
-                  </>
-                );
+                      const metaTokens = [project.role, project.context, project.year]
+                        .filter(Boolean)
+                        .map((t) => String(t));
 
-                return (
-                  <div class={`project-item ${gridClass}`}>
-                    <div class="project-item-content">
-                      {isWIP ? (
-                        <div class="project-card-link cursor-default">{content}</div>
-                      ) : (
-                        <a href={project.url} class="project-card-link">
-                          {content}
-                        </a>
-                      )}
-                    </div>
+                      const content = (
+                        <>
+                          <div class="project-image-container relative">
+                            {isWIP && <div class="wip-banner">Work in Progress</div>}
+                            {isLottie ? (
+                              <LottiePlayer
+                                src={project.cover.replace(/ /g, "%20")}
+                                className="project-image"
+                                loop={true}
+                                client:visible
+                                backgroundColor={needsDarkBg ? "#111111" : undefined}
+                                isFirst={globalIndex === 0}
+                              />
+                            ) : isVideo ? (
+                              <video
+                                src={project.cover.replace(/ /g, "%20")}
+                                class={`project-image ${isWIP ? "opacity-50" : ""}`}
+                                muted
+                                loop
+                                playsinline
+                                preload={isPriority ? "auto" : "metadata"}
+                              />
+                            ) : (
+                              <img
+                                src={project.cover.replace(/ /g, "%20")}
+                                alt={project.coverAlt}
+                                class={`project-image ${isWIP ? "opacity-50" : ""}`}
+                                loading={isPriority ? "eager" : "lazy"}
+                                fetchpriority={isPriority ? "high" : "auto"}
+                              />
+                            )}
+                            {!isWIP && <div class="image-overlay" />}
+                          </div>
+                          <div class="project-info">
+                            <div class="project-item-content">
+                              <div class="project-info-top">
+                                <span class="project-title">{project.title}</span>
+                                <span class="project-date">{project.year}</span>
+                              </div>
+                              {project.subtitle && (
+                                <span class="project-subtitle">{project.subtitle}</span>
+                              )}
+                              {metaTokens.length > 0 && (
+                                <span class="project-meta">{metaTokens.join(" · ")}</span>
+                              )}
+                              {project.summaryCard && (
+                                <p class="project-summary">{project.summaryCard}</p>
+                              )}
+                              {project.stack && project.stack.length > 0 && (
+                                <ul class="project-stack" aria-label="Stack">
+                                  {project.stack.slice(0, 3).map((tag) => (
+                                    <li class="project-stack-tag">{tag}</li>
+                                  ))}
+                                </ul>
+                              )}
+                            </div>
+                          </div>
+                        </>
+                      );
+
+                      return (
+                        <div
+                          class={`project-item ${gridClass}`}
+                          data-index={globalIndex}
+                        >
+                          {isWIP ? (
+                            <div class="project-card-link cursor-default">{content}</div>
+                          ) : (
+                            <a href={project.url} class="project-card-link">
+                              {content}
+                            </a>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
-                );
-              })
+                </section>
+              ))
             }
           </div>
         </div>
@@ -187,6 +241,23 @@ const projects = allProjects
       /* Will be animated by GSAP */
       position: relative;
       z-index: 1;
+    }
+
+    /* Prevent the SHAIN wordmark from bleeding off-screen on narrow
+     * viewports. Using clip keeps the layout contained without creating
+     * a new scroll container. */
+    @media (max-width: 480px) {
+      .logo-container {
+        max-width: 100vw;
+        overflow-x: clip;
+        margin-inline: auto;
+      }
+
+      .logo-container :global(.shain-logo),
+      .logo-container :global(svg) {
+        max-width: 100%;
+        height: auto;
+      }
     }
 
     .portfolio-content-wrapper {
@@ -311,16 +382,74 @@ const projects = allProjects
       }
     }
 
+    .projects-sections {
+      position: relative;
+      z-index: 10;
+      background-color: #111;
+      min-height: 100vh;
+      margin-top: -1px;
+    }
+
+    .projects-section {
+      scroll-margin-top: 96px;
+    }
+
+    .projects-section + .projects-section {
+      padding-top: 4rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .projects-section-header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 1.5rem 16px 1.5rem 16px;
+      max-width: 62ch;
+    }
+
+    .projects-section-eyebrow {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .projects-section-heading {
+      font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
+      font-weight: 500;
+      line-height: 1.1;
+      margin: 0;
+      color: #fff;
+    }
+
+    .projects-section-description {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.65);
+    }
+
+    @media (min-width: 768px) {
+      .projects-section-header {
+        padding: 2rem 16px 2rem 16px;
+      }
+    }
+
     .projects-grid {
       display: grid;
       grid-template-columns: 1fr;
       gap: var(--space-4);
-      padding: 0 16px 2rem 16px; /* Reduced bottom padding */
+      padding: 0 16px 3rem 16px;
       position: relative;
       z-index: 10;
-      background-color: #111; /* Cover the parallax logo */
-      min-height: 100vh; /* Ensure it covers even if few projects */
-      margin-top: -1px; /* Ensure overlap */
+      background-color: #111;
+      margin-top: -1px;
+    }
+
+    .projects-section--wip .projects-grid {
+      padding-bottom: 2rem;
     }
 
     @media (min-width: 768px) {
@@ -328,7 +457,7 @@ const projects = allProjects
         grid-template-columns: repeat(12, 1fr);
         column-gap: 2rem;
         row-gap: 4rem;
-        padding: 0 16px 2rem 16px;
+        padding: 0 16px 4rem 16px;
       }
 
       .span-6 {
@@ -348,22 +477,7 @@ const projects = allProjects
         aspect-ratio: 16/9;
       }
 
-      /* Vertical Offset for every second item (Right Column) - APPLIED TO INNER CONTENT */
-      /* Note: We target the inner content div because the outer div is now a React component wrapper */
-      /* But wait, in Astro, the React component renders a div with the class we passed. */
-      /* So .project-item:nth-child(even) should still work if RevealOnScroll renders a div with that class. */
-      /* However, RevealOnScroll is a sibling in the grid now. */
-
-      /* Let's double check the CSS selector. */
-      /* The projects-grid contains RevealOnScroll elements. */
-      /* RevealOnScroll renders a motion.div with className="project-item span-6" */
-      /* So :nth-child(even) on .project-item should work if we target .project-item directly or use child selector on grid */
-
-      /* The CSS below targets .project-item:nth-child(even) .project-item-content */
-      /* This assumes .project-item is the direct child of the grid. */
-      /* Since RevealOnScroll renders the div with .project-item class, this is correct. */
-
-      .project-item:nth-child(even) .project-item-content {
+      .projects-grid .project-item:nth-child(even) .project-item-content {
         margin-top: 10vh;
       }
     }
@@ -454,21 +568,74 @@ const projects = allProjects
 
     .project-info {
       display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.4rem;
       font-size: 0.875rem;
       font-weight: 400;
       color: #fff;
-      padding-top: 0.25rem;
+      padding-top: 0.5rem;
+    }
+
+    .project-info-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
     }
 
     .project-title {
       text-align: left;
+      font-weight: 500;
     }
 
     .project-date {
       text-align: right;
       opacity: 0.7;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.8125rem;
+    }
+
+    .project-subtitle {
+      font-size: 0.8125rem;
+      color: rgba(255, 255, 255, 0.72);
+      letter-spacing: 0.01em;
+    }
+
+    .project-meta {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.7rem;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .project-summary {
+      margin: 0;
+      font-size: 0.875rem;
+      line-height: 1.45;
+      color: rgba(255, 255, 255, 0.68);
+      max-width: 58ch;
+    }
+
+    .project-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin: 0.15rem 0 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .project-stack-tag {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.02em;
+      padding: 0.15rem 0.55rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 9999px;
+      color: rgba(255, 255, 255, 0.75);
+      background: rgba(255, 255, 255, 0.03);
     }
   </style>
 

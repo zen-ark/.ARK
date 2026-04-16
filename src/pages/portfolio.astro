@@ -1,12 +1,50 @@
 ---
 import Base from "@/layouts/Base.astro";
-import { loadProjects } from "@/lib/projects";
+import { loadProjects, type ProjectListItem } from "@/lib/projects";
 import PortfolioAnimation from "@/components/PortfolioAnimation";
 import ShainLogo from "@/components/ShainLogo";
 import SmoothScroll from "@/components/SmoothScroll";
 import LottiePlayer from "@/components/LottiePlayer";
 
 const projects = await loadProjects({ mode: "hiring" });
+
+const selectedWork: ProjectListItem[] = projects.filter((p) => p.category === "selected");
+const explorations: ProjectListItem[] = projects.filter((p) => p.category === "explorations");
+const workInProgress: ProjectListItem[] = projects.filter(
+  (p) => p.category === "wip" || p.workInProgress
+);
+
+const sections: Array<{
+  id: string;
+  eyebrow: string;
+  heading: string;
+  description?: string;
+  items: ProjectListItem[];
+}> = [
+  {
+    id: "work",
+    eyebrow: "01 — Commercial",
+    heading: "Selected Work",
+    description:
+      "Client engagements where UX strategy, visual direction, and dev handoff landed on a production deadline.",
+    items: selectedWork,
+  },
+  {
+    id: "explorations",
+    eyebrow: "02 — Studio & R&D",
+    heading: "Explorations",
+    description:
+      "Self-directed work: the .ARK studio system and an 8-year 3D archive. Where new ideas are pressure-tested before they ship to clients.",
+    items: explorations,
+  },
+  {
+    id: "wip",
+    eyebrow: "03 — Upcoming",
+    heading: "Work in Progress",
+    description: "Currently in design — check back soon.",
+    items: workInProgress,
+  },
+].filter((section) => section.items.length > 0);
 ---
 
 <Base title="Shain — Portfolio" showFooter={true} footerMode="reveal" wrapperClass="bg-[#111]">
@@ -36,73 +74,116 @@ const projects = await loadProjects({ mode: "hiring" });
             </div>
           </div>
 
-          <div id="work" class="projects-grid projects-grid-content">
+          <div class="projects-sections projects-grid-content">
             {
-              projects.map((project, index) => {
-                // Uniform 50/50 Layout
-                // All items take up half the grid (6/12 columns)
-                let gridClass = "span-6";
-
-                const isPriority = index < 3;
-                const isLottie = project.cover.endsWith(".json");
-                const isVideo = project.cover.match(/\.(mp4|webm|mov)$/i);
-                // Identifying projects that need background color patching
-                // Note: user asked to change background color for Trauffer and Movieworld
-                const needsDarkBg =
-                  project.slug === "trauffer" || project.slug === "movieworld-spiez";
-                const isWIP = project.workInProgress;
-
-                const content = (
-                  <>
-                    <div class="project-image-container relative">
-                      {isWIP && <div class="wip-banner">Work in Progress</div>}
-                      {isLottie ? (
-                        <LottiePlayer
-                          src={project.cover.replace(/ /g, "%20")}
-                          className="project-image"
-                          loop={true}
-                          client:visible
-                          backgroundColor={needsDarkBg ? "#111111" : undefined}
-                        />
-                      ) : isVideo ? (
-                        <video
-                          src={project.cover.replace(/ /g, "%20")}
-                          class={`project-image ${isWIP ? "opacity-50" : ""}`}
-                          muted
-                          loop
-                          playsinline
-                          preload={isPriority ? "auto" : "metadata"}
-                        />
-                      ) : (
-                        <img
-                          src={project.cover.replace(/ /g, "%20")}
-                          alt={project.coverAlt}
-                          class={`project-image ${isWIP ? "opacity-50" : ""}`}
-                          loading={isPriority ? "eager" : "lazy"}
-                          fetchpriority={isPriority ? "high" : "auto"}
-                        />
-                      )}
-                      {!isWIP && <div class="image-overlay" />}
-                    </div>
-                    <div class="project-info">
-                      <span class="project-title">{project.title}</span>
-                      <span class="project-date">{project.year}</span>
-                    </div>
-                  </>
-                );
-
-                return (
-                  <div class={`project-item ${gridClass}`}>
-                    {isWIP ? (
-                      <div class="project-card-link cursor-default">{content}</div>
-                    ) : (
-                      <a href={project.url} class="project-card-link">
-                        {content}
-                      </a>
+              sections.map((section, sectionIndex) => (
+                <section
+                  id={section.id}
+                  class={`projects-section projects-section--${section.id}`}
+                  aria-labelledby={`section-${section.id}-heading`}
+                >
+                  <header class="projects-section-header">
+                    <span class="projects-section-eyebrow">{section.eyebrow}</span>
+                    <h2 id={`section-${section.id}-heading`} class="projects-section-heading">
+                      {section.heading}
+                    </h2>
+                    {section.description && (
+                      <p class="projects-section-description">{section.description}</p>
                     )}
+                  </header>
+
+                  <div class="projects-grid">
+                    {section.items.map((project, itemIndex) => {
+                      const globalIndex = sectionIndex * 10 + itemIndex;
+                      const gridClass = "span-6";
+                      // Prioritize hero load only for the first card in the
+                      // first (Selected) section to reduce mobile bandwidth.
+                      const isPriority = sectionIndex === 0 && itemIndex < 2;
+                      const isLottie = project.cover.endsWith(".json");
+                      const isVideo = project.cover.match(/\.(mp4|webm|mov)$/i);
+                      const needsDarkBg =
+                        project.slug === "trauffer" || project.slug === "movieworld-spiez";
+                      const isWIP = project.workInProgress || project.category === "wip";
+
+                      const metaTokens = [project.role, project.context, project.year]
+                        .filter(Boolean)
+                        .map((t) => String(t));
+
+                      const content = (
+                        <>
+                          <div class="project-image-container relative">
+                            {isWIP && <div class="wip-banner">Work in Progress</div>}
+                            {isLottie ? (
+                              <LottiePlayer
+                                src={project.cover.replace(/ /g, "%20")}
+                                className="project-image"
+                                loop={true}
+                                client:visible
+                                backgroundColor={needsDarkBg ? "#111111" : undefined}
+                              />
+                            ) : isVideo ? (
+                              <video
+                                src={project.cover.replace(/ /g, "%20")}
+                                class={`project-image ${isWIP ? "opacity-50" : ""}`}
+                                muted
+                                loop
+                                playsinline
+                                preload={isPriority ? "auto" : "metadata"}
+                              />
+                            ) : (
+                              <img
+                                src={project.cover.replace(/ /g, "%20")}
+                                alt={project.coverAlt}
+                                class={`project-image ${isWIP ? "opacity-50" : ""}`}
+                                loading={isPriority ? "eager" : "lazy"}
+                                fetchpriority={isPriority ? "high" : "auto"}
+                              />
+                            )}
+                            {!isWIP && <div class="image-overlay" />}
+                          </div>
+                          <div class="project-info">
+                            <div class="project-info-top">
+                              <span class="project-title">{project.title}</span>
+                              <span class="project-date">{project.year}</span>
+                            </div>
+                            {project.subtitle && (
+                              <span class="project-subtitle">{project.subtitle}</span>
+                            )}
+                            {metaTokens.length > 0 && (
+                              <span class="project-meta">{metaTokens.join(" · ")}</span>
+                            )}
+                            {project.summaryCard && (
+                              <p class="project-summary">{project.summaryCard}</p>
+                            )}
+                            {project.stack && project.stack.length > 0 && (
+                              <ul class="project-stack" aria-label="Stack">
+                                {project.stack.slice(0, 3).map((tag) => (
+                                  <li class="project-stack-tag">{tag}</li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        </>
+                      );
+
+                      return (
+                        <div
+                          class={`project-item ${gridClass}`}
+                          data-index={globalIndex}
+                        >
+                          {isWIP ? (
+                            <div class="project-card-link cursor-default">{content}</div>
+                          ) : (
+                            <a href={project.url} class="project-card-link">
+                              {content}
+                            </a>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
-                );
-              })
+                </section>
+              ))
             }
           </div>
         </div>
@@ -147,6 +228,24 @@ const projects = await loadProjects({ mode: "hiring" });
       /* Will be animated by GSAP */
       position: relative;
       z-index: 1;
+    }
+
+    /* Prevent the SHAIN wordmark from bleeding off-screen on narrow
+     * viewports where the SVG is sized by viewport units. Using clip
+     * (not hidden) avoids establishing a new scroll container while
+     * still containing the horizontal overflow. */
+    @media (max-width: 480px) {
+      .logo-container {
+        max-width: 100vw;
+        overflow-x: clip;
+        margin-inline: auto;
+      }
+
+      .logo-container :global(.shain-logo),
+      .logo-container :global(svg) {
+        max-width: 100%;
+        height: auto;
+      }
     }
 
     .portfolio-content-wrapper {
@@ -271,16 +370,74 @@ const projects = await loadProjects({ mode: "hiring" });
       }
     }
 
+    .projects-sections {
+      position: relative;
+      z-index: 10;
+      background-color: #111;
+      min-height: 100vh;
+      margin-top: -1px;
+    }
+
+    .projects-section {
+      scroll-margin-top: 96px;
+    }
+
+    .projects-section + .projects-section {
+      padding-top: 4rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .projects-section-header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 1.5rem 16px 1.5rem 16px;
+      max-width: 62ch;
+    }
+
+    .projects-section-eyebrow {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .projects-section-heading {
+      font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
+      font-weight: 500;
+      line-height: 1.1;
+      margin: 0;
+      color: #fff;
+    }
+
+    .projects-section-description {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.65);
+    }
+
+    @media (min-width: 768px) {
+      .projects-section-header {
+        padding: 2rem 16px 2rem 16px;
+      }
+    }
+
     .projects-grid {
       display: grid;
       grid-template-columns: 1fr;
       gap: var(--space-4);
-      padding: 0 16px 2rem 16px; /* Reduced bottom padding */
+      padding: 0 16px 3rem 16px;
       position: relative;
       z-index: 10;
       background-color: #111; /* Cover the parallax logo */
-      min-height: 100vh; /* Ensure it covers even if few projects */
       margin-top: -1px; /* Ensure overlap */
+    }
+
+    .projects-section--wip .projects-grid {
+      padding-bottom: 2rem;
     }
 
     @media (min-width: 768px) {
@@ -288,7 +445,7 @@ const projects = await loadProjects({ mode: "hiring" });
         grid-template-columns: repeat(12, 1fr);
         column-gap: 2rem;
         row-gap: 4rem;
-        padding: 0 16px 2rem 16px;
+        padding: 0 16px 4rem 16px;
       }
 
       .span-6 {
@@ -309,7 +466,7 @@ const projects = await loadProjects({ mode: "hiring" });
       }
 
       /* Vertical Offset for every second item (Right Column) */
-      .project-item:nth-child(even) {
+      .projects-grid .project-item:nth-child(even) {
         margin-top: 10vh;
       }
     }
@@ -400,21 +557,74 @@ const projects = await loadProjects({ mode: "hiring" });
 
     .project-info {
       display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.4rem;
       font-size: 0.875rem;
       font-weight: 400;
       color: #fff;
-      padding-top: 0.25rem;
+      padding-top: 0.5rem;
+    }
+
+    .project-info-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
     }
 
     .project-title {
       text-align: left;
+      font-weight: 500;
     }
 
     .project-date {
       text-align: right;
       opacity: 0.7;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.8125rem;
+    }
+
+    .project-subtitle {
+      font-size: 0.8125rem;
+      color: rgba(255, 255, 255, 0.72);
+      letter-spacing: 0.01em;
+    }
+
+    .project-meta {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.7rem;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .project-summary {
+      margin: 0;
+      font-size: 0.875rem;
+      line-height: 1.45;
+      color: rgba(255, 255, 255, 0.68);
+      max-width: 58ch;
+    }
+
+    .project-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin: 0.15rem 0 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .project-stack-tag {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.02em;
+      padding: 0.15rem 0.55rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 9999px;
+      color: rgba(255, 255, 255, 0.75);
+      background: rgba(255, 255, 255, 0.03);
     }
   </style>
 
