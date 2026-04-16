@@ -5,10 +5,17 @@ const projects = defineCollection({
   schema: ({ image }) =>
     z.object({
       title: z.string(),
+      subtitle: z.string().optional(),
       date: z.string(),
       year: z.union([z.number(), z.string()]).optional(),
       client: z.string().optional(),
       summary: z.string(),
+      summaryCard: z.string().optional(),
+      outcomeLine: z.string().optional(),
+      role: z.string().optional(),
+      context: z.string().optional(),
+      stack: z.array(z.string()).default([]),
+      category: z.enum(["selected", "explorations", "wip"]).optional(),
       services: z.array(z.string()).default([]),
       tags: z.array(z.string()).default([]),
       // Require explicit cover asset path for controlled art direction

@@ -1,12 +1,21 @@
 import { getCollection } from "astro:content";
 
+export type ProjectCategory = "selected" | "explorations" | "wip";
+
 export type ProjectFrontmatter = {
   title: string;
+  subtitle?: string;
   date?: string;
   year?: number;
   status?: "live" | "beta" | "archived";
   tags?: string[];
   summary?: string;
+  summaryCard?: string;
+  outcomeLine?: string;
+  role?: string;
+  context?: string;
+  stack?: string[];
+  category?: ProjectCategory;
   cover: string;
   coverAlt?: string;
   accent?: string;
@@ -21,8 +30,15 @@ export type ProjectListItem = {
   slug: string;
   url: string;
   title: string;
+  subtitle?: string;
   tags: string[];
   summary?: string;
+  summaryCard?: string;
+  outcomeLine?: string;
+  role?: string;
+  context?: string;
+  stack: string[];
+  category?: ProjectCategory;
   cover: string;
   coverAlt?: string;
   accent?: string;
@@ -60,22 +76,40 @@ export async function loadProjects({ mode = 'agency', limit }: LoadProjectsOptio
     return p.data.showInAgency !== false;
   });
 
-  const mapped: ProjectListItem[] = filtered.map((p) => ({
-    slug: p.slug,
-    url: (mode === 'portfolio' || mode === 'hiring') ? `/portfolio/projects/${p.slug}` : `/projects/${p.slug}`,
-    title: p.data.title,
-    tags: p.data.tags ?? [],
-    summary: p.data.summary,
-    cover: p.data.cover,
-    coverAlt: p.data.coverAlt ?? p.data.title,
-    accent: (p.data as any).accent,
-    status: p.data.status,
-    year: p.data.year,
-    orderHiring: p.data.orderHiring,
-    workInProgress: p.data.workInProgress,
-    // carry through featured for sorting (not in type on purpose)
-    ...(p.data.featured ? { featured: true } : {}),
-  }));
+  const mapped: ProjectListItem[] = filtered.map((p) => {
+    const data = p.data as any;
+    const workInProgress = !!data.workInProgress;
+    const explicitCategory = data.category as ProjectCategory | undefined;
+    // Infer category if not explicitly set: WIP flag wins, then slug-based heuristic.
+    const inferredCategory: ProjectCategory | undefined = workInProgress
+      ? "wip"
+      : p.slug === "ai-workflow" || p.slug === "3d-explorations"
+        ? "explorations"
+        : "selected";
+    return {
+      slug: p.slug,
+      url: (mode === 'portfolio' || mode === 'hiring') ? `/portfolio/projects/${p.slug}` : `/projects/${p.slug}`,
+      title: data.title,
+      subtitle: data.subtitle,
+      tags: data.tags ?? [],
+      summary: data.summary,
+      summaryCard: data.summaryCard,
+      outcomeLine: data.outcomeLine,
+      role: data.role,
+      context: data.context,
+      stack: data.stack ?? [],
+      category: explicitCategory ?? inferredCategory,
+      cover: data.cover,
+      coverAlt: data.coverAlt ?? data.title,
+      accent: data.accent,
+      status: data.status,
+      year: data.year,
+      orderHiring: data.orderHiring,
+      workInProgress,
+      // carry through featured for sorting (not in type on purpose)
+      ...(data.featured ? { featured: true } : {}),
+    };
+  });
 
   let sorted = mapped;
 
