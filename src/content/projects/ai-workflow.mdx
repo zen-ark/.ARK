@@ -303,6 +303,21 @@ import CaseStudyResults from "../../components/case-study/CaseStudyResults.astro
   </div>
 </div>
 
-<CaseStudyResults currentSlug="ai-workflow">
-  The journey from systemic design to technical logic and finally visual experimentation represents a complete ecosystem. What started as a school project evolved into a professional studio workflow, proving that structure and creativity are not opposing forces, but complementary engines.
-</CaseStudyResults>
+<CaseStudyResults
+  currentSlug="ai-workflow"
+  outcome="One coherent logic across three chapters — studio system, RAG-backed medical knowledge app, and an 8-year visual archive — running on a single design and token layer."
+  outcomeBullets={[
+    {
+      label: "What shipped",
+      text: "A live studio site, a working RAG medical assistant on top of a vector DB, and a curated 3D archive — all using the same tokens, type scale and motion language.",
+    },
+    {
+      label: "What improved",
+      text: "Turned 'AI-assisted' from a buzzword into a measurable workflow: structured prompts, repeatable components and a data layer that stays owned by the practice, not the model vendor.",
+    },
+    {
+      label: "What I learned",
+      text: "End-to-end ownership is the real differentiator. When design, systems thinking and engineering share one head, the pipeline stops leaking detail between roles.",
+    },
+  ]}
+/>

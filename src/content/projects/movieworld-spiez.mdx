@@ -177,21 +177,23 @@ import CaseStudyResults from "@/components/case-study/CaseStudyResults.astro";
   </div>
 </section>
 
-<CaseStudyResults currentSlug="movieworld-spiez">
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-left">
-    <div>
-      <h3 className="text-xl font-bold text-white mb-4 text-[#00FF00]">Outcome</h3>
-      <p className="text-white/90 text-2xl leading-relaxed">
-        Delivered a premium, "big-budget" feel on a lean timeline.
-      </p>
-    </div>
-    <div>
-      <h3 className="text-xl font-bold text-white mb-4 text-blue-400">Future-Proofing</h3>
-      <p className="text-white/90 text-2xl leading-relaxed">
-        The custom API structure allows for easy scaling and metadata updates.
-      </p>
-    </div>
-  </div>
-</CaseStudyResults>
+<CaseStudyResults
+  currentSlug="movieworld-spiez"
+  outcome="Replaced rigid iframe widgets with a custom React frontend on top of the legacy backend — premium, theatre-ready feel on a lean timeline."
+  outcomeBullets={[
+    {
+      label: "What shipped",
+      text: "Mobile-first headless UI with bespoke swipe interactions and a dark, cinema-appropriate surface, sitting on a custom-parsed layer over the legacy feed.",
+    },
+    {
+      label: "What improved",
+      text: "A messy legacy API became a clean, queryable internal model — so updates, filters and 'No Results' edge cases are handled in the frontend instead of fought against it.",
+    },
+    {
+      label: "What I learned",
+      text: "You don't always get to replace the backend. The leverage is in the integration layer — where a small API parser is what actually unlocks a modern UX.",
+    },
+  ]}
+/>
 
 </div>

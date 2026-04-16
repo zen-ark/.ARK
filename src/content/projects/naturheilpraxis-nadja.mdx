@@ -103,8 +103,21 @@ import CaseStudyResults from "../../components/case-study/CaseStudyResults.astro
   </div>
 </StickyScrollSection>
 
-<CaseStudyResults currentSlug="naturheilpraxis-nadja">
-  Naturheilpraxis Nadja demonstrates the power of the Designer-as-Developer model. By utilizing
-  Framer, we delivered a boutique digital presence that feels artisanal yet functions with modern
-  technical precision.
-</CaseStudyResults>
+<CaseStudyResults
+  currentSlug="naturheilpraxis-nadja"
+  outcome="A concept-to-launch sprint: discovery → design → live production for a boutique wellness brand, with a single owner across design and build."
+  outcomeBullets={[
+    {
+      label: "What shipped",
+      text: "A high-trust one-pager tuned for conversion — brand identity, content model and responsive build all delivered against one short timeline.",
+    },
+    {
+      label: "What improved",
+      text: "The designer-as-developer setup closed the handoff gap: approved prototype went live without the usual translation loss between Figma and production.",
+    },
+    {
+      label: "What I learned",
+      text: "For small, premium brands, speed and coherence beat tooling debates. Pick the stack the client can maintain, then invest the saved time in craft.",
+    },
+  ]}
+/>

@@ -29,18 +29,40 @@ const parseValue = (val: string) => {
   return { prefix, num, suffix, hasLeadingZero, isNumeric: true };
 };
 
+const formatFinalValue = (value: string) => {
+  const { prefix, num, suffix, hasLeadingZero, isNumeric } = parseValue(value);
+  if (!isNumeric) return value;
+  let formatted = Math.round(num).toString();
+  if (hasLeadingZero && Math.round(num) < 10) {
+    formatted = "0" + formatted;
+  }
+  return `${prefix}${formatted}${suffix}`;
+};
+
 const CountUp = ({ value, className, delay = 0 }: { value: string, className?: string, delay?: number }) => {
   const ref = useRef<HTMLSpanElement>(null)
-  const isInView = useInView(ref, { once: true, amount: 0.5 })
+  const isInView = useInView(ref, { once: true, amount: 0.2 })
   const motionValue = useMotionValue(0)
   const springValue = useSpring(motionValue, { stiffness: 50, damping: 20 })
-  
+
   const { prefix, num, suffix, hasLeadingZero, isNumeric } = parseValue(value);
-  const [displayValue, setDisplayValue] = useState(isNumeric ? "0" : value)
+
+  const prefersReducedMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+  const [displayValue, setDisplayValue] = useState(() =>
+    isNumeric ? (prefersReducedMotion ? formatFinalValue(value) : "0") : value
+  );
 
   useEffect(() => {
     if (!isNumeric) {
       if (displayValue !== value) setDisplayValue(value);
+      return;
+    }
+
+    if (prefersReducedMotion) {
+      setDisplayValue(formatFinalValue(value));
       return;
     }
 
@@ -50,7 +72,13 @@ const CountUp = ({ value, className, delay = 0 }: { value: string, className?: s
       }, delay * 1000);
       return () => clearTimeout(timeoutId);
     }
-  }, [isInView, num, motionValue, delay, isNumeric, value, displayValue]);
+
+    const fallbackId = setTimeout(() => {
+      motionValue.set(num);
+      setDisplayValue((prev) => (prev === "0" ? formatFinalValue(value) : prev));
+    }, 2500 + delay * 1000);
+    return () => clearTimeout(fallbackId);
+  }, [isInView, num, motionValue, delay, isNumeric, value, displayValue, prefersReducedMotion]);
 
   useEffect(() => {
     if (!isNumeric) return;

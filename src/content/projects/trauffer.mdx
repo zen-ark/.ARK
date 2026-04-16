@@ -106,11 +106,23 @@ import LeanSystem from "../../components/case-study/LeanSystem";
 
 <LeanSystem client:load />
 
-<CaseStudyResults currentSlug="trauffer">
-  The project was delivered 100% on-spec. By leading direct client meetings and eliminating feedback
-  loops, we bypassed the traditional 'agency lag.' The result is a unified digital ecosystem that
-  respects Trauffer’s 80-year history while functioning as a modern, high-conversion hospitality
-  platform.
-</CaseStudyResults>
+<CaseStudyResults
+  currentSlug="trauffer"
+  outcome="Delivered on-spec in 25 hours by leading the client directly and solving the IA for five business units before touching the UI."
+  outcomeBullets={[
+    {
+      label: "What shipped",
+      text: "A dev-ready, 42-page high-fidelity prototype unifying Shop, Hotel, Restaurants, Events and HQ under a single Information Architecture.",
+    },
+    {
+      label: "What improved",
+      text: "Cut the 'agency lag': direct stakeholder meetings replaced layered handoffs, so feedback loops closed in the same session instead of across sprints.",
+    },
+    {
+      label: "What I learned",
+      text: "On rescue engagements, IA is the real deliverable. Solve navigation and role clarity first, and the UI becomes a logical consequence rather than a decision surface.",
+    },
+  ]}
+/>
 
 </div>
