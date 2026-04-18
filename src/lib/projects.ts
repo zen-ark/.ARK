@@ -47,6 +47,8 @@ export type ProjectListItem = {
   featured?: boolean;
   orderHiring?: number;
   workInProgress?: boolean;
+  /** From frontmatter `links.demo` or `links.live` */
+  demoUrl?: string;
 };
 
 function sortProjects(a: ProjectListItem, b: ProjectListItem): number {
@@ -86,6 +88,8 @@ export async function loadProjects({ mode = 'agency', limit }: LoadProjectsOptio
       : p.slug === "ai-workflow" || p.slug === "3d-explorations"
         ? "explorations"
         : "selected";
+    const links = data.links as { demo?: string; live?: string } | undefined;
+    const demoUrl = links?.demo ?? links?.live;
     return {
       slug: p.slug,
       url: (mode === 'portfolio' || mode === 'hiring') ? `/portfolio/projects/${p.slug}` : `/projects/${p.slug}`,
@@ -106,6 +110,7 @@ export async function loadProjects({ mode = 'agency', limit }: LoadProjectsOptio
       year: data.year,
       orderHiring: data.orderHiring,
       workInProgress,
+      ...(demoUrl ? { demoUrl } : {}),
       // carry through featured for sorting (not in type on purpose)
       ...(data.featured ? { featured: true } : {}),
     };

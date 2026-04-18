@@ -64,10 +64,10 @@ const sections: Array<{
             </div>
             <div class="intro-text">
               <h1>
-                <span class="block w-full text-right"
-                  >UI/UX designer turning complexity into clean screens —</span
+                <span class="intro-line-primary block w-full"
+                  >UI/UX designer turning complexity into clean screens&nbsp;—</span
                 >
-                <span class="block w-full text-left"
+                <span class="intro-line-secondary block w-full"
                   >from concept to dev-ready handoff, with high-level 3D & motion to elevate key
                   moments without sacrificing usability.</span
                 >
@@ -114,60 +114,61 @@ const sections: Array<{
                         .filter(Boolean)
                         .map((t) => String(t));
 
-                      const content = (
+                      const mediaBlock = (
+                        <div class="project-image-container relative">
+                          {isWIP && <div class="wip-banner">Work in Progress</div>}
+                          {isLottie ? (
+                            <LottiePlayer
+                              src={project.cover.replace(/ /g, "%20")}
+                              className="project-image"
+                              loop={true}
+                              client:visible
+                              backgroundColor={needsDarkBg ? "#111111" : undefined}
+                            />
+                          ) : isVideo ? (
+                            <video
+                              src={project.cover.replace(/ /g, "%20")}
+                              class={`project-image ${isWIP ? "opacity-50" : ""}`}
+                              muted
+                              loop
+                              playsinline
+                              preload="metadata"
+                            />
+                          ) : (
+                            <img
+                              src={project.cover.replace(/ /g, "%20")}
+                              alt={project.coverAlt}
+                              class={`project-image ${isWIP ? "opacity-50" : ""}`}
+                              loading={isPriority ? "eager" : "lazy"}
+                              fetchpriority={isPriority ? "high" : "auto"}
+                            />
+                          )}
+                          {!isWIP && <div class="image-overlay" />}
+                        </div>
+                      );
+
+                      const infoFields = (
                         <>
-                          <div class="project-image-container relative">
-                            {isWIP && <div class="wip-banner">Work in Progress</div>}
-                            {isLottie ? (
-                              <LottiePlayer
-                                src={project.cover.replace(/ /g, "%20")}
-                                className="project-image"
-                                loop={true}
-                                client:visible
-                                backgroundColor={needsDarkBg ? "#111111" : undefined}
-                              />
-                            ) : isVideo ? (
-                              <video
-                                src={project.cover.replace(/ /g, "%20")}
-                                class={`project-image ${isWIP ? "opacity-50" : ""}`}
-                                muted
-                                loop
-                                playsinline
-                                preload="metadata"
-                              />
-                            ) : (
-                              <img
-                                src={project.cover.replace(/ /g, "%20")}
-                                alt={project.coverAlt}
-                                class={`project-image ${isWIP ? "opacity-50" : ""}`}
-                                loading={isPriority ? "eager" : "lazy"}
-                                fetchpriority={isPriority ? "high" : "auto"}
-                              />
-                            )}
-                            {!isWIP && <div class="image-overlay" />}
+                          <div class="project-info-top">
+                            <span class="project-title">{project.title}</span>
+                            <span class="project-date">{project.year}</span>
                           </div>
-                          <div class="project-info">
-                            <div class="project-info-top">
-                              <span class="project-title">{project.title}</span>
-                              <span class="project-date">{project.year}</span>
-                            </div>
-                            {project.subtitle && (
-                              <span class="project-subtitle">{project.subtitle}</span>
-                            )}
-                            {metaTokens.length > 0 && (
-                              <span class="project-meta">{metaTokens.join(" · ")}</span>
-                            )}
-                            {project.summaryCard && (
-                              <p class="project-summary">{project.summaryCard}</p>
-                            )}
-                            {project.stack && project.stack.length > 0 && (
-                              <ul class="project-stack" aria-label="Stack">
-                                {project.stack.slice(0, 3).map((tag) => (
-                                  <li class="project-stack-tag">{tag}</li>
-                                ))}
-                              </ul>
-                            )}
-                          </div>
+                          {project.subtitle && (
+                            <span class="project-subtitle">{project.subtitle}</span>
+                          )}
+                          {metaTokens.length > 0 && (
+                            <span class="project-meta">{metaTokens.join(" · ")}</span>
+                          )}
+                          {project.summaryCard && (
+                            <p class="project-summary">{project.summaryCard}</p>
+                          )}
+                          {project.stack && project.stack.length > 0 && (
+                            <ul class="project-stack" aria-label="Stack">
+                              {project.stack.slice(0, 3).map((tag) => (
+                                <li class="project-stack-tag">{tag}</li>
+                              ))}
+                            </ul>
+                          )}
                         </>
                       );
 
@@ -177,11 +178,21 @@ const sections: Array<{
                           data-index={globalIndex}
                         >
                           {isWIP ? (
-                            <div class="project-card-link cursor-default">{content}</div>
+                            <div class="project-card project-card--wip">
+                              <div class="project-card-media-link cursor-default">{mediaBlock}</div>
+                              <div class="project-info">{infoFields}</div>
+                            </div>
                           ) : (
-                            <a href={project.url} class="project-card-link">
-                              {content}
-                            </a>
+                            <div class="project-card">
+                              <a href={project.url} class="project-card-media-link">
+                                {mediaBlock}
+                              </a>
+                              <div class="project-info">
+                                <a href={project.url} class="project-info-link">
+                                  {infoFields}
+                                </a>
+                              </div>
+                            </div>
                           )}
                         </div>
                       );
@@ -274,7 +285,7 @@ const sections: Array<{
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
-      padding: 0 16px 1.5rem 16px;
+      padding: 0 max(32px, env(safe-area-inset-left)) 1.5rem max(32px, env(safe-area-inset-right));
       background-color: #111;
       position: relative;
       z-index: 10;
@@ -282,7 +293,7 @@ const sections: Array<{
 
     @media (min-width: 768px) {
       .portfolio-strips {
-        padding: 0 16px 2rem 16px;
+        padding: 0 max(32px, env(safe-area-inset-left)) 2rem max(32px, env(safe-area-inset-right));
         gap: 1rem;
       }
     }
@@ -292,10 +303,17 @@ const sections: Array<{
      * Uses visibility + opacity so GSAP autoAlpha reveals them atomically.
      */
     .portfolio-intro-content,
-    .projects-grid-content .project-item {
+    .projects-grid-content .project-item,
+    .projects-grid-content .projects-section-header {
       visibility: hidden;
       opacity: 0;
       transform: translateY(30px);
+    }
+
+    .portfolio-strips :global(.previously-strip) {
+      visibility: hidden;
+      opacity: 0;
+      transform: translateX(-40px);
     }
 
     .shain-logo-wrapper :global(.shain-logo .letter) {
@@ -307,8 +325,7 @@ const sections: Array<{
       display: grid;
       grid-template-columns: 1fr;
       gap: var(--space-4);
-      /* Padding 32px top, 48px bottom (increased from 16px), 16px sides */
-      padding: 32px 16px 48px 16px;
+      padding: 32px max(32px, env(safe-area-inset-left)) 48px max(32px, env(safe-area-inset-right));
       position: relative;
       background-color: #111; /* Ensure background color is set */
       z-index: 10;
@@ -324,23 +341,30 @@ const sections: Array<{
      Intro & Grid: higher z-index and have background color.
   */
 
+    /* Tablet/desktop: grid keeps “The studio” in flow so it never overlaps the headline */
     @media (min-width: 768px) {
       .portfolio-intro {
-        display: block;
-        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 11rem) minmax(0, 1fr);
+        column-gap: clamp(1rem, 2.5vw, 2rem);
+        row-gap: 0;
+        align-items: start;
       }
 
       .intro-link {
-        position: absolute;
-        top: 32px; /* Align with container top padding */
-        left: 0;
-        width: 25%;
-        /* Ensure it aligns with the padding of the container */
-        padding-left: 16px; /* Align with container side padding */
+        position: static;
+        width: auto;
+        padding-top: 0.35rem;
       }
 
       .intro-text {
         width: 100%;
+        min-width: 0;
+      }
+
+      .intro-line-primary,
+      .intro-line-secondary {
+        text-align: left;
       }
     }
 
@@ -350,7 +374,7 @@ const sections: Array<{
         display: flex;
         flex-direction: column;
         gap: var(--space-4);
-        padding: 24px 16px 32px 16px;
+        padding: 24px max(32px, env(safe-area-inset-left)) 32px max(32px, env(safe-area-inset-right));
         padding-top: max(24px, env(safe-area-inset-top));
       }
 
@@ -364,10 +388,14 @@ const sections: Array<{
         width: 100%;
       }
 
-      /* On mobile, align text left normally, no forced right/left split if it looks weird */
-      .intro-text h1 span.text-right {
+      .intro-line-primary,
+      .intro-line-secondary {
         text-align: left;
       }
+    }
+
+    .intro-link {
+      text-align: left;
     }
 
     .studio-link {
@@ -375,6 +403,7 @@ const sections: Array<{
       text-decoration: underline;
       font-size: 1.25rem;
       text-underline-offset: 4px;
+      text-align: left;
     }
 
     .studio-link:hover {
@@ -390,16 +419,10 @@ const sections: Array<{
          Equation: 19.2px + 1.5vw
       */
       font-size: clamp(1.5rem, 1.2rem + 1.5vw, 3rem);
-      line-height: 1.1;
+      line-height: 1.05;
       font-weight: 500;
       max-width: 100%;
       margin: 0;
-    }
-
-    @media (min-width: 768px) {
-      .intro-text h1 {
-        /* text-indent: 25vw; Removed as we are using block spans now */
-      }
     }
 
     .projects-sections {
@@ -422,8 +445,8 @@ const sections: Array<{
     .projects-section-header {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
-      padding: 1.5rem 16px 1.5rem 16px;
+      gap: 0.35rem;
+      padding: 1.5rem max(32px, env(safe-area-inset-left)) 1.5rem max(32px, env(safe-area-inset-right));
       max-width: 62ch;
     }
 
@@ -431,6 +454,7 @@ const sections: Array<{
       font-family: "JetBrains Mono", monospace;
       font-size: 0.75rem;
       font-weight: 400;
+      line-height: 1.2;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: rgba(255, 255, 255, 0.5);
@@ -439,7 +463,7 @@ const sections: Array<{
     .projects-section-heading {
       font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
       font-weight: 500;
-      line-height: 1.1;
+      line-height: 1.05;
       margin: 0;
       color: #fff;
     }
@@ -447,21 +471,21 @@ const sections: Array<{
     .projects-section-description {
       margin: 0;
       font-size: 0.95rem;
-      line-height: 1.5;
+      line-height: 1.35;
       color: rgba(255, 255, 255, 0.65);
     }
 
     @media (min-width: 768px) {
       .projects-section-header {
-        padding: 2rem 16px 2rem 16px;
+        padding: 2rem max(32px, env(safe-area-inset-left)) 2rem max(32px, env(safe-area-inset-right));
       }
     }
 
     .projects-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: var(--space-4);
-      padding: 0 16px 3rem 16px;
+      gap: clamp(2.75rem, 6.5vw, 3.75rem);
+      padding: 0 max(32px, env(safe-area-inset-left)) 3rem max(32px, env(safe-area-inset-right));
       position: relative;
       z-index: 10;
       background-color: #111; /* Cover the parallax logo */
@@ -476,8 +500,8 @@ const sections: Array<{
       .projects-grid {
         grid-template-columns: repeat(12, 1fr);
         column-gap: 2rem;
-        row-gap: 4rem;
-        padding: 0 16px 4rem 16px;
+        row-gap: clamp(5.25rem, 10vw, 7rem);
+        padding: 0 max(32px, env(safe-area-inset-left)) 4rem max(32px, env(safe-area-inset-right));
       }
 
       .span-6 {
@@ -504,10 +528,6 @@ const sections: Array<{
     }
 
     @media (max-width: 767px) {
-      .intro-text h1 span {
-        text-align: left !important;
-      }
-
       .span-6,
       .span-4,
       .span-3,
@@ -522,8 +542,24 @@ const sections: Array<{
       flex-direction: column;
     }
 
-    .project-card-link {
+    .project-card {
       display: block;
+    }
+
+    .project-card-media-link {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .project-card--wip .project-card-media-link {
+      cursor: default;
+    }
+
+    .project-info-link {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
       text-decoration: none;
       color: inherit;
     }
@@ -533,7 +569,7 @@ const sections: Array<{
       background-color: #111; /* Match page background to prevent flickering */
       border-radius: 0px;
       overflow: hidden;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.3rem;
       aspect-ratio: 16/9;
       transform: translateZ(0); /* Fix for Safari flickering */
     }
@@ -551,7 +587,7 @@ const sections: Array<{
       transition: opacity 0.3s ease;
     }
 
-    .project-card-link:hover .project-image {
+    .project-card:hover .project-image {
       opacity: 1;
     }
 
@@ -583,18 +619,47 @@ const sections: Array<{
       z-index: 10;
     }
 
-    .project-card-link:hover .image-overlay {
+    .project-card:hover .image-overlay {
       opacity: 0;
     }
 
     .project-info {
       display: flex;
       flex-direction: column;
-      gap: 0.4rem;
+      gap: 0;
       font-size: 0.875rem;
       font-weight: 400;
       color: #fff;
-      padding-top: 0.5rem;
+      padding-top: 0.2rem;
+    }
+
+    /* Text stack: tight title group → spec line → body → tags (not uniform gaps) */
+    .project-info-top + .project-subtitle {
+      margin-top: 0.12rem;
+    }
+
+    .project-info-top + .project-meta {
+      margin-top: 0.55rem;
+    }
+
+    .project-subtitle + .project-meta {
+      margin-top: 0.3rem;
+    }
+
+    .project-meta + .project-summary {
+      margin-top: 0.55rem;
+    }
+
+    .project-info-top + .project-summary {
+      margin-top: 0.55rem;
+    }
+
+    .project-subtitle + .project-summary {
+      margin-top: 0.55rem;
+    }
+
+    .project-summary + .project-stack {
+      margin-top: 0.75rem;
     }
 
     .project-info-top {
@@ -643,16 +708,21 @@ const sections: Array<{
       display: flex;
       flex-wrap: wrap;
       gap: 0.4rem;
-      margin: 0.15rem 0 0 0;
+      margin: 0;
       padding: 0;
       list-style: none;
     }
 
     .project-stack-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
       font-family: "JetBrains Mono", monospace;
       font-size: 0.7rem;
       letter-spacing: 0.02em;
-      padding: 0.15rem 0.55rem;
+      line-height: 1;
+      padding: 0.2rem 0.55rem;
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 9999px;
       color: rgba(255, 255, 255, 0.75);
