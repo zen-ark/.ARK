@@ -1,0 +1,59 @@
+---
+/**
+ * Desktop: play project cover video on hover (existing behavior).
+ * Touch / coarse pointer: no hover — play when the card is in view, pause when off-screen.
+ * coverPoster on video elements (from project frontmatter) fixes empty iOS previews for paused video.
+ */
+---
+
+<script is:inline>
+  function setupPortfolioVideoPreviews() {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const canFinePointerHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+    document.querySelectorAll(".project-image-container").forEach((container) => {
+      const video = container.querySelector("video");
+      if (!video) return;
+      if (container.dataset.videoPreviewBound) return;
+      container.dataset.videoPreviewBound = "true";
+
+      video.pause();
+      video.muted = true;
+
+      if (prefersReducedMotion) {
+        return;
+      }
+
+      if (canFinePointerHover) {
+        container.addEventListener("mouseenter", () => {
+          video.muted = true;
+          const p = video.play();
+          if (p !== undefined) p.catch(() => {});
+        });
+        container.addEventListener("mouseleave", () => {
+          video.pause();
+        });
+        return;
+      }
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              video.muted = true;
+              const p = video.play();
+              if (p !== undefined) p.catch(() => {});
+            } else {
+              video.pause();
+            }
+          });
+        },
+        { threshold: 0.25 },
+      );
+      io.observe(container);
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", setupPortfolioVideoPreviews);
+  document.addEventListener("astro:page-load", setupPortfolioVideoPreviews);
+</script>

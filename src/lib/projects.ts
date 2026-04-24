@@ -17,6 +17,7 @@ export type ProjectFrontmatter = {
   stack?: string[];
   category?: ProjectCategory;
   cover: string;
+  coverPoster?: string;
   coverAlt?: string;
   accent?: string;
   featured?: boolean;
@@ -40,6 +41,7 @@ export type ProjectListItem = {
   stack: string[];
   category?: ProjectCategory;
   cover: string;
+  coverPoster?: string;
   coverAlt?: string;
   accent?: string;
   status?: string;
@@ -104,6 +106,7 @@ export async function loadProjects({ mode = 'agency', limit }: LoadProjectsOptio
       stack: data.stack ?? [],
       category: explicitCategory ?? inferredCategory,
       cover: data.cover,
+      coverPoster: data.coverPoster,
       coverAlt: data.coverAlt ?? data.title,
       accent: data.accent,
       status: data.status,

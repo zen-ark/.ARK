@@ -28,8 +28,14 @@ const {
   basePath = "/projects",
 } = Astro.props;
 
-const siteUrl = import.meta.env.SITE || "https://ark.studio.ch";
-const projectUrl = new URL(`${basePath}/${slug}`, siteUrl).toString();
+const siteUrl = import.meta.env.SITE || "https://ark-studio.ch";
+const canonicalPath =
+  basePath === "/portfolio/projects"
+    ? `/projects/${slug}`
+    : basePath === "/de/portfolio/projects"
+      ? `/de/projects/${slug}`
+      : `${basePath}/${slug}`;
+const projectUrl = new URL(canonicalPath, siteUrl).toString();
 
 const articleSchema = buildArticleSchema({
   headline: title,

@@ -6,6 +6,7 @@ import ShainLogo from "@/components/ShainLogo";
 import SmoothScroll from "@/components/SmoothScroll";
 import LottiePlayer from "@/components/LottiePlayer";
 import PreviousExperienceStrip from "@/components/PreviousExperienceStrip.astro";
+import PortfolioVideoPreviewScript from "@/components/PortfolioVideoPreviewScript.astro";
 
 const allProjects = await loadProjects({ mode: "hiring" });
 // Keep DE URLs pointing at the German route tree without touching the
@@ -173,13 +174,6 @@ const sections: Array<{
                           {project.summaryCard && (
                             <p class="project-summary">{project.summaryCard}</p>
                           )}
-                          {project.stack && project.stack.length > 0 && (
-                            <ul class="project-stack" aria-label="Stack">
-                              {project.stack.slice(0, 3).map((tag) => (
-                                <li class="project-stack-tag">{tag}</li>
-                              ))}
-                            </ul>
-                          )}
                         </div>
                       );
 
@@ -217,6 +211,8 @@ const sections: Array<{
       </header>
     </PortfolioAnimation>
   </main>
+
+  <PortfolioVideoPreviewScript />
 
   <style>
     :global(body) {
@@ -660,10 +656,6 @@ const sections: Array<{
       margin-top: 0.55rem;
     }
 
-    .project-summary + .project-stack {
-      margin-top: 0.75rem;
-    }
-
     .project-info-top {
       display: flex;
       justify-content: space-between;
@@ -705,65 +697,6 @@ const sections: Array<{
       color: rgba(255, 255, 255, 0.68);
       max-width: 58ch;
     }
-
-    .project-stack {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    .project-stack-tag {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-sizing: border-box;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.02em;
-      line-height: 1;
-      padding: 0.2rem 0.55rem;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 9999px;
-      color: rgba(255, 255, 255, 0.75);
-      background: rgba(255, 255, 255, 0.03);
-    }
   </style>
 
-  <script is:inline>
-    function setupVideoHover() {
-      const containers = document.querySelectorAll(".project-image-container");
-
-      containers.forEach((container) => {
-        const video = container.querySelector("video");
-        if (video) {
-          // Check if already attached to avoid duplicates
-          if (container.dataset.hasHoverListener) return;
-          container.dataset.hasHoverListener = "true";
-
-          // Ensure video is paused initially
-          video.pause();
-
-          container.addEventListener("mouseenter", () => {
-            video.muted = true; // Ensure muted for autoplay policy
-            const playPromise = video.play();
-            if (playPromise !== undefined) {
-              playPromise.catch((e) => console.debug("Video play interrupted", e));
-            }
-          });
-
-          container.addEventListener("mouseleave", () => {
-            video.pause();
-          });
-        }
-      });
-    }
-
-    // Run on initial load
-    document.addEventListener("DOMContentLoaded", setupVideoHover);
-    // Run on view transitions navigation
-    document.addEventListener("astro:page-load", setupVideoHover);
-  </script>
 </Base>

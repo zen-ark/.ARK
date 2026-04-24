@@ -20,6 +20,8 @@ const projects = defineCollection({
       tags: z.array(z.string()).default([]),
       // Require explicit cover asset path for controlled art direction
       cover: z.string().min(1, { message: "Project cover is required" }),
+      // Optional still image for video covers (critical on iOS; hover preview is a no-op for touch)
+      coverPoster: z.string().optional(),
       // Optional descriptive alt text for the cover image
       coverAlt: z.string().optional(),
       hero: image().optional(),

@@ -19,7 +19,8 @@ export default defineConfig({
           de: "de",
         },
       },
-      filter: (page) => !page.includes("/placeholder-"),
+      filter: (page) =>
+        !page.includes("/placeholder-") && !page.includes("/portfolio/projects/"),
     }),
   ],
   vite: {

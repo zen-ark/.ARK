@@ -87,13 +87,12 @@ function getLocaleAlternates(pathname: string): { en: string; de: string } | nul
   }
 
   if (normalizedPath.startsWith("/portfolio/projects/")) {
-    return { en: normalizedPath, de: `/de${normalizedPath}` };
+    const slug = normalizedPath.replace(/^\/portfolio\/projects\//, "");
+    return { en: `/projects/${slug}`, de: `/de/projects/${slug}` };
   }
   if (normalizedPath.startsWith("/de/portfolio/projects/")) {
-    return {
-      en: normalizedPath.replace(/^\/de/, ""),
-      de: normalizedPath,
-    };
+    const slug = normalizedPath.replace(/^\/de\/portfolio\/projects\//, "");
+    return { en: `/projects/${slug}`, de: `/de/projects/${slug}` };
   }
 
   return null;
