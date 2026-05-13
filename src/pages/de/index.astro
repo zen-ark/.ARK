@@ -2,7 +2,6 @@
 import Base from "@/layouts/Base.astro";
 import Hero from "@/components/Hero";
 import WhatArkDoes from "@/components/WhatArkDoes";
-import ProjectsV6 from "@/components/ProjectsV6";
 import OpenNewFile from "@/components/OpenNewFile";
 import SystemStateController from "@/components/SystemStateController";
 import Marquee from "@/components/Marquee";
@@ -30,9 +29,6 @@ import FooterV2 from "@/layouts/partials/FooterV2.astro";
     <WhatArkDoes client:load />
 
     <!-- Network Registry / Validation Log (hidden for now) -->
-
-    <!-- Projects V6 Liquid Folder -->
-    <ProjectsV6 client:load />
 
     <!-- SYSTEM STATE CONTROLLER (The .ARK Model) -->
     <SystemStateController client:only="react" />

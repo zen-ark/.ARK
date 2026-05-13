@@ -18,7 +18,7 @@ const GalleryBlock = ({ title, description, imageSrc, theme, imagePosition }: Ga
 
   return (
     <div className={`w-full ${bgColor} py-20 md:py-32 overflow-hidden transition-colors duration-700 ease-in-out`}>
-      <div className="max-w-7xl mx-auto px-4 md:px-6">
+      <div className="max-w-case mx-auto px-4 md:px-6">
         <div className={`flex flex-col gap-12 md:gap-24 items-center ${imagePosition === 'right' ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
           
           {/* Text Content */}

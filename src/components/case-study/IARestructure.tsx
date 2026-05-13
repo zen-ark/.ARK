@@ -101,7 +101,7 @@ export default function IARestructure({ title, description, imageSrc, seniorNote
   const sitemapData = data || defaultSitemapData;
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-24 bg-transparent">
+    <section className="w-full max-w-case mx-auto px-4 md:px-6 py-16 md:py-24 bg-transparent">
       <RevealOnScroll>
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 tracking-tight">

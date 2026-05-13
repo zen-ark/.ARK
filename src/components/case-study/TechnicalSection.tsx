@@ -21,7 +21,7 @@ export default function TechnicalSection({ title, subtitle, children }: Technica
       {/* Radial Gradient for depth */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/20 pointer-events-none" />
 
-      <div className="relative max-w-7xl mx-auto px-4 md:px-6 py-24">
+      <div className="relative max-w-case mx-auto px-4 md:px-6 py-24">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
           {/* Header */}
           <div className="md:col-span-4">

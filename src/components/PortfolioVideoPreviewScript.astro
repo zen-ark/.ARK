@@ -2,11 +2,55 @@
 /**
  * Desktop: play project cover video on hover (existing behavior).
  * Touch / coarse pointer: no hover — play when the card is in view, pause when off-screen.
- * coverPoster on video elements (from project frontmatter) fixes empty iOS previews for paused video.
+ * Optional `poster` on the video (coverPoster in frontmatter) overrides thumbnail with a static image.
+ * Without poster: seek slightly past t=0 so a decoded frame shows as the idle thumbnail, then reset on pause.
  */
 ---
 
 <script is:inline>
+  function thumbTime(video) {
+    const d = video.duration;
+    if (!Number.isFinite(d) || d <= 0) return null;
+    return Math.min(0.06, Math.max(0.001, d * 0.001));
+  }
+
+  /** When there is no `poster` attribute, show a real video frame at rest (not a black rectangle). */
+  function primeIdleFrame(video) {
+    if (video.getAttribute("poster")) return;
+    if (video.dataset.idleFramePrimed === "true") return;
+    const t = thumbTime(video);
+    if (t == null) return;
+    const done = () => {
+      video.dataset.idleFramePrimed = "true";
+    };
+    const seek = () => {
+      const onSeeked = () => {
+        video.removeEventListener("seeked", onSeeked);
+        video.pause();
+        done();
+      };
+      video.addEventListener("seeked", onSeeked);
+      try {
+        video.currentTime = t;
+      } catch (_) {
+        video.removeEventListener("seeked", onSeeked);
+        done();
+      }
+    };
+    if (video.readyState >= 1) seek();
+    else video.addEventListener("loadedmetadata", seek, { once: true });
+  }
+
+  function pauseAtIdleThumb(video) {
+    video.pause();
+    if (video.getAttribute("poster")) return;
+    const t = thumbTime(video);
+    if (t == null) return;
+    try {
+      video.currentTime = t;
+    } catch (_) {}
+  }
+
   function setupPortfolioVideoPreviews() {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const canFinePointerHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
@@ -19,6 +63,7 @@
 
       video.pause();
       video.muted = true;
+      primeIdleFrame(video);
 
       if (prefersReducedMotion) {
         return;
@@ -31,7 +76,7 @@
           if (p !== undefined) p.catch(() => {});
         });
         container.addEventListener("mouseleave", () => {
-          video.pause();
+          pauseAtIdleThumb(video);
         });
         return;
       }
@@ -44,7 +89,7 @@
               const p = video.play();
               if (p !== undefined) p.catch(() => {});
             } else {
-              video.pause();
+              pauseAtIdleThumb(video);
             }
           });
         },

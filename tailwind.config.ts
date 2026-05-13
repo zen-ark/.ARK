@@ -89,6 +89,9 @@ export default {
         "modal": "var(--z-modal)",
         "toast": "var(--z-toast)"
       },
+      "maxWidth": {
+        "case": "1440px"
+      },
       "screens": {
         "sm": "375px",
         "md": "768px",

@@ -1,22 +1,21 @@
 ---
 title: "The .ARK Ecosystem"
-subtitle: "Studio System · RAG · Visual Archive"
+subtitle: "Studio System · RAG"
 date: "2026-02-05"
 year: 2026
 client: "Personal / Studio"
-summary: "From systemic design to logic engines and visual storytelling."
-summaryCard: "A self-built ecosystem spanning the studio's design system, a RAG-based medical knowledge system, and an 8-year visual archive — one coherent logic across three chapters."
-outcomeLine: "Proved the .ARK thesis end-to-end: systemic design, technical logic, and visual craft as one pipeline, not three silos."
-role: "Art Direction + Fullstack + Video"
+summary: "From systemic design to logic engines — studio and product in one stack."
+summaryCard: "A self-built ecosystem spanning the studio's design system and a RAG-based medical knowledge system — one coherent design and token layer across both."
+outcomeLine: "Proved the .ARK thesis end-to-end: systemic design and technical logic as one pipeline, not two silos."
+role: "Art Direction + Fullstack"
 context: "Personal / Studio"
 stack: ["Astro", "React", "Three.js"]
 category: "explorations"
-services: ["Art Direction", "Fullstack", "Video Production"]
-tags: ["Design System", "React", "Video"]
+services: ["Art Direction", "Fullstack"]
+tags: ["Design System", "React"]
 cover: "/portfolio projects/ai-workflow/hero.mp4"
-coverPoster: "/portfolio projects/ai-workflow/cover.png"
 roles: ["Creative Director", "Engineer"]
-tech: ["Astro", "React", "Three.js", "Premiere"]
+tech: ["Astro", "React", "Three.js"]
 links:
   demo: "https://hausarztpraxis-five.vercel.app/landingpage"
 status: "live"
@@ -32,18 +31,17 @@ import TechnicalSection from "../../components/case-study/TechnicalSection";
 import CodeFlowDiagram from "../../components/case-study/CodeFlowDiagram";
 import DesignSystemShowcase from "../../components/case-study/DesignSystemShowcase";
 import BrowserWindow from "../../components/case-study/BrowserWindow";
-import MusicVideoGallery from "../../components/case-study/MusicVideoGallery";
 import CaseStudyResults from "../../components/case-study/CaseStudyResults.astro";
 
 <CaseStudyHeader
   client:load
   label="The Ecosystem"
   title="Passion Projects: The .ARK Ecosystem"
-  subtitle="A journey through systemic design, logic engines, and visual storytelling."
+  subtitle="A journey through systemic design and applied AI — one studio stack, one token layer."
   imageSrc="/portfolio projects/ai-workflow/hero.mp4"
   clientName="Personal / Studio"
-  services={["Art Direction", "Fullstack", "Video Production"]}
-  tech={["Astro", "React", "Three.js", "Premiere"]}
+  services={["Art Direction", "Fullstack"]}
+  tech={["Astro", "React", "Three.js"]}
   className="h-[85vh] min-h-[600px] mb-4 mt-0"
 />
 
@@ -52,10 +50,10 @@ import CaseStudyResults from "../../components/case-study/CaseStudyResults.astro
   className="py-8 md:py-12"
   items={[
     {
-      value: "3",
-      label: "Disciplines",
+      value: "2",
+      label: "Pillars",
       description:
-        "Merging Systemic Design, Technical Logic, and Visual Experimentation into one cohesive ecosystem.",
+        "Studio system and applied AI — systemic design and a production RAG stack sharing one token layer.",
     },
     {
       value: ".ARK",
@@ -75,7 +73,7 @@ import CaseStudyResults from "../../components/case-study/CaseStudyResults.astro
 {/* Section 1: .ARK Digital Design Studio */}
 
 <div className="bg-[#0a0a0a] border-t border-white/10 pb-24">
-  <div className="w-full max-w-7xl mx-auto px-4 md:px-6 pt-24">
+  <div className="w-full max-w-case mx-auto px-4 md:px-6 pt-24">
     <div className="md:w-8/12 mb-16">
       <h2 className="text-sm md:text-base font-mono uppercase tracking-wider text-white/50 mb-4">
         Chapter 01
@@ -169,148 +167,13 @@ import CaseStudyResults from "../../components/case-study/CaseStudyResults.astro
   </a>
 </TechnicalSection>
 
-{/* Section 3: Visual Stories (Music Videos) */}
-
-<div className="bg-[#0a0a0a] border-t border-white/10 pb-32">
-  <div className="w-full max-w-7xl mx-auto px-4 md:px-6 pt-24">
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-24">
-       <div className="md:col-span-8">
-        <h2 className="text-sm md:text-base font-mono uppercase tracking-wider text-white/50 mb-4">
-          Chapter 03
-        </h2>
-        <p className="text-4xl md:text-5xl font-medium text-white mb-6">Visual Stories</p>
-        <p className="text-xl text-white/80 font-light leading-relaxed max-w-2xl">
-          The "Learning by Doing" Era. Before .ARK became a systematic studio, my work was fueled by the raw, chaotic energy of the Bern creative scene.
-        </p>
-       </div>
-    </div>
-
-    {/* The Story Grid */}
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 mb-24">
-      {/* Column 1: Chaos */}
-      <div className="space-y-8">
-        <h3 className="text-2xl font-medium text-white">The Intuition Phase</h3>
-        <div className="prose prose-lg prose-invert text-white/70 font-light">
-          <p>
-            This was a time of pure experimentation where the goal was simply to create something that felt alive, regardless of whether I knew the technical "rules" yet.
-          </p>
-          <p>
-            My first collaboration with yung glas was a baptism by fire. I found myself holding a Sony FX6—a high-end cinema camera—with absolutely no idea of the power or complexity I had in my hands.
-          </p>
-           <div className="pl-6 border-l-2 border-[#C7FF55] my-8">
-            <p className="italic text-white/90 text-lg">
-              "I was capturing cinematic visuals by pure instinct. It was the ultimate 'fake it 'til you make it' moment. Looking back, the mistakes were plenty—most notably a complete lack of colorspace management that nearly broke the final grades—but the energy we captured was irreplaceable."
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Column 2: Transition */}
-      <div className="space-y-8">
-        <h3 className="text-2xl font-medium text-white">Chaotic Energy & Professional Pivot</h3>
-        <div className="prose prose-lg prose-invert text-white/70 font-light">
-          <p>
-            <strong>The Lunaria Festival:</strong> Filming the aftermovie was a masterclass in adapting to the moment. It was a steep learning curve navigated through the haze of a festival atmosphere—handling a gimbal in the middle of a crowd while leaning into that "chaotic Bern energy".
-          </p>
-          <p>
-            <strong>The Turning Point:</strong> Joining the Swisscom filmteam was where "Chaos" met "Structure." I finally learned the technical "why" behind the "how"—properly operating the equipment I had previously only used by instinct.
-          </p>
-          <p>
-             This experience bridged the gap between my raw passion projects and the precise, modular philosophy that now defines .ARK. I realized that you can only truly break the rules once you have mastered the system that governs them.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div className="mb-24">
-      <MusicVideoGallery client:visible />
-    </div>
-
-    {/* Instagram CTA - Motion Archive Style */}
-    <div className="w-full bg-[#0a0a0a] py-40 border-t border-white/5 flex justify-center">
-      <div className="relative w-full max-w-4xl border border-white/5 bg-black/20 p-12 md:p-24 text-center overflow-hidden group">
-        
-        {/* Viewfinder Corners */}
-        <div className="absolute top-0 left-0 w-4 h-4 border-l border-t border-white/20"></div>
-        <div className="absolute top-0 right-0 w-4 h-4 border-r border-t border-white/20"></div>
-        <div className="absolute bottom-0 left-0 w-4 h-4 border-l border-b border-white/20"></div>
-        <div className="absolute bottom-0 right-0 w-4 h-4 border-r border-b border-white/20"></div>
-
-        {/* Metadata */}
-        <div className="mb-8">
-          <span className="text-[10px] font-mono text-white/30 tracking-widest uppercase">LOG_ENTRY // MOTION_DESIGN_REEL_V2.0</span>
-        </div>
-
-        {/* Heading */}
-        <h3 className="text-6xl md:text-8xl font-medium text-white mb-8 tracking-tighter uppercase font-display">
-          Motion<br/>Archive
-        </h3>
-
-        {/* Body Text */}
-        <div className="flex justify-center mb-12">
-          <p className="text-white/60 text-lg font-light leading-relaxed max-w-[600px]">
-            My latest reel marks a new chapter—swapping to DaVinci Resolve and embracing the steep learning curve. Follow my journey as I push my technical boundaries.
-          </p>
-        </div>
-
-        {/* System Button Group */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-          {/* Private / Video Account */}
-          <div className="flex flex-col items-center gap-2">
-            <a 
-              href="https://instagram.com/shainzen" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="group relative inline-flex items-center gap-3 px-6 py-3 bg-white/5 backdrop-blur-xl border border-white/10 rounded-lg transition-all duration-300 hover:bg-[#111] hover:border-white/30 w-full justify-center"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[hsl(258,55%,63%)] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[hsl(258,55%,63%)]"></span>
-              </span>
-              <span className="text-sm font-mono text-white/90 uppercase tracking-wide group-hover:text-white">Video / Private</span>
-            </a>
-            <div className="flex items-center gap-1 text-white/30 hover:text-white/50 transition-colors">
-              <span className="text-xs font-mono">@shainzen</span>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M7 17l9.2-9.2M17 8v9" />
-              </svg>
-            </div>
-          </div>
-
-          {/* Motion Design Account */}
-          <div className="flex flex-col items-center gap-2">
-            <a 
-              href="https://instagram.com/mondzhain" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="group relative inline-flex items-center gap-3 px-6 py-3 bg-white/5 backdrop-blur-xl border border-white/10 rounded-lg transition-all duration-300 hover:bg-[#111] hover:border-white/30 w-full justify-center"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C7FF55] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#C7FF55]"></span>
-              </span>
-              <span className="text-sm font-mono text-white/90 uppercase tracking-wide group-hover:text-white">Motion Design</span>
-            </a>
-            <div className="flex items-center gap-1 text-white/30 hover:text-white/50 transition-colors">
-              <span className="text-xs font-mono">@mondzhain</span>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M7 17l9.2-9.2M17 8v9" />
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <CaseStudyResults
   currentSlug="ai-workflow"
-  outcome="One coherent logic across three chapters — studio system, RAG-backed medical knowledge app, and an 8-year visual archive — running on a single design and token layer."
+  outcome="One coherent logic across the studio system and a RAG-backed medical knowledge app — running on a single design and token layer."
   outcomeBullets={[
     {
       label: "What shipped",
-      text: "A live studio site, a working RAG medical assistant on top of a vector DB, and a curated 3D archive — all using the same tokens, type scale and motion language.",
+      text: "A live studio site and a working RAG medical assistant on top of a vector DB — both using the same tokens, type scale and motion language.",
     },
     {
       label: "What improved",

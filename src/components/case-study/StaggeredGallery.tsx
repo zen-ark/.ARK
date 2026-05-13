@@ -11,7 +11,7 @@ const images = [
 
 export default function StaggeredGallery() {
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 md:px-6 py-24">
+    <section className="w-full max-w-case mx-auto px-4 md:px-6 py-24">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
         {/* Column 1 */}
         <div className="flex flex-col gap-8 md:gap-12">

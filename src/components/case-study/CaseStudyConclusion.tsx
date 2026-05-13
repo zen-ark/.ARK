@@ -15,7 +15,7 @@ export default function CaseStudyConclusion({ heading, children }: CaseStudyConc
   }
 
   return (
-    <section className="w-full max-w-4xl mx-auto px-4 md:px-6 py-16 md:py-32 text-center">
+    <section className="w-full max-w-case mx-auto px-4 md:px-6 py-16 md:py-32 text-center">
       <RevealOnScroll>
         <h2 className="text-sm md:text-base font-mono uppercase tracking-wider text-white/50 mb-6">
           {heading}

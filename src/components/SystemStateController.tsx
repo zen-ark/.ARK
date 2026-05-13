@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useLayoutEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -230,121 +230,176 @@ export default function SystemStateController() {
     }
   }, [phase2Index, activePhase]);
 
-  // Master GSAP Timeline
-  useGSAP(() => {
-    if (!containerRef.current) return;
+  // Master GSAP timeline + ScrollTrigger (useLayoutEffect + gsap.context: reliable with pin,
+  // and avoids pinning a node that uses overflow:hidden — that combo often kills ScrollTrigger.)
+  useLayoutEffect(() => {
+    const root = containerRef.current;
+    if (!root || typeof window === "undefined") return undefined;
 
-    const LOCK_DURATION = 0.5;
-    const ZOOM_DURATION = 2.0;
-    const PHASE1_DURATION = 3.0;
-    const WIPE_DURATION = 1.5;
-    const DWELL_DURATION = 0.5;
-    const PER_MODULE_DURATION = 0.8;
-    const MODULE_COUNT = MODULES_CONTENT.length;
-    const PHASE2_DURATION = Math.max(1, MODULE_COUNT) * PER_MODULE_DURATION;
-    const TOTAL_DURATION = LOCK_DURATION + ZOOM_DURATION + PHASE1_DURATION + WIPE_DURATION + DWELL_DURATION + PHASE2_DURATION;
+    const svg = root.querySelector<SVGSVGElement>("#ark-model-svg");
+    const zoomPaths = svg?.querySelectorAll<SVGPathElement>("path:not(#ark-dot)") ?? [];
+    const zoomOverlay = root.querySelector<HTMLElement>("#full-screen-zoom-overlay");
+    const zoomLayer = root.querySelector<HTMLElement>("[data-ark-zoom-layer]");
+    const phase2El = root.querySelector<HTMLElement>("[data-ark-phase2]");
+    const hudStatus = root.querySelector<HTMLElement>("#hud-status");
+    const hudRight = root.querySelector<HTMLElement>("#hud-right");
+    const hudProgress = root.querySelector<HTMLElement>("#hud-progress");
+    const p1Tags = root.querySelector<HTMLElement>("#p1-exit-tags");
+    const p1Body = root.querySelector<HTMLElement>("#p1-exit-body");
+    const p1Header = root.querySelector<HTMLElement>("#p1-exit-header");
 
-    const tZoomEnd = LOCK_DURATION + ZOOM_DURATION;
-    const tPhase1Start = tZoomEnd;
-    const tPhase1End = tPhase1Start + PHASE1_DURATION;
-    const tWipeStart = tPhase1End;
-    const tWipeEnd = tWipeStart + WIPE_DURATION;
-    const tPhase2Start = tWipeEnd + DWELL_DURATION;
+    if (!svg || !zoomLayer || !phase2El) return undefined;
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top top",
-        end: () => `+=${6000 + Math.max(0, MODULE_COUNT - 5) * 800}`,
-        pin: true,
-        scrub: 1,
-        snap: {
+    let cancelled = false;
+    const runRefresh = () => {
+      if (!cancelled) ScrollTrigger.refresh();
+    };
+
+    const ctx = gsap.context(() => {
+      const LOCK_DURATION = 0.5;
+      const ZOOM_DURATION = 2.0;
+      const PHASE1_DURATION = 3.0;
+      const WIPE_DURATION = 1.5;
+      const DWELL_DURATION = 0.5;
+      const PER_MODULE_DURATION = 0.8;
+      const MODULE_COUNT = MODULES_CONTENT.length;
+      const PHASE2_DURATION = Math.max(1, MODULE_COUNT) * PER_MODULE_DURATION;
+      const TOTAL_DURATION = LOCK_DURATION + ZOOM_DURATION + PHASE1_DURATION + WIPE_DURATION + DWELL_DURATION + PHASE2_DURATION;
+
+      const tZoomEnd = LOCK_DURATION + ZOOM_DURATION;
+      const tPhase1Start = tZoomEnd;
+      const tPhase1End = tPhase1Start + PHASE1_DURATION;
+      const tWipeStart = tPhase1End;
+      const tWipeEnd = tWipeStart + WIPE_DURATION;
+      const tPhase2Start = tWipeEnd + DWELL_DURATION;
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: root,
+          start: "top top",
+          end: () => `+=${6000 + Math.max(0, MODULE_COUNT - 5) * 800}`,
+          pin: true,
+          scrub: 1,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          snap: {
             snapTo: (value) => {
-                const wipeNorm0 = (tWipeStart - 0.1) / TOTAL_DURATION;
-                const wipeNorm1 = tWipeEnd / TOTAL_DURATION;
-                const midPoint = (wipeNorm0 + wipeNorm1) / 2;
+              const wipeNorm0 = (tWipeStart - 0.1) / TOTAL_DURATION;
+              const wipeNorm1 = tWipeEnd / TOTAL_DURATION;
+              const midPoint = (wipeNorm0 + wipeNorm1) / 2;
 
-                if (value > wipeNorm0 && value < wipeNorm1) {
-                    return value > midPoint ? wipeNorm1 : wipeNorm0;
-                }
-                return value;
+              if (value > wipeNorm0 && value < wipeNorm1) {
+                return value > midPoint ? wipeNorm1 : wipeNorm0;
+              }
+              return value;
             },
             duration: { min: 0.6, max: 1.0 },
             delay: 0,
-            ease: "power2.inOut"
+            ease: "power2.inOut",
+          },
+          onUpdate: (self) => {
+            const p = self.progress * TOTAL_DURATION;
+
+            if (p < tPhase1Start) {
+              if (activePhaseRef.current !== 0) setActivePhase(0);
+              if (contentVisibleRef.current) setContentVisible(false);
+            } else if (p >= tPhase1Start && p < tPhase1End) {
+              if (activePhaseRef.current !== 1) setActivePhase(1);
+              if (!contentVisibleRef.current) setContentVisible(true);
+
+              const p1Prog = (p - tPhase1Start) / PHASE1_DURATION;
+              if (p1Prog < 0.33) setPhase1Index(0);
+              else if (p1Prog < 0.66) setPhase1Index(1);
+              else setPhase1Index(2);
+            } else if (p >= tWipeStart) {
+              if (activePhaseRef.current !== 2) setActivePhase(2);
+              if (!contentVisibleRef.current) setContentVisible(true);
+
+              const p2Prog = Math.max(0, Math.min(1, (p - tPhase2Start) / PHASE2_DURATION));
+              const idx = Math.floor(p2Prog * MODULE_COUNT);
+              const newIndex = Math.min(MODULE_COUNT - 1, idx);
+              if (newIndex !== phase2IndexRef.current) {
+                setPhase2Index(newIndex);
+              }
+
+              if (hudProgress) {
+                gsap.set(hudProgress, { width: `${Math.min(100, p2Prog * 100)}%` });
+              }
+            }
+          },
         },
-        onUpdate: (self) => {
-             const p = self.progress * TOTAL_DURATION;
+      });
 
-             if (p < tPhase1Start) {
-                 if (activePhaseRef.current !== 0) setActivePhase(0);
-                 if (contentVisibleRef.current) setContentVisible(false);
-             }
-             else if (p >= tPhase1Start && p < tPhase1End) {
-                 if (activePhaseRef.current !== 1) setActivePhase(1);
-                 if (!contentVisibleRef.current) setContentVisible(true);
+      tl.addLabel("start").to({}, { duration: LOCK_DURATION });
 
-                 const p1Prog = (p - tPhase1Start) / PHASE1_DURATION;
-                 if (p1Prog < 0.33) setPhase1Index(0);
-                 else if (p1Prog < 0.66) setPhase1Index(1);
-                 else setPhase1Index(2);
-             }
-             else if (p >= tWipeStart) {
-                 if (activePhaseRef.current !== 2) setActivePhase(2);
-                 if (!contentVisibleRef.current) setContentVisible(true);
+      tl.addLabel("zoomStart")
+        .to(
+          svg,
+          {
+            scale: 150,
+            transformOrigin: "27.72% 90.55%",
+            ease: "power2.inOut",
+            duration: ZOOM_DURATION,
+          },
+          "zoomStart",
+        )
+        .to(zoomPaths, { opacity: 0, duration: 0.5 }, "zoomStart+=0.5");
 
-                 const p2Prog = Math.max(0, Math.min(1, (p - tPhase2Start) / PHASE2_DURATION));
-                 const idx = Math.floor(p2Prog * MODULE_COUNT);
-                 const newIndex = Math.min(MODULE_COUNT - 1, idx);
-                 if (newIndex !== phase2IndexRef.current) {
-                   setPhase2Index(newIndex);
-                 }
-
-                 gsap.set("#hud-progress", { width: `${Math.min(100, p2Prog * 100)}%` });
-             }
-        }
+      if (zoomOverlay) {
+        tl.to(zoomOverlay, { opacity: 1, duration: 0.2 }, "zoomStart+=1.8");
       }
-    });
+      tl.to(zoomLayer, { opacity: 0, duration: 0.1 }, "zoomStart+=1.95").call(
+        () => {
+          setContentVisible(true);
+          setActivePhase(1);
+        },
+        [],
+        "zoomStart+=1.95",
+      );
 
-    tl.addLabel("start")
-      .to({}, { duration: LOCK_DURATION });
+      tl.addLabel("phase1Start", "zoomStart+=2");
+      tl.to({}, { duration: PHASE1_DURATION });
 
-    tl.addLabel("zoomStart")
-      .to("#ark-model-svg", {
-          scale: 150,
-          transformOrigin: "27.72% 90.55%",
+      tl.addLabel("wipeStart");
+
+      tl.to(
+        phase2El,
+        {
+          clipPath: "inset(0% 0 0 0)",
+          duration: WIPE_DURATION,
           ease: "power2.inOut",
-          duration: ZOOM_DURATION
-      }, "zoomStart")
-      .to("#ark-model-svg path:not(#ark-dot)", { opacity: 0, duration: 0.5 }, "zoomStart+=0.5")
-      .to("#full-screen-zoom-overlay", { opacity: 1, duration: 0.2 }, "zoomStart+=1.8")
-      .to(zoomLayerRef.current, { opacity: 0, duration: 0.1 }, "zoomStart+=1.95")
-      .call(() => { setContentVisible(true); setActivePhase(1); }, [], "zoomStart+=1.95");
+        },
+        "wipeStart",
+      );
 
-    tl.addLabel("phase1Start", "zoomStart+=2");
-    tl.to({}, { duration: PHASE1_DURATION });
+      if (hudStatus) tl.to(hudStatus, { color: "#000000", duration: 0.5 }, "wipeStart+=0.2");
+      if (hudRight) tl.to(hudRight, { opacity: 0, duration: 0.5 }, "wipeStart");
 
-    tl.addLabel("wipeStart");
+      if (p1Tags && p1Body && p1Header) {
+        tl.to(p1Tags, { y: -50, opacity: 0, duration: 0.8, ease: "power2.in" }, "wipeStart")
+          .to(p1Body, { y: -100, opacity: 0, duration: 0.8, ease: "power2.in" }, "wipeStart+=0.1")
+          .to(p1Header, { y: -150, opacity: 0, duration: 0.8, ease: "power2.in" }, "wipeStart+=0.2");
+      }
 
-    tl.to(phase2ContainerRef.current, {
-        clipPath: "inset(0% 0 0 0)",
-        duration: WIPE_DURATION,
-        ease: "power2.inOut"
-    }, "wipeStart");
+      tl.to({}, { duration: DWELL_DURATION });
 
-    tl.to(["#hud-status"], { color: "#000000", duration: 0.5 }, "wipeStart+=0.2");
-    tl.to("#hud-right", { opacity: 0, duration: 0.5 }, "wipeStart");
+      tl.addLabel("phase2Start");
+      tl.to({}, { duration: PHASE2_DURATION });
+    }, root);
 
-    tl.to("#p1-exit-tags", { y: -50, opacity: 0, duration: 0.8, ease: "power2.in" }, "wipeStart")
-      .to("#p1-exit-body", { y: -100, opacity: 0, duration: 0.8, ease: "power2.in" }, "wipeStart+=0.1")
-      .to("#p1-exit-header", { y: -150, opacity: 0, duration: 0.8, ease: "power2.in" }, "wipeStart+=0.2");
+    requestAnimationFrame(() => {
+      requestAnimationFrame(runRefresh);
+    });
+    window.addEventListener("load", runRefresh);
+    window.addEventListener("resize", runRefresh);
 
-    tl.to({}, { duration: DWELL_DURATION });
-
-    tl.addLabel("phase2Start");
-    tl.to({}, { duration: PHASE2_DURATION });
-
-  }, { scope: containerRef });
+    return () => {
+      cancelled = true;
+      window.removeEventListener("load", runRefresh);
+      window.removeEventListener("resize", runRefresh);
+      ctx.revert();
+    };
+  }, []);
 
 
   return (
@@ -352,9 +407,10 @@ export default function SystemStateController() {
       id="services"
       ref={containerRef} 
       data-theme={activePhase === 2 ? "light" : "dark"}
-      className="relative w-full h-screen bg-[#0A0A0A] overflow-hidden"
+      className="relative w-full h-screen bg-[#0A0A0A]"
       style={{ scrollMarginTop: "120px" }}
     >
+        <div className="absolute inset-0 overflow-hidden">
         {/* --- LAYERS (Stacked Absolute) --- */}
 
         {/* 0. Phase 1 Background */}
@@ -443,6 +499,7 @@ export default function SystemStateController() {
         {/* Initial ClipPath hides it completely at the bottom */}
         <div 
             ref={phase2ContainerRef}
+            data-ark-phase2
             className="absolute inset-0 z-20 bg-white flex items-center justify-center"
             style={{ clipPath: "inset(100% 0 0 0)" }} 
         >
@@ -505,6 +562,7 @@ export default function SystemStateController() {
         {/* 4. Zoom Layer (SVG) - Topmost initial layer (fades out) */}
         <div 
             ref={zoomLayerRef}
+            data-ark-zoom-layer
             className="absolute inset-0 z-40 flex items-center justify-center bg-white pointer-events-none"
         >
              {/* New Full Screen Overlay to prevent "box" artifact */}
@@ -518,7 +576,8 @@ export default function SystemStateController() {
                     viewBox="0 0 1479 127" 
                     fill="none" 
                     xmlns="http://www.w3.org/2000/svg"
-                    className="w-full h-auto origin-center"
+                    className="w-full h-auto"
+                    style={{ transformBox: "fill-box" }}
                 >
                      <g id="ark-text">
                         <path d="M38.9193 123.926V13.9971H0.000316483V2.7311H89.4458V13.9971H50.5268V123.926H38.9193ZM114.121 123.926V2.7311H125.728V61.2803L120.266 57.0129H195.714L190.252 61.2803V2.7311H201.859V123.926H190.252V63.8408L195.714 68.2789H120.266L125.728 63.8408V123.926H114.121ZM242.924 123.926V2.7311H317.519V13.9971H254.532V57.6957H315.47V68.791H254.532V112.66H318.884V123.926H242.924ZM402.658 123.926V107.369H418.874V123.926H402.658ZM442.179 123.926L486.389 2.7311H501.752L545.792 123.926H533.16L520.187 87.5677H467.783L454.81 123.926H442.179ZM471.709 76.3017H516.261L494.071 13.1436L471.709 76.3017ZM574.437 123.926V2.7311H618.818C627.467 2.7311 634.807 4.21048 640.838 7.16923C646.984 10.0142 651.706 14.1109 655.006 19.4594C658.306 24.808 659.957 31.2376 659.957 38.7483C659.957 44.3244 658.648 49.2746 656.03 53.5989C653.527 57.9233 650.17 61.3941 645.959 64.0115C641.749 66.6288 637.197 68.1082 632.304 68.4496L631.45 66.9133C639.416 66.9133 645.561 68.7341 649.885 72.3756C654.324 75.9034 656.884 81.4795 657.567 89.104L660.639 123.926H648.861L645.959 90.1282C645.504 84.5521 643.513 80.4553 639.985 77.838C636.457 75.1068 630.767 73.7412 622.915 73.7412H586.045V123.926H574.437ZM586.045 62.4752H620.696C629.003 62.4752 635.547 60.4268 640.326 56.3301C645.22 52.1196 647.666 46.202 647.666 38.5776C647.666 30.6117 645.22 24.5235 640.326 20.3129C635.433 16.1024 628.207 13.9971 618.648 13.9971H586.045V62.4752ZM697.073 123.926V2.7311H708.68V67.5961L768.083 2.7311H782.763L734.626 55.3059L786.177 123.926H772.179L726.945 63.8408L708.68 83.6417V123.926H697.073ZM871.497 123.926V2.7311H888.226L929.705 111.295L971.185 2.7311H987.913V123.926H976.306V22.7027L937.216 123.926H922.194L883.105 22.7027V123.926H871.497Z" fill="black"/>
@@ -532,6 +591,7 @@ export default function SystemStateController() {
         {/* 7. Persistent UI (HUD) - Topmost Layer */}
         <CornerUI />
 
+        </div>
     </section>
   );
 }

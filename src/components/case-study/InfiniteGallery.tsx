@@ -687,7 +687,7 @@ const FocusView = ({ item, items, onClose, onSelect, layoutId }: { item: Gallery
       <div className="flex-1 relative flex items-center justify-center p-4 md:p-12 pointer-events-none">
         <motion.div
           layoutId={layoutId || undefined}
-          className="relative w-full max-w-5xl aspect-video bg-black rounded-sm overflow-hidden shadow-2xl pointer-events-auto"
+          className="relative w-full max-w-case aspect-video bg-black rounded-sm overflow-hidden shadow-2xl pointer-events-auto"
           onClick={(e) => e.stopPropagation()}
         >
              {item.video ? (

@@ -40,9 +40,9 @@ export default function CaseStudyHero({ title, subtitle, imageSrc, className }: 
           )}
         </div>
 
-        {/* Text Overlay */}
-        <div className="absolute bottom-0 left-0 w-full p-8 md:p-12 bg-gradient-to-t from-black/50 to-transparent pointer-events-none">
-          <div className="max-w-4xl pointer-events-auto">
+        {/* Text overlay — aligned to case study content column */}
+        <div className="absolute bottom-0 left-0 right-0 pb-8 pt-8 md:pb-12 md:pt-12 bg-gradient-to-t from-black/50 to-transparent pointer-events-none">
+          <div className="max-w-case mx-auto w-full px-4 md:px-6 pointer-events-auto">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-2 tracking-tight">
               {title}
             </h1>

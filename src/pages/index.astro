@@ -3,7 +3,6 @@ import Base from "@/layouts/Base.astro";
 import Hero from "@/components/Hero";
 import WhatArkDoes from "@/components/WhatArkDoes";
 import ProjectIndex from "@/components/ProjectIndex";
-import ProjectsV6 from "@/components/ProjectsV6";
 import OpenNewFile from "@/components/OpenNewFile";
 import SystemStateController from "@/components/SystemStateController";
 import Marquee from "@/components/Marquee";
@@ -76,11 +75,8 @@ const schemas = [personSchema, serviceSchema1, serviceSchema2, serviceSchema3, f
     <!-- Project Index -->
     <ProjectIndex client:visible />
 
-    <!-- Projects V6 Liquid Folder -->
-    <ProjectsV6 client:visible />
-
     <!-- SYSTEM STATE CONTROLLER (The .ARK Model) -->
-    <SystemStateController client:visible />
+    <SystemStateController client:load />
 
     <!-- FAQ Section -->
     <FAQ client:visible />
