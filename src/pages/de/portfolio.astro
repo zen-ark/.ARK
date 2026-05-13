@@ -212,6 +212,16 @@ const sections: Array<{
     </PortfolioAnimation>
   </main>
 
+  <aside class="site-colophon" aria-label="Site-Kolophon">
+    <dl class="site-colophon__ledger">
+      <dt>Design</dt>
+      <dd>Figma</dd>
+      <dt>Engineering</dt>
+      <dd>Vibe Coding</dd>
+    </dl>
+    <p class="site-colophon__sign">— Shain, 2026</p>
+  </aside>
+
   <PortfolioVideoPreviewScript />
 
   <style>
@@ -428,6 +438,7 @@ const sections: Array<{
       max-width: 100%;
       margin: 0;
     }
+
 
     .projects-sections {
       position: relative;
@@ -696,6 +707,105 @@ const sections: Array<{
       line-height: 1.45;
       color: rgba(255, 255, 255, 0.68);
       max-width: 58ch;
+    }
+
+    /* Fixed site colophon — typographic spec ledger in the bottom-right corner.
+       Reads like a film/album credit rather than a UI chip. */
+    .site-colophon {
+      position: fixed;
+      right: clamp(0.75rem, 2vw, 1.5rem);
+      bottom: clamp(0.75rem, 2vw, 1.5rem);
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      padding: 0.7rem 0.95rem 0.6rem;
+      background: rgba(17, 17, 17, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      color: #fff;
+      font-family: "Geist Mono", "JetBrains Mono", monospace;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      pointer-events: auto;
+      opacity: 0;
+      animation: site-colophon-fade 0.6s ease-out 1.2s forwards;
+    }
+
+    @keyframes site-colophon-fade {
+      to {
+        opacity: 1;
+      }
+    }
+
+    .site-colophon__ledger {
+      display: grid;
+      grid-template-columns: auto auto;
+      column-gap: 1.1rem;
+      row-gap: 0.18rem;
+      margin: 0;
+      align-items: baseline;
+    }
+
+    .site-colophon__ledger dt {
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.5);
+      font-weight: 400;
+    }
+
+    .site-colophon__ledger dd {
+      margin: 0;
+      font-size: 0.78rem;
+      line-height: 1.2;
+      color: #fff;
+      letter-spacing: 0.01em;
+      text-align: right;
+    }
+
+    .site-colophon__sign {
+      margin: 0;
+      padding-top: 0.45rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      text-align: right;
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    @media (max-width: 540px) {
+      .site-colophon {
+        right: 0.65rem;
+        bottom: 0.65rem;
+        padding: 0.55rem 0.75rem 0.5rem;
+        gap: 0.4rem;
+      }
+
+      .site-colophon__ledger {
+        column-gap: 0.8rem;
+      }
+
+      .site-colophon__ledger dt {
+        font-size: 0.58rem;
+      }
+
+      .site-colophon__ledger dd {
+        font-size: 0.72rem;
+      }
+
+      .site-colophon__sign {
+        font-size: 0.55rem;
+        padding-top: 0.35rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .site-colophon {
+        animation: none;
+        opacity: 1;
+      }
     }
   </style>
 
