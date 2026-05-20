@@ -1,6 +1,7 @@
 ---
 import "@/styles/global.css";
 import Header from "./partials/Header.astro";
+import PortfolioPreviewTicker from "./partials/PortfolioPreviewTicker.astro";
 import Footer from "./partials/FooterV2.astro";
 import FooterPortfolio from "./partials/FooterPortfolio.astro";
 import { buildOrganizationSchema, buildWebSiteSchema, formatJsonLd } from "@/lib/seo";
@@ -194,6 +195,7 @@ const websiteSchema = buildWebSiteSchema({
     }
   </head>
   <body class={`antialiased m-0 p-0 ${footerMode === "reveal" ? "bg-black" : ""}`}>
+    <PortfolioPreviewTicker />
     {
       footerMode === "reveal" ? (
         <>

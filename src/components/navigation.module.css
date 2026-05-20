@@ -35,7 +35,9 @@
 
 .header {
   position: fixed;
-  inset: 0 0 auto;
+  top: var(--preview-ticker-height, 0);
+  left: 0;
+  right: 0;
   padding: var(--nav-padding-y) var(--nav-padding-x) 0;
   z-index: 10005;
   pointer-events: none;
