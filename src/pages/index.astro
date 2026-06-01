@@ -1,129 +1,446 @@
 ---
-import Base from "@/layouts/Base.astro";
-import Hero from "@/components/Hero";
-import WhatArkDoes from "@/components/WhatArkDoes";
-import ProjectIndex from "@/components/ProjectIndex";
-import OpenNewFile from "@/components/OpenNewFile";
-import SystemStateController from "@/components/SystemStateController";
-import Marquee from "@/components/Marquee";
-import FooterV2 from "@/layouts/partials/FooterV2.astro";
-import FAQ, { faqData } from "@/components/FAQ";
-import DirectAnswer from "@/components/DirectAnswer.astro";
-import { buildPersonSchema, buildServiceSchema, buildFAQPageSchema } from "@/lib/seo";
-
-const personSchema = buildPersonSchema({
-  name: "Shain Gerstner",
-  jobTitle: "Founder & Operator",
-  url: "https://ark.studio.ch",
-  sameAs: ["https://www.linkedin.com/in/shain-gerstner/", "https://www.instagram.com/mondzhain/"],
-  worksFor: {
-    name: ".ARK",
-    url: "https://ark.studio.ch"
-  }
-});
-
-const serviceSchema1 = buildServiceSchema({
-  name: "Interface Design",
-  description: "Crafting clear, usable, and aesthetic user interfaces for web and mobile applications.",
-  provider: { name: ".ARK", url: "https://ark.studio.ch" },
-  serviceType: "Design",
-  areaServed: "Global"
-});
-
-const serviceSchema2 = buildServiceSchema({
-  name: "Design Systems",
-  description: "Building scalable and consistent design systems to streamline development and ensure brand coherence.",
-  provider: { name: ".ARK", url: "https://ark.studio.ch" },
-  serviceType: "Design",
-  areaServed: "Global"
-});
-
-const serviceSchema3 = buildServiceSchema({
-  name: "AI Readiness Audit",
-  description: "Optimizing digital presence for AI search engines and integrating AI workflows for Swiss KMUs.",
-  provider: { name: ".ARK", url: "https://ark.studio.ch" },
-  serviceType: "Consulting",
-  areaServed: "Switzerland, Thun, Bern"
-});
-
-const faqSchema = buildFAQPageSchema(faqData);
-
-const schemas = [personSchema, serviceSchema1, serviceSchema2, serviceSchema3, faqSchema];
+// ─────────────────────────────────────────────────────────────────────────────
+// TEMPORARY COVER — "currently building"
+// Standalone holding page for ark-studio.ch while the new .ARK site is built.
+// Self-contained on purpose: it does NOT import Base.astro, so it bypasses the
+// shared Header, the top PortfolioPreviewTicker marquee, and the Footer.
+// Design tokens (palette, fonts, the .ARK selection-mark) are ported from the
+// new .ARK Astro rebuild (012_Ark_Website). The original homepage is preserved
+// at src/pages/index.full.astro.bak — restore it to bring the old site back.
+// ─────────────────────────────────────────────────────────────────────────────
+const title = ".ARK — currently building";
+const description =
+  "A new .ARK studio site is on the way. Web · film · image. In the meantime, reach me at shain@ark-studio.ch.";
 ---
 
-<Base 
-  title=".ARK | AI-Ready Design & UX Studio Thun, Switzerland" 
-  description="Boutique digital studio in Thun, Switzerland. We specialize in AI-readiness, UX/UI design, and high-end technical integration for Swiss KMUs."
-  showFooter={false}
-  schemas={schemas}
->
-  <main>
-    <!-- Hero Section -->
-    <Hero
-      client:load
-      videoSource="/Hero_Videos/Export.mov"
-      secondaryVideoSource="/Hero_Videos/2_Loops.webm"
-      title="Where digital work becomes tangible."
-      subtitle="Shaping interfaces with clarity, usability, and a subtle experimental edge."
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="noindex" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ark-studio.ch/" />
+    <meta property="og:site_name" content=".ARK" />
+
+    <!-- Fonts — Space Grotesk + Space Mono (new .ARK design system) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
     />
 
-    <!-- WHAT .ARK DOES Section -->
-    <WhatArkDoes client:visible />
+    <style is:global>
+      /* ── Tokens (ported verbatim from the new .ARK design system) ───────── */
+      :root {
+        --paper: #faf9f6;
+        --ink: #111212;
+        --slate: #54544f;
+        --gray: #9a9a95;
+        --cobalt: #3358d6;
+        --acid: #d6f84c;
+        --selection-tint: rgba(51, 88, 214, 0.16);
 
-    <!-- Network Registry / Validation Log (hidden for now) -->
+        --font-display: "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "Space Mono", ui-monospace, monospace;
 
-    <!-- Project Index -->
-    <ProjectIndex client:visible />
+        --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+        --motion-fast: 120ms;
+      }
 
-    <!-- SYSTEM STATE CONTROLLER (The .ARK Model) -->
-    <SystemStateController client:load />
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
 
-    <!-- FAQ Section -->
-    <FAQ client:visible />
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
 
-    <!-- Direct Answer Section -->
-    <DirectAnswer />
+      body {
+        background: var(--paper);
+        color: var(--ink);
+        font-family: var(--font-display);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        overflow: hidden;
+      }
 
-    <!-- OPEN A NEW FILE Section -->
-    <OpenNewFile client:visible />
-  </main>
+      /* Brand selection highlight everywhere (the locked gesture). */
+      ::selection {
+        background: var(--selection-tint);
+      }
 
-  <!-- FooterV2 - Preview of inversa.com footer style -->
-  <FooterV2 />
-  <Marquee />
+      /* ── Background build-log stream ────────────────────────────────────── */
+      .codestream {
+        position: fixed;
+        inset: 0;
+        margin: 0;
+        padding: 6vh 7vw 0;
+        font-family: var(--font-mono);
+        font-size: 13px;
+        line-height: 1.9;
+        color: var(--ink);
+        opacity: 0.11;
+        white-space: pre-wrap;
+        word-break: break-word;
+        pointer-events: none;
+        user-select: none;
+        z-index: 0;
+        /* fade out toward the bottom */
+        -webkit-mask-image: linear-gradient(
+          to bottom,
+          transparent 0%,
+          #000 8%,
+          #000 42%,
+          transparent 88%
+        );
+        mask-image: linear-gradient(
+          to bottom,
+          transparent 0%,
+          #000 8%,
+          #000 42%,
+          transparent 88%
+        );
+      }
+      .codestream b {
+        color: var(--cobalt);
+        font-weight: 400;
+      }
+      .codestream .ok {
+        color: var(--cobalt);
+      }
 
-  <script>
-    // Handle hash-based scrolling to projects section
-    if (window.location.hash === "#projects") {
-      // Wait for page to fully load, then scroll
-      window.addEventListener("load", () => {
-        setTimeout(() => {
-          const projectsSection = document.getElementById("projects");
-          if (projectsSection) {
-            // Calculate scroll position accounting for sticky elements
-            // Get the sticky wrapper (the parent of the sticky element)
-            const stickyWrapper = document
-              .querySelector('[id="what-the-ark"]')
-              ?.closest(".sticky")?.parentElement;
-            const stickyWrapperBottom = stickyWrapper
-              ? stickyWrapper.getBoundingClientRect().bottom + window.pageYOffset
-              : 0;
-            const header = document.querySelector("header");
-            const headerHeight = header ? header.getBoundingClientRect().height : 0;
+      /* Soft paper scrim behind the centred content for legibility. */
+      .scrim {
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background: radial-gradient(
+          60% 55% at 50% 46%,
+          rgba(250, 249, 246, 0.92) 0%,
+          rgba(250, 249, 246, 0.7) 45%,
+          rgba(250, 249, 246, 0) 100%
+        );
+      }
 
-            // Scroll to just past the sticky section, accounting for header
-            const targetScroll = Math.max(
-              stickyWrapperBottom - headerHeight + 20, // 20px padding
-              projectsSection.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20
-            );
+      /* ── .ARK selection-mark (top-left) — ported from shell.css ─────────── */
+      .topbar {
+        position: fixed;
+        top: 30px;
+        left: 30px;
+        z-index: 3;
+      }
+      .selmark {
+        display: inline-block;
+        text-decoration: none;
+      }
+      .selmark__sel {
+        position: relative;
+        display: inline-block;
+        padding: 0.1em 0.16em;
+        font-family: var(--font-display);
+        font-weight: 500;
+        font-size: 17px;
+        line-height: 1.3;
+      }
+      .selmark__hl,
+      .selmark__bar,
+      .selmark__knob {
+        opacity: 0;
+        transition:
+          opacity var(--motion-fast) var(--ease-out),
+          background var(--motion-fast) var(--ease-out);
+      }
+      .selmark__hl {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background: var(--selection-tint);
+      }
+      .selmark__txt {
+        position: relative;
+        z-index: 2;
+        color: var(--ink);
+        transition: color var(--motion-fast) var(--ease-out);
+      }
+      .selmark__bar {
+        position: absolute;
+        top: -2px;
+        bottom: -2px;
+        width: 3px;
+        background: var(--cobalt);
+        z-index: 3;
+      }
+      .selmark__bar--l {
+        left: -1.5px;
+      }
+      .selmark__bar--r {
+        right: -1.5px;
+      }
+      .selmark__knob {
+        position: absolute;
+        width: 9px;
+        height: 9px;
+        background: var(--cobalt);
+        z-index: 4;
+      }
+      .selmark__knob--tl {
+        top: -9px;
+        left: -1.5px;
+      }
+      .selmark__knob--br {
+        bottom: -9px;
+        right: -1.5px;
+      }
+      .selmark__sel.is-selected .selmark__hl,
+      .selmark__sel.is-selected .selmark__bar,
+      .selmark__sel.is-selected .selmark__knob {
+        opacity: 1;
+      }
+      .selmark:hover .selmark__hl,
+      .selmark:focus-visible .selmark__hl {
+        opacity: 1;
+        background: var(--cobalt);
+      }
+      .selmark:hover .selmark__bar,
+      .selmark:hover .selmark__knob,
+      .selmark:focus-visible .selmark__bar,
+      .selmark:focus-visible .selmark__knob {
+        opacity: 1;
+        background: var(--paper);
+      }
+      .selmark:hover .selmark__txt,
+      .selmark:focus-visible .selmark__txt {
+        color: var(--paper);
+      }
 
-            window.scrollTo({
-              top: targetScroll,
-              behavior: "smooth",
-            });
+      /* ── Centred cover content ──────────────────────────────────────────── */
+      .cover {
+        position: relative;
+        z-index: 2;
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 0 24px;
+      }
+      .eyebrow {
+        margin: 0 0 28px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--slate);
+      }
+      .headline {
+        margin: 0;
+        font-family: var(--font-display);
+        font-weight: 500;
+        font-size: clamp(38px, 8vw, 96px);
+        letter-spacing: -0.02em;
+        line-height: 1.04;
+        color: var(--ink);
+      }
+      .caret {
+        display: inline-block;
+        width: 0.06em;
+        min-width: 3px;
+        height: 0.92em;
+        margin-left: 0.06em;
+        translate: 0 0.1em;
+        background: var(--cobalt);
+        animation: blink 1s steps(1) infinite;
+      }
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+      .lede {
+        margin: 28px 0 0;
+        max-width: 36ch;
+        font-family: var(--font-display);
+        font-weight: 400;
+        font-size: clamp(15px, 2.2vw, 18px);
+        line-height: 1.5;
+        color: var(--slate);
+      }
+      .contact {
+        margin: 40px 0 0;
+        font-family: var(--font-mono);
+        font-size: 15px;
+        color: var(--ink);
+      }
+      .contact a {
+        color: var(--cobalt);
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        transition: border-color var(--motion-fast) var(--ease-out);
+      }
+      .contact a:hover {
+        border-color: var(--cobalt);
+      }
+      .subline {
+        margin: 14px 0 0;
+        font-family: var(--font-mono);
+        font-size: 12.5px;
+        letter-spacing: 0.04em;
+        color: var(--gray);
+      }
+      .subline a {
+        color: var(--slate);
+        text-decoration: none;
+        border-bottom: 1px solid var(--gray);
+        transition: color var(--motion-fast) var(--ease-out);
+      }
+      .subline a:hover {
+        color: var(--cobalt);
+        border-color: var(--cobalt);
+      }
+
+      @media (max-width: 600px) {
+        .topbar {
+          top: 22px;
+          left: 22px;
+        }
+        .codestream {
+          font-size: 11px;
+          padding: 4vh 6vw 0;
+        }
+      }
+
+      /* Reduced motion: kill the caret blink (typing JS is also guarded). */
+      @media (prefers-reduced-motion: reduce) {
+        .caret {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <pre class="codestream" id="codestream" aria-hidden="true"></pre>
+    <div class="scrim" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="selmark" href="/" aria-label=".ARK — home">
+        <span class="selmark__sel is-selected">
+          <span class="selmark__hl"></span>
+          <span class="selmark__bar selmark__bar--l"></span>
+          <span class="selmark__bar selmark__bar--r"></span>
+          <span class="selmark__knob selmark__knob--tl"></span>
+          <span class="selmark__knob selmark__knob--br"></span>
+          <span class="selmark__txt">.ARK</span>
+        </span>
+      </a>
+    </header>
+
+    <main class="cover">
+      <p class="eyebrow">.ARK · web · film · image</p>
+      <h1 class="headline"><span id="type">currently building</span><span class="caret"></span></h1>
+      <p class="lede">I'm rebuilding the studio site from the ground up. Back soon.</p>
+      <p class="contact">
+        <a href="mailto:shain@ark-studio.ch">shain@ark-studio.ch</a>
+      </p>
+      <p class="subline">
+        Personal portfolio →
+        <a href="https://shain.ch" target="_blank" rel="noopener noreferrer"
+          >shain.ch</a
+        >
+      </p>
+    </main>
+
+    <script is:inline>
+      (() => {
+        const reduce = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+
+        /* ── Headline typewriter loop ───────────────────────────────────── */
+        const typeEl = document.getElementById("type");
+        const phrases = ["currently building", "writing new code", "shipping soon"];
+        if (typeEl) {
+          if (reduce) {
+            typeEl.textContent = phrases[0];
+          } else {
+            // start already "full" on phrase 0 so the pre-filled headline
+            // holds, then deletes — no clear-and-retype flash when JS boots.
+            let p = 0,
+              i = phrases[0].length,
+              deleting = false;
+            const tick = () => {
+              const word = phrases[p];
+              typeEl.textContent = word.slice(0, i);
+              let delay = deleting ? 45 : 80;
+              if (!deleting && i === word.length) {
+                deleting = true;
+                delay = 1600; // hold at full word
+              } else if (deleting && i === 0) {
+                deleting = false;
+                p = (p + 1) % phrases.length;
+                delay = 320;
+              } else {
+                i += deleting ? -1 : 1;
+              }
+              setTimeout(tick, delay);
+            };
+            tick();
           }
-        }, 100);
-      });
-    }
-  </script>
-</Base>
+        }
+
+        /* ── Background build-log stream ────────────────────────────────── */
+        const stream = document.getElementById("codestream");
+        const lines = [
+          "$ npm run build",
+          "▲ astro v5 — building static site for ark-studio.ch",
+          "○ resolving design tokens …",
+          "  --paper   #faf9f6",
+          "  --ink     #111212",
+          "  --cobalt  <b>#3358d6</b>",
+          "  --acid    #d6f84c",
+          "○ painting .ARK selection-mark <b>[ok]</b>",
+          "○ loading Space Grotesk + Space Mono",
+          "○ wiring web · film · image",
+          "→ composing new homepage layout",
+          "→ writing case studies …",
+          "✓ type-check passed",
+          "✓ a11y contrast AA passed",
+          "deploying preview → <b>building</b> …",
+          "",
+        ];
+        if (stream) {
+          if (reduce) {
+            stream.innerHTML = lines.join("\n");
+          } else {
+            const MAX = 26;
+            let buf = [];
+            let n = 0;
+            const push = () => {
+              buf.push(lines[n % lines.length]);
+              if (buf.length > MAX) buf.shift();
+              stream.innerHTML = buf.join("\n");
+              n++;
+              setTimeout(push, 280 + Math.round(Math.sin(n) * 60 + 60));
+            };
+            push();
+          }
+        }
+      })();
+    </script>
+  </body>
+</html>
